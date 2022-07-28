@@ -1,1 +1,6 @@
 Options -Indexes
+
+<Files "^\.">
+Order allow,deny
+Deny from all
+</Files>
