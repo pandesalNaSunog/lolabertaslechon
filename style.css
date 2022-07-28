@@ -1,0 +1,36 @@
+#pic1{
+    background-image: url('lechon1.PNG'); 
+    background-size: cover; 
+    height:300px;
+}
+#pic2{
+    background-image: url('lechon2.PNG'); 
+    background-size: cover; 
+    height:300px;
+}
+#pic3{
+    background-image: url('lechon3.PNG'); 
+    background-size: cover; 
+    height:300px;
+}
+
+
+@media(min-width: 992px){
+    #pic1{
+        background-image: url('lechon1.PNG'); 
+        background-size: cover; 
+        height:750px;
+    }
+    #pic2{
+        background-image: url('lechon2.PNG'); 
+        background-size: cover; 
+        height:750px;
+    }
+    #pic3{
+        background-image: url('lechon3.PNG'); 
+        background-size: cover; 
+        height:750px;
+    }
+}
+
+
