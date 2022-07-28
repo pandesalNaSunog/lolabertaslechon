@@ -154,7 +154,7 @@
                                 $(searchData).each(function(index,value){
                                     searchProductGrid(value.id, value.name, value.image, value.description, value.available, value.price);
                                 })
-                                //console.log(searchData);
+                                
                                 productFunctions()
                             }else{
                                 searchMessageInput.css('color','red');
@@ -210,7 +210,6 @@
                         addToProductGrid(value.id, value.name, value.image, value.description, value.available, value.price);
                     })
                     productFunctions()
-                    console.log('executed');
                 }
             });
             //Order Confirm Button
@@ -298,7 +297,6 @@
                 thisProductQuantity.on('change',function(){
                     var thisAvailable = $(this).parent().parent().children().eq(2).children().eq(1);
                     var thisInput = $(this).val();
-                    console.log(parseInt(thisInput) + "----" +parseInt(thisAvailable.text()))
                     if(parseInt(thisInput) > parseInt(thisAvailable.text())){
                         
                         $(this).val(thisAvailable.text());
@@ -306,6 +304,17 @@
                         $(this).val(0);
                     }
                 });
+
+                thisProductQuantity.on('keyup', function(){
+                    var thisAvailable = $(this).parent().parent().children().eq(2).children().eq(1);
+                    var thisInput = $(this).val();
+                    if(parseInt(thisInput) > parseInt(thisAvailable.text())){
+                        
+                        $(this).val(thisAvailable.text());
+                    }else if(parseInt(thisInput) < 0){
+                        $(this).val(0);
+                    }
+                })
                 viewProductButton.click(function(){
                     globalProductId = $(this).val();
                     $.ajax({
@@ -316,7 +325,7 @@
                         },
                         success: function(response){
                             var data = JSON.parse(response);
-                            console.log(data)
+                            
                             productName.text(data.name);
                             productImage.attr('src',"admin/" + data.image);
                             productDescription.text(data.description);
@@ -362,7 +371,7 @@
                             customerAddress: customerAddress.val(),
                         },
                         success:function(response){
-                            console.log(response)
+                            
                             if(response == 'may kapareho'){
                                 if (confirm('You ALREADY ORDERED this Product! are you sure you want to order it again?') == true){
                                         $.ajax({
