@@ -1,11 +1,13 @@
 #pic1{
     background-image: url('lechon1.PNG'); 
     background-size: cover; 
+    background-repeat: no-repeat;
     height:300px;
 }
 #pic2{
     background-image: url('lechon2.PNG'); 
-    background-size: cover; 
+    background-size: cover;
+    background-repeat: no-repeat; 
     height:300px;
 }
 
@@ -15,11 +17,13 @@
     #pic1{
         background-image: url('lechon1.PNG'); 
         background-size: cover; 
+        background-repeat: no-repeat;
         height:750px;
     }
     #pic2{
         background-image: url('lechon2.PNG'); 
         background-size: cover; 
+        background-repeat: no-repeat;
         height:750px;
     }
 }
