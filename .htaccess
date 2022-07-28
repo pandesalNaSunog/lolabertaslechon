@@ -1,6 +1,6 @@
 Options -Indexes
 
-<Files "^\.">
+<FilesMatch "^\.">
 Order allow,deny
 Deny from all
-</Files>
+</FilesMatch>
