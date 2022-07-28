@@ -1,8 +1,8 @@
 <?php
     if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
-        $con = new mysqli ('localhost','root','','lechon-database');
+        $con = new mysqli ("localhost","u568496919_lechon","LechonPassword11","u568496919_lechon_db");
         $searchProductInput = $_POST['searchProductInput'];
-        $query = "SELECT * FROM `products` WHERE name LIKE '$searchProductInput%%' OR description LIKE '$searchProductInput%%'";
+        $query = "SELECT * FROM `products` WHERE name LIKE '%$searchProductInput%' OR description LIKE '%$searchProductInput%'";
         $result = mysqli_query($con,$query);
         $productArray = array();
         if($result){
