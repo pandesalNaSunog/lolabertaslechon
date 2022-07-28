@@ -295,13 +295,15 @@
                         thisquantity.val(currentValue);
                     }
                 });
-                thisProductQuantity.on('keyup',function(){
+                thisProductQuantity.on('change',function(){
                     var thisAvailable = $(this).parent().parent().children().eq(2).children().eq(1);
                     var thisInput = $(this).val();
                     console.log(parseInt(thisInput) + "----" +parseInt(thisAvailable.text()))
                     if(parseInt(thisInput) > parseInt(thisAvailable.text())){
                         
                         $(this).val(thisAvailable.text());
+                    }else if(parseInt(thisInput) < 0){
+                        $(this).val(0);
                     }
                 });
                 viewProductButton.click(function(){
