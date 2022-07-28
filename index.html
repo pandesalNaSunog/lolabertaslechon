@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lola Berta's</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function(){
+            var totalOfCart = 0;
+            var productIds = [];
+            var productQuantities = [];
+            var globalProductId = 0;
+            var productList = $('#productList');
+            var searchProductList = $('#searchProductList');
+            var searchProductInput = $('#searchProductInput');
+            var searchProduct = $('#searchProduct');
+            var showProductList = $('#showProductList');
+            var productName = $('#productName');
+            var productImage = $('#productImage');
+            var productDescription = $('#productDescription');
+            var productQuantity = $('#productQuantity');
+            var productPrice = $('#productPrice');
+            var cartPop = $('#cartPop');
+            var mainCart = $('#mainCart');
+            var myCart = $('.myCart');
+            var searchMessageInput = $('#searchMessageInput');
+            var myOrderslist = $('#myOrderslist');
+            var cartList = $('#cartList');
+            var welcomeBlockquote = $('#welcomeCustomers');
+            
+            //myCart Position On Start
+            if($(window).width() < 976){
+                cartPop.show();
+                mainCart.hide();
+            }else{
+                mainCart.show();
+                cartPop.hide();
+            }
+            //myCart Position when window is resized
+            $(window).mouseenter(function(){
+                if($(window).width() < 976){
+                cartPop.show('fast');
+                mainCart.hide('fast');
+                }else{
+                    mainCart.show('fast');
+                    cartPop.hide('fast');
+                }
+            });
+            mainCart.click(function(){
+                if(productIds.length == 0 || productQuantities.length == 0){
+                    alert('Your Cart is currently empty.');
+                }else{
+                    myOrderslist.modal('show');
+                    cartList.children().remove();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'admin/php/proccessOrders.php',
+                        data:
+                        {
+                            productIds: productIds,
+                            productQuantities: productQuantities,
+                        },
+                        success: function(response){
+                            var data = JSON.parse(response);
+                            totalOfCart = data.total;
+                            $(data.products).each(function(index, value){
+                                addToCartsList(value.id, value.name, value.description, value.image, value.quantity, value.price);
+                            })
+                        }
+                    });
+                }
+            });
+            myCart.on('click', function(){
+                if(productIds.length == 0 || productQuantities.length == 0){
+                    alert('Your Cart is currently empty.');
+                }else{
+                    myOrderslist.modal('show');
+                    cartList.children().remove();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'admin/php/proccessOrders.php',
+                        data:
+                        {
+                            productIds: productIds,
+                            productQuantities: productQuantities,
+                        },
+                        success: function(response){
+                            var data = JSON.parse(response);
+                            totalOfCart = data.total;
+                            $(data.products).each(function(index, value){
+                                addToCartsList(value.id, value.name, value.description, value.image, value.quantity, value.price);
+                            })
+                        }
+                    });
+                }
+            });
+
+
+            function addToCartsList(id, name, description, image, quantity, price){
+                cartList.append(`<div class="card shadow">
+                                    <div class="card-body" style="display: flex;">
+                                        <div style="height: 100px; width: 100px;">
+                                            <img class="img-fluid" style="width: 100px; height:100px;" src="admin/${image}">
+                                        </div>
+                                        
+                                            <div style="margin-left: 20px; width: 150px;">
+                                                <h5 style="margin-bottom: 0px;">${name}</h5>
+                                                <code style="margin-top: 0px;">(${description})</code>
+                                            </div>
+                                            <div style="margin-left: 20px;">
+                                                <p><strong>Quantity: </strong>${quantity}</p>
+                                                <p>
+                                                    <span>&#8369</span>${price}
+                                                </p>
+                                            </div>
+                                        
+                                    </div>
+                                </div>`)
+            }
+            //page start
+            $('#searchMessage').hide();
+            searchProductList.hide();
+            //Product list button on header navigations
+            showProductList.click(function(){
+                location.reload();
+            });
+            //search product
+            searchProduct.click(function(){
+                if(searchProductInput.val() != ""){
+                    welcomeBlockquote.slideUp('fast');
+                    $('#ListMessage').slideUp('fast');
+                    $('#searchMessage').slideDown('slow');
+                    searchProductList.children().remove();
+                    productList.slideUp('fast');
+                    searchProductList.slideDown('slow');
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'admin/php/searchProduct.php',
+                        data:
+                        {
+                            searchProductInput: searchProductInput.val()
+                        },
+                        success: function(response){
+                            if (response != '[]'){
+                                searchMessageInput.css('color','black');
+                                searchMessageInput.text('Results for: ' + searchProductInput.val());
+                                var searchData = JSON.parse(response);
+                                $(searchData).each(function(index,value){
+                                    searchProductGrid(value.id, value.name, value.image, value.description, value.available, value.price);
+                                })
+                                //console.log(searchData);
+                                productFunctions()
+                            }else{
+                                searchMessageInput.css('color','red');
+                                var noDataMessage = "Sorry, there is no product with such name.";
+                                searchMessageInput.text(noDataMessage);
+                            }
+                        }
+                    });
+                }else{
+                    alert('no input')
+                }
+            });
+            function searchProductGrid(id, name, image, description, available, price){
+                searchProductList.append(
+                            `<div id="item" class="card shadow col-md mx-auto rounded-4" style="width: 300px; margin: 20px;">
+                                <div class="card-header rounded-4 rounded-buttom text-light" style="background-color: rgb(254,105,23);">
+                                    <h5 class="text-truncate">${name}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <center>
+                                        <img style="border-radius: 5%;" src="admin/${image}" alt="" height="200px" width="200px" style="margin: 10px;">
+                                    </center>
+                                    <p style="margin-left: 10px;margin-top: 5px;margin-bottom: 5px;" class="text-truncate"><strong>Description: </strong>${description}</p>
+                                    <p style="margin-left: 10px;margin-bottom: 15px;"><strong>Available: </strong><span class="available">${available}</span></p>
+                                    <p style="margin-left: 10px;">
+                                        <code style="color: orange;padding: 2px;background-color: black;border-radius: 25%;">Price</code>
+                                        <br>
+                                        <strong>
+                                            <span>&#8369</span>${price}
+                                        </strong>
+                                    </p>
+                                    <div class="input-group mb-3">
+                                        <button style="border-radius: 50% 0 0 50%;" class="thisProductDecrease btn btn-success">-</button>
+                                        <input type="number" class="thisProductQuantity form-control text-center" value="0">
+                                        <button style="border-radius: 0 50% 50% 0;" class="thisProductIncrease btn btn-success">+</button> 
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button value="${id}" class="viewProductButton btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#viewProduct">View Product</button>
+                                        <button value="${id}" class="add-to-cart btn btn-warning">Add To Cart</button>
+                                    </div>
+                                </div>
+                            </div>`
+                        );
+            }
+            //this how we display products
+            $.ajax({
+                type: 'GET',
+                url: 'admin/php/displayMyProduct.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index, value){
+                        //${value.name} ${value.image} ${value.description} ${value.available} ${value.price} ${value.id}
+                        addToProductGrid(value.id, value.name, value.image, value.description, value.available, value.price);
+                    })
+                    productFunctions()
+                    console.log('executed');
+                }
+            });
+            //Order Confirm Button
+            var customerName = $('#customerName');
+            var customerAddress = $('#customerAddress');
+            var orderQuantity = $('#orderQuantity');
+            var resetOrderFields = $('#resetOrderFields');
+            var orderConfirmButton = $('#confirmOrder');
+
+
+            function addToCartFunc(productId, quantity){
+                productIds.push(productId);
+                productQuantities.push(quantity);
+            }
+
+            function addToProductGrid(id, name, image, description, available, price){
+                productList.append(
+                            `<div id="item" class="card shadow col-md mx-auto rounded-4" style="width: 300px; margin: 20px;">
+                                <div class="card-header rounded-4 rounded-buttom text-light" style="background-color: rgb(254,105,23);">
+                                    <h5 class="text-truncate">${name}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <center>
+                                        <img style="border-radius: 5%;" src="admin/${image}" alt="" height="200px" width="200px" style="margin: 10px;">
+                                    </center>
+                                    <p style="margin-left: 10px;margin-top: 5px;margin-bottom: 5px;" class="text-truncate"><strong>Description: </strong>${description}</p>
+                                    <p style="margin-left: 10px;margin-bottom: 15px;"><strong>Available: </strong><span class="available">${available}</span></p>
+                                    <p style="margin-left: 10px;">
+                                        <code style="color: orange;padding: 2px;background-color: black;border-radius: 25%;">Price</code>
+                                        <br>
+                                        <strong>
+                                            <span>&#8369</span>${price}
+                                        </strong>
+                                    </p>
+                                    <div class="input-group mb-3">
+                                        <button style="border-radius: 50% 0 0 50%;" class="thisProductDecrease btn btn-success">-</button>
+                                        <input type="number" class="thisProductQuantity form-control text-center" value="0">
+                                        <button style="border-radius: 0 50% 50% 0;" class="thisProductIncrease btn btn-success">+</button> 
+                                    </div>
+                                    <div class="d-flex justify-content-between">
+                                        <button value="${id}" class="viewProductButton btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#viewProduct">View Product</button>
+                                        <button value="${id}" class="add-to-cart btn btn-warning">Add To Cart</button>
+                                    </div>
+                                </div>
+                            </div>`
+                        );
+            }
+            
+            function productFunctions(){
+                var viewProductButton = $('.viewProductButton');
+                var thisProductDecrease = $('.thisProductDecrease');
+                var thisProductQuantity = $('.thisProductQuantity');
+                var thisProductIncrease = $('.thisProductIncrease');
+                var addToCart = $('.add-to-cart');
+
+                addToCart.on('click', function(){
+                    var thisProductOrderQuantity = $(this).parent().parent().children().eq(4).children().eq(1).val();
+                    globalProductId = $(this).val();
+                    if(parseInt(thisProductOrderQuantity) == 0){
+                        alert('Please Add Quantity');
+                    }else{
+                        addToCartFunc(globalProductId, thisProductOrderQuantity);
+                        alert('Product Successfully Added to Cart');
+                    }
+                })
+                thisProductDecrease.click(function(){
+                    var thisquantity = $(this).parent().children().eq(1)
+                    var currentValue = thisquantity.val();
+                    if(currentValue > 0){
+                        currentValue--;
+                        thisquantity.val(currentValue);
+                    }
+                });
+                thisProductIncrease.click(function(){
+                    var thisquantity = $(this).parent().children().eq(1)
+                    var currentValue = thisquantity.val();
+                    var thisAvailable = $(this).parent().parent().children().eq(2).children().eq(1);
+
+                    var thisAvailableInt = parseInt(thisAvailable.text());
+                    if(currentValue < thisAvailableInt){
+                        currentValue++;
+                        thisquantity.val(currentValue);
+                    }
+                });
+                thisProductQuantity.on('keyup',function(){
+                    var thisAvailable = $(this).parent().parent().children().eq(2).children().eq(1);
+                    var thisInput = $(this).val();
+                    console.log(parseInt(thisInput) + "----" +parseInt(thisAvailable.text()))
+                    if(parseInt(thisInput) > parseInt(thisAvailable.text())){
+                        
+                        $(this).val(thisAvailable.text());
+                    }
+                });
+                viewProductButton.click(function(){
+                    globalProductId = $(this).val();
+                    $.ajax({
+                        type: 'POST',
+                        url: 'admin/php/viewProduct.php',
+                        data: {
+                            product_id: globalProductId,
+                        },
+                        success: function(response){
+                            var data = JSON.parse(response);
+                            console.log(data)
+                            productName.text(data.name);
+                            productImage.attr('src',"admin/" + data.image);
+                            productDescription.text(data.description);
+                            productQuantity.text(data.quantity);
+                            productPrice.text(data.price);
+                        }
+                    });
+                });
+            }
+            customerName.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            customerAddress.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            orderQuantity.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            })
+            resetOrderFields.click(function(){
+                if(confirm('Are you sure?') == true){
+                    customerAddress.val("");
+                    customerName.val("");
+                    orderQuantity.val("");
+                }
+            });
+            orderConfirmButton.click(function(){
+                if(customerName.val() == ""){
+                    customerName.addClass('is-invalid');
+                }
+                if(customerAddress.val() == ""){
+                    customerAddress.addClass("is-invalid");
+                }
+                if(orderQuantity.val() == ""){
+                    orderQuantity.addClass("is-invalid");
+                }
+                if(customerName.val() && customerAddress.val() && orderQuantity.val() != ""){
+                    $.ajax({
+                        type: 'POST',
+                        url: 'admin/php/orderDuplicate.php',
+                        data:
+                        {
+                            customerName: customerName.val(),
+                            customerAddress: customerAddress.val(),
+                        },
+                        success:function(response){
+                            console.log(response)
+                            if(response == 'may kapareho'){
+                                if (confirm('You ALREADY ORDERED this Product! are you sure you want to order it again?') == true){
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'admin/php/order.php',
+                                            data:
+                                            {
+                                                customerName: customerName.val(),
+                                                customerAddress: customerAddress.val(),
+                                                orderQuantity: orderQuantity.val()
+                                            },
+                                            success:function(response){
+                                                if(response == 'success'){
+                                                    alert('You have Successfully Ordered ANOTHER SET of the Product.');
+                                                    customerName.val("");
+                                                    customerAddress.val("");
+                                                    orderQuantity.val("");
+                                                }else{
+                                                    alert('error');
+                                                }
+                                            }
+                                        })
+                                }
+                            }else if(response == 'clear'){
+                                if(confirm('Are you sure?') == true){
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'admin/php/order.php',
+                                        data:
+                                        {
+                                            customerName: customerName.val(),
+                                            customerAddress: customerAddress.val(),
+                                            orderQuantity: orderQuantity.val()
+                                        },
+                                        success:function(response){
+                                            if(response == 'success'){
+                                                alert('You have Successfully Ordered a Product.');
+                                                customerName.val("");
+                                                customerAddress.val("");
+                                                orderQuantity.val("");
+                                            }else{
+                                                alert('error');
+                                            }
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    });
+                    
+                }
+            });
+        });
+    </script>
+    <style>
+        *{
+            font-family: cursive;
+        }
+        #logo-ni-lola{
+            display: none;
+        }
+
+        @media (min-width: 768px){
+            #logo-ni-lola{
+                display:inline;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="sticky-top" style="background-color: rgb(254,105,23);">
+        <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="padding: 0px;">
+            <div class="container">
+                <div class="navbar-brand" style="margin: 0;">
+                    <img style="margin: 0px;" id="logo-ni-lola" src="admin/branding/received_727156111882599 page logo.png" height="70px" width="70px" alt="" srcset="">
+                    <img class="shadow mt-2" src="admin/Branding/brand.png" height="50px" width="280px" alt="">
+                </div>
+                <button class="navbar-toggler shadow" style="border: solid 2px rgb(255, 124, 36);border-radius: 25%;" data-bs-toggle="collapse" data-bs-target="#nav-menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="nav-menu" class="collapse navbar-collapse mt-3">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <div class="input-group col-8 shadow">
+                                <input type="text" class="form-control mt-0 mb-0" id="searchProductInput" placeholder="Search...">
+                                <button class="btn btn-warning mt-0" id="searchProduct">Search</button>
+                            </div>
+                        </li>
+                        <li id="mainCart" class="nav-item mx-5">
+                            <a class="btn btn-warning shadow" id="maincart" href="#">My Cart</a>
+                        </li>
+                        <li class="nav-item mx-5">
+                            <a href="#" class="nav-link" id="showProductList" style="color: white;">All Products</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div id="cartPop" style="display: flex;flex-direction: row-reverse;">
+        <a class="myCart btn btn-warning shadow" style="position: fixed;margin-top: 0px;width: 100px;z-index: 100; margin-left: 10px;border-radius: 0 0 50% 50%;margin-right: 5%;border-top: 0px;border-bottom:thin black;border-left: ridge black;border-right:ridge black;" href="#" class="nav-link">
+            <h6>My Cart</h6>
+        </a>
+    </div>
+    <main class="container">
+        <section id="welcomeCustomers" class="text-center text-md-start">
+            <div>
+            <blockquote class="p-5">
+                <h4>Welcome Blockquote:</h4>
+               Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus fugiat libero eveniet ullam error exercitationem fuga corporis distinctio aliquam asperiores beatae deleniti quam minima facere aspernatur dignissimos veritatis excepturi in, vero sunt quis a iure? Necessitatibus obcaecati libero illo, explicabo at est facere quia iste eius rerum, perferendis error cumque.
+            </blockquote>
+            </div>
+        </section>
+        <section>
+            <div id="ListMessage" style="display: flex; justify-content:space-between">
+                <hr style="width: 40%;color: linear-gradient(orange,blue,yellow);margin-right: 10px;">
+                <center>
+                    <h5> 
+                        <span style="margin-right:10px;">All Products</span>
+                    </h5>
+                </center>
+                <hr style="width: 40%;margin-left: 10px;">
+            </div>
+            <div id="productList" style="display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr));"></div>
+        </section>
+        <!--searchBar Results-->
+        <section style="margin-top: 25px;">
+            <div id="searchMessage" style="display: flex;justify-content: space-between;">
+                <hr style="width: 40%;margin-right: 10px;">
+                <center>
+                    <h6> 
+                        <span id="searchMessageInput" style="margin-right:10px;"></span>
+                    </h6>
+                </center>
+                <hr style="width: 40%;margin-left: 10px;">
+            </div>
+            <div id="searchProductList" style="display: grid; grid-template-columns:  repeat(auto-fill,minmax(320px,1fr));"></div>
+        </section>
+    </main>
+    <footer></footer>
+
+    <div class="modal fade" id="viewProduct">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 id="productName"></h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center my-3">
+                        <img class="img-fluid" id="productImage" style="width:300px; height:auto;" src="" alt="">
+                    </div>
+                    <p>
+                        <strong>Description: </strong>
+                        <span id="productDescription"></span>
+                    </p>
+                    <p>
+                        <strong>Quantity: </strong>
+                        <span id="productQuantity"></span>
+                    </p>
+                    <p>
+                        <strong>Price: </strong>
+                        <span>&#8369</span><span id="productPrice"></span>
+                    </p>
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-warning" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#orderModal">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myOrderslist">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">My Cart</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="cartList" style="margin-bottom: 20px;">
+
+                    </div>
+                    <button class="btn btn-outline-success" id="confirm-my-order">Confirm Order</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script src="jquery.js"></script>
+<script>
+    $(document).ready(function(){
+        var windowHeight = $(window).height();
+        var windowScrollPosTop = $(window).scrollTop();
+        var windowScrollPosBottom = windowHeight + windowScrollPosTop;
+        $('.j').css('opacity',0);
+
+        $.fn.revealOnScroll = function(direction, speed){
+            return this.each(function(){
+                var objectOffset = $(this).offset();
+                var objectOffsetTop = objectOffset.top;
+
+                if(!$(this).hasClass('hidden')){
+
+                    if(direction == 'right'){
+                        $(this).animate({
+                            'opacity': 0,
+                            'right': '700px',
+                        })
+                    }else{
+                        $(this).css({
+                            'opacity': 0,
+                            'right': '-700px',
+                        })
+                    }
+
+                    $(this).css('opacity',0).addClass('hidden');
+                }
+
+                if(!$(this).hasClass('animation-complete')){
+
+                    if(windowScrollPosBottom > objectOffsetTop){
+                        $(this).animate({'opacity' : 1, 'right' : 0}, speed).addClass('animation-complete');
+                    }
+                }
+            });
+        }//end function
+        $(window).scroll(function(){
+            windowHeight = $(window).height();
+            windowScrollPosTop = $(window).scrollTop();
+            windowScrollPosBottom = windowHeight + windowScrollPosTop;
+            $('.j').revealOnScroll('left',500);
+            
+        });
+    });
+</script>
+<style>
+    *{
+        left: 1000px;
+    }
+    #imgA{
+        right: 700px;
+    }
+</style>
+<body>
+    <h1>Test</h1>
+    <img class="j" src="images/62d3ac3aeac7c.jpg" alt="" srcset="">
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor nihil illum consectetur sit veniam suscipit culpa, praesentium, ab molestiae, perferendis obcaecati quis amet! Exercitationem quod vel doloribus eius possimus debitis, natus magni cumque corporis tempore similique, molestiae error officiis, qui laboriosam quibusdam quia mollitia dolorum suscipit minus inventore. Sit magni nesciunt iste! Temporibus eos omnis reiciendis, illum, nam quae enim sit magni saepe laudantium adipisci maiores deleniti esse cumque culpa. Doloribus magnam soluta maiores quas quisquam nisi eos dolorem corporis, iste atque dicta error, nesciunt excepturi ducimus vitae neque laborum esse, aperiam nostrum? Corporis fuga similique culpa odit dolore distinctio.</p>
+    <img class="j" src="images/62d3c31a4231c.jpg" alt="">
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. A, quos numquam iste veritatis quidem libero amet voluptatum illo quod commodi deleniti, possimus doloribus. Necessitatibus asperiores, impedit et ipsam repellat quod atque, odio unde ex, nesciunt esse molestiae? Cum architecto repudiandae expedita delectus accusamus minus possimus. Incidunt repellat nostrum ratione in corporis repudiandae nesciunt? Unde est adipisci maxime necessitatibus ex illum, maiores quis cumque autem modi natus quisquam reprehenderit voluptatibus sapiente, totam suscipit dignissimos temporibus vitae omnis? Rerum quam dignissimos illum amet aspernatur, rem beatae ab cupiditate aperiam odit ex explicabo quibusdam deserunt natus ut corrupti consectetur suscipit ratione fugit officia.</p>
+    <div>
+        <img class="j" src="images/62d3c31a4231c.jpg" alt="">
+    </div>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Deleniti consectetur quae qui necessitatibus iste excepturi nulla natus dolor sit harum itaque eius aperiam ab libero velit non inventore, nesciunt, ad eum. Iusto, debitis. Cumque molestias facilis quos fuga sed, saepe eos itaque dolor sapiente iusto vitae labore, asperiores consequatur, sequi aliquid! Cum minima aspernatur, provident excepturi veniam, nisi soluta ea est asperiores id totam eveniet optio. Quis itaque, cum provident beatae possimus repellendus a quibusdam minima. Aperiam dignissimos dolorum odit? Temporibus et itaque inventore sed, facere incidunt rerum? Provident quas a et nostrum eveniet esse. Ullam in labore ipsum blanditiis?</p>
+    <div>
+        <img class="j" src="images/62d3c31a4231c.jpg" alt="">
+    </div>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus sapiente consequatur est qui, quisquam et dicta perspiciatis amet vitae distinctio deleniti esse nemo ullam quia corporis! Iusto aut minus harum! Molestiae accusantium quibusdam explicabo dolorem itaque sed ducimus, atque nam, fugiat repellat ab vero ratione odio, nemo sunt dicta! Illo at similique odit ut libero porro cum tenetur illum ducimus qui voluptatem recusandae consectetur doloribus laboriosam, nulla tempore nobis excepturi repellendus eveniet iste, eos et officia exercitationem maiores. Aut pariatur recusandae, quo, delectus perferendis iste ad nostrum incidunt doloribus vero consequatur cumque corrupti ullam voluptatem. Vero, perspiciatis quae nulla ipsam aliquid culpa, placeat natus saepe velit nostrum vel fuga amet, commodi non. Qui impedit voluptatem ipsam doloribus placeat, architecto nesciunt molestias saepe eligendi illum dignissimos sunt laboriosam dolore nemo doloremque praesentium atque delectus et neque aliquid optio. Accusantium reprehenderit natus provident nam enim dicta officia? Optio aspernatur ab amet ratione sed culpa illum quae iste atque obcaecati? Distinctio fugiat recusandae repellat itaque vel quos adipisci nostrum natus. Neque, libero officiis porro nam, tempora aspernatur provident, molestias pariatur veniam natus illum quod nisi beatae voluptatibus fugiat! Facere totam quae esse. Nam dolores, rem nisi eligendi adipisci tempore omnis quibusdam, ad enim asperiores magnam? Et, inventore repudiandae enim quaerat magnam modi, doloribus natus velit, delectus necessitatibus ipsum corporis cum libero fugiat? Commodi ipsa repellendus accusantium veniam illum iure iusto corporis fugit voluptates. Similique alias, quia commodi cupiditate quas nam deleniti tenetur est, nostrum harum ducimus fugiat ab debitis possimus laborum nihil ad molestias illo quisquam adipisci repudiandae, asperiores reprehenderit hic. Nam aperiam hic deserunt quidem excepturi officia deleniti quos non dolorum animi doloribus quam, eaque culpa dignissimos nostrum magnam illum tempore? Eum corporis quibusdam impedit, reprehenderit excepturi autem. Ipsam consequatur ut repudiandae placeat laboriosam. Perferendis aut corporis veniam ducimus iusto vitae assumenda quis, ea, praesentium adipisci, quas expedita. Officiis placeat corporis sapiente explicabo veritatis inventore, eius sed ratione distinctio voluptatem, culpa quo officia nisi. Placeat doloribus labore quo nisi asperiores reprehenderit, error quis corrupti deserunt quae nam incidunt quisquam inventore. Rem ratione amet in unde magnam veritatis possimus architecto illo maiores at. Odit quis commodi, ipsa, deserunt amet quod aliquam suscipit velit labore perferendis autem nisi veniam et voluptatem aspernatur iste harum neque eius! Ex eligendi velit id deleniti adipisci nisi inventore, nostrum voluptatibus laborum laudantium reprehenderit numquam, porro quod omnis sit quas, cumque ipsum saepe at nemo. Omnis sequi nemo rerum dolores ut placeat eos excepturi tenetur nam voluptates culpa aspernatur, sit natus ipsum non animi assumenda labore corporis eveniet, eius laborum perferendis maxime consequuntur? Explicabo reprehenderit cupiditate veniam, dolorem et natus fugit cumque nisi minima obcaecati velit ut corporis at, aliquam corrupti praesentium non adipisci voluptatem repudiandae tempore rerum eaque? Corrupti iusto, id enim nobis nam illum, sed distinctio dolor dolorum quod deserunt fugit officiis sunt laboriosam, rem nihil animi doloribus. Facere consequuntur quasi molestiae ratione, consectetur aperiam ea harum asperiores quisquam magni explicabo laborum odio quia tenetur voluptatum, officia quidem ut! Tempora dicta deleniti vitae earum harum velit sequi.</p>
+    <div>
+        <img class="j" src="images/62d3c31a4231c.jpg" alt="">
+    </div>
+</body>
+</html>

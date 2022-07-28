@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lola Berta's Lechon</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.css">
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function(){
+            //default menu
+            $('#ordersNav').css('color','dimgrey');
+            $('#ordersNav').css('-webkit-text-fill-color','transparent');
+            $('#ordersNav').css('-webkit-text-stroke-width','1px');
+            $.ajax({
+                type: 'GET',
+                url: 'php/sessioncheck.php',
+                success:function(response){
+                    if( response == 'index.html'){
+                        window.location.replace(response);
+                        
+                    }
+                }
+            });
+            //Jquery Nav Animation
+            $('#myProductsSection').hide();
+            var globalProductId = 0;
+            var ordersTable = $('#ordersTable');
+            var productsTable = $('#productsTable');
+            var myProductsNav = $('#myProductsNav');
+            var ordersNav = $('#ordersNav');
+            var myProductSection = $('#myProductsSection');
+            var ordersSection = $('#ordersSection');
+            var welcomeSection = $('#welcomeSection');
+            var editButton = $('#editButton');
+
+            //navigational Buttons
+            myProductsNav.click(function(){
+                $(this).css('color','dimgrey');
+                $(this).css('-webkit-text-fill-color','transparent');
+                $(this).css('-webkit-text-stroke-width','1px');
+                ordersNav.css('color','white');
+                ordersNav.css('-webkit-text-stroke-width','0px');
+                ordersNav.css('-webkit-text-fill-color','white');
+                myProductSection.slideDown('slow');
+                ordersSection.slideUp('fast');
+            });
+            ordersNav.click(function(){
+                $(this).css('color','dimgrey');
+                $(this).css('-webkit-text-fill-color','transparent');
+                $(this).css('-webkit-text-stroke-width','1px');
+                myProductsNav.css('color','white');
+                myProductsNav.css('-webkit-text-stroke-width','0px');
+                myProductsNav.css('-webkit-text-fill-color','white');
+                ordersSection.slideDown('slow');
+                myProductSection.slideUp('fast');
+            });
+            //view Certain product variables
+            var certainProductName = $('#certainProductName');
+            var certainProductImage = $('#certainProductImage');
+            var certainProductDescription = $('#certainProductDescription');
+            var certainProductQuantity = $('#certainProductQuantity');
+            var certainProductPrice = $('#certainProductPrice');
+            //SHOW MyProducts
+            $.ajax({
+                type: 'GET',
+                url: 'php/displayMyProduct.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index, value){
+                        productsTable.append(`<tr>
+                                                <td id="name">${value.name}</td>
+                                                <td>
+                                                    <div style="display: flex; margin: 0px;">
+                                                        <img src="${value.image}" style="height: 50px; width: 50px;">
+                                                        <button id="imgLarge" data-bs-toggle="modal" data-bs-target="#viewProductImage" class="viewProductImageButton btn btn-success" value="${value.id}">View</button>
+                                                    </div>
+                                                </td>
+                                                <td>${value.description}</td>
+                                                <td>${value.available}</td>
+                                                <td><span>&#8369<span>${value.price}</td>
+                                                <td>
+                                                    <button class="edit-product btn btn-outline-danger" id="editButton" data-bs-toggle="modal" data-bs-target="#selectEditMethod" value="${value.id}">Edit</button>
+                                                    <button class="delete-product btn btn-outline-warning" id="deleteButton" value="${value.id}">Delete</button>
+                                                </td>
+                                            </tr>
+                                            `);
+                    })
+                    var name = $('#name');
+                    var btnEdit = $('.edit-product');
+                    var btnDelete = $('.delete-product');
+                    var viewProductImageButton = $('.viewProductImageButton');
+                    viewProductImageButton.click(function(){
+                        globalProductId = $(this).val();
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/AVI.php',
+                            data:
+                            {
+                                globalProductId: globalProductId
+                            },
+                            success:function(response){
+                                var data = JSON.parse(response);
+                                console.log(data);
+                                certainProductName.text(data.name);
+                                certainProductImage.attr('src', data.image);
+                                certainProductDescription.text(data.description);
+                                certainProductQuantity.text(data.quantity);
+                                certainProductPrice.text(data.price);
+                            }
+                        });
+                    });
+                    btnEdit.click(function(){
+                        globalProductId = $(this).val();
+                    });
+                    btnDelete.click(function(){
+                        var thisDelete = $(this);
+                        globalProductId = $(this).val();
+                        if(confirm('Are you sure you want to DELETE this product?') == true){
+                            $.ajax({
+                                type: 'POST',
+                                url: 'php/deleteProduct.php',
+                                data:
+                                {
+                                    globalProductId: globalProductId,
+                                },
+                                success:function(response){
+                                    thisDelete.parent().parent().remove();
+                                    if(response == 'success'){
+                                        alert('Data Deleted');
+                                    }
+                                }
+                            })
+                        }
+                    });
+                }
+            });
+
+            var logOut = $('#logOut');
+
+            logOut.click(function(){
+                if(confirm('Are you sure?') == true){
+                    $.ajax({
+                        type: 'GET',
+                        url: 'php/logout.php',
+                        success:function(response){
+                            if( response == "index.html"){
+                                window.location.replace(response);
+                            }
+                        }
+                    })
+                }
+            });
+            //this is all the variables on Edit button on each tablerow
+            var editName = $('#editName');
+            var editFile = $('#editFile');
+            var editDescription = $('#editDescription');
+            var editQuantity = $('#editQuantity');
+            var editPrice = $('#editPrice');
+            var editButton = $('#confirmEditProduct');
+            var resetAllEditFields = $('#resetAllEditFields');
+
+            //remove Edit invalid feedback on keydown/click
+            editName.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            editFile.on('click',function(){
+                $(this).removeClass('is-invalid');
+            });
+            editDescription.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            editQuantity.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            editPrice.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            editButton.click(function(){
+                // if a specific Edit input has no data
+                if(editName.val() == ""){
+                    editName.addClass('is-invalid');
+                }
+                if(editFile.val() == ""){
+                    editFile.addClass("is-invalid");
+                }
+                if(editDescription.val() == ""){
+                    editDescription.addClass('is-invalid');
+                }
+                if(editQuantity.val() == ""){
+                    editQuantity.addClass('is-invalid');
+                }
+                if(editPrice.val() == ""){
+                    editPrice.addClass('is-invalid');
+                }
+                if(editName.val() || editFile.val() || editDescription.val() || editQuantity.val() || editPrice.val() != ""){
+                    var form = new FormData();
+                    form.append('productId', globalProductId);
+                    form.append('editName',editName.val());
+                    form.append('editPrice',editPrice.val());
+                    form.append('editfile', editFile[0].files[0]);
+                    form.append('editDescription', editDescription.val());
+                    form.append('editQuantity', editQuantity.val());
+
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/editProduct.php',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success:function(response){
+                            if(response == 'success'){
+                                alert('Data Editted.')
+                            }
+                        }
+                    })
+                }
+                resetAllEditFields.click(function(){
+                    if(confirm('Are you sure you want to RESET?') == true){
+                        editName.val("");
+                        editFile.val("");
+                        editDescription.val("");
+                        editQuantity.val("");
+                        editPrice.val("");
+                    }
+                });
+            });
+            //Manual Product Data Edit
+            //manual edit inputs and buttons
+            var manualNameEdit = $('#manualNameEdit');
+            var manualFileEdit = $('#manualFileEdit');
+            var manualDescriptionEdit = $('#manualDescriptionEdit');
+            var manualQuantityEdit = $('#manualQuantityEdit');
+            var manualPriceEdit = $('#manualPriceEdit');
+            var manualNameEditButton = $('#manualNameEditButton');
+            var manualFileEditButton = $('#manualFileEditButton');
+            var manualDescriptionEditButton = $('#manualDescriptionEditButton');
+            var manualQuantityEditButton = $('#manualQuantityEditButton');
+            var manualPriceEditButton = $('#manualPriceEditButton');
+            //keydown removeClass
+            manualNameEdit.on('keydown', function(){
+                $(this).removeClass('is-invalid')
+            });
+            manualFileEdit.click(function(){
+                $(this).removeClass('is-invalid');
+            });
+            manualDescriptionEdit.on('keydown', function(){
+                $(this).removeClass('is-invalid');
+            });
+            manualQuantityEdit.on('keydown', function(){
+                $(this).removeClass('is-invalid');
+            });
+            manualPriceEdit.on('keydown', function(){
+                $(this).removeClass('is-invalid');
+            });
+            //manual edit button functions
+            //manual name edit
+            manualNameEditButton.click(function(){
+                if(manualNameEdit.val() == ""){
+                    manualNameEdit.addClass('is-invalid');
+                }else if(confirm("Are you sure you want to Edit Product's Name?") == true){
+                    var form = new FormData();
+                    form.append('productId', globalProductId);
+                    form.append('manualNameEdit', manualNameEdit.val());
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/manualNameEdit.php',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success:function(response){
+                            if(response == 'success'){
+                                alert("You successfully edited the Product's Name");
+                            }
+                        }
+                    })
+                }
+            });
+            manualFileEditButton.click(function(){
+                if(manualFileEdit.val() == ""){
+                    manualFileEdit.addClass('is-invalid');
+                }else if(confirm("Are you sure you want to Edit Product Image?") == true){
+                    var form = new FormData();
+                    form.append('productId', globalProductId);
+                    form.append('editfile', manualFileEdit[0].files[0]);
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/manualFileEdit.php',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success:function(response){
+                            if(response == 'success'){
+                                alert("You successfully edited the Product's Image");
+                            }
+                        }
+                    });
+                }
+            });
+            manualDescriptionEditButton.click(function(){
+                if(manualDescriptionEdit.val() == ""){
+                    manualDescriptionEdit.addClass('is-invalid');
+                }else if(confirm("Are you sure you want to Edit Product's Description?") == true){
+                    var form = new FormData();
+                    form.append('productId', globalProductId);
+                    form.append('manualDescriptionEdit', manualDescriptionEdit.val());
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/manualDescriptionEdit.php',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success: function(response){
+                            if(response == 'success'){
+                                alert("You successfully edited the Product's Description?");
+                            }
+                        }
+                    })
+                }
+            });
+            manualQuantityEditButton.click(function(){
+                if(manualQuantityEdit.val() == ""){
+                    manualQuantityEdit.addClass('is-invalid');
+                }else if(confirm("Are you sure you want to Edit Product's Quantity?") == true){
+                    var form = new FormData();
+                    form.append('productId', globalProductId);
+                    form.append('manualQuantityEdit', manualQuantityEdit.val());
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/manualQuantityEdit.php',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success:function(response){
+                            if(response == 'success'){
+                                alert("You successfully edited the Product's Quantity");
+                            }
+                        }
+                    })
+                }
+            });
+            manualPriceEditButton.click(function(){
+                if(manualPriceEdit.val() == ""){
+                    manualPriceEdit.addClass('is-invalid');
+                }else if(confirm("Are you sure you want to Edit Product's Price?") == true){
+                    var form = new FormData();
+                    form.append('productId', globalProductId);
+                    form.append('manualPriceEdit', manualPriceEdit.val());
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/manualPriceEdit.php',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success:function(response){
+                            if(response == 'success'){
+                                alert("You have successfully edited the Product's Price");
+                            }
+                        }
+                    })
+                }
+            });
+            //this is the Add Product button function
+            var productName = $('#productName');
+            var productFile = $('#productFile');
+            var productDescription = $('#productDescription');
+            var productQuantity = $('#productQuantity');
+            var productPrice = $('#productPrice');
+            var addProductButton = $('#confirmNewProduct');
+            var resetAllFields = $('#resetAllFields');
+
+            //remove invalid feedback on keydown/click
+            productName.on('keydown',function(){
+                productName.removeClass('is-invalid');
+            });
+            productFile.on('click',function(){
+                productFile.removeClass('is-invalid');
+            });
+            productDescription.on('keydown',function(){
+                productDescription.removeClass('is-invalid');
+            });
+            productQuantity.on('keydown',function(){
+                productQuantity.removeClass('is-invalid');
+            });
+            productPrice.on('keydown',function(){
+                productPrice.removeClass('is-invalid');
+            });
+            //confirm button
+            addProductButton.click(function(){
+                //if a specific input has no data
+                if(productName.val() == ""){
+                    productName.addClass('is-invalid');
+                }
+                if(productFile.val() == ""){
+                    productFile.addClass("is-invalid");
+                }
+                if(productDescription.val() == ""){
+                    productDescription.addClass('is-invalid');
+                }
+                if(productQuantity.val() == ""){
+                    productQuantity.addClass('is-invalid');
+                }
+                if(productPrice.val() == ""){
+                    productPrice.addClass('is-invalid');
+                }
+                //if the New Product has a Duplicate on "My Products"
+                if(productName.val() && productFile.val() && productDescription.val() && productQuantity.val() && productPrice.val() != ""){
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/productDuplicate.php',
+                        data:
+                        {
+                            productName: productName.val(),
+                            productDescription: productDescription.val(),
+                            productQuantity: productQuantity.val(),
+                            productPrice: productPrice.val()
+                        },
+                        success:function(response){
+                            //IF a Duplicate has Detected
+                            if(response == "may kapareho"){
+                                //if user still want to insert Duplicated data
+                                if(confirm("This NEW ITEM has a Duplicate inside your PRODUCTS LIST.   do you still want to proceed?") == true){
+                                        var formData = new FormData();
+                                    
+                                        formData.append("productName", productName.val());
+                                        formData.append("productFile", productFile[0].files[0]);
+                                        formData.append("productDescription", productDescription.val());
+                                        formData.append("productQuantity", productQuantity.val());
+                                        formData.append("productPrice", productPrice.val());
+
+
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/addProduct.php',
+                                            data: formData,
+                                            contentType: false,
+                                            processData: false,
+                                            success: function(response){
+                                                    alert('The New Product Is Inserted Successfully');
+                                                    productName.val("");
+                                                    productFile.val("");
+                                                    productDescription.val("");
+                                                    productQuantity.val("");
+                                                    productPrice.val("");
+                                                }
+                                        })
+                                //cancel the New Product Input Due to a Duplicate
+                                }else{
+                                    alert('Item Cancelled');
+                                }
+                            //if there are no duplicates
+                            }else{
+                                if(confirm("add this NEW PRODUCT to the LIST?") == true){
+
+                                    var formData = new FormData();
+                                    
+                                    formData.append("productName", productName.val());
+                                    formData.append("productFile", productFile[0].files[0]);
+                                    formData.append("productDescription", productDescription.val());
+                                    formData.append("productQuantity", productQuantity.val());
+                                    formData.append("productPrice", productPrice.val());
+
+
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: 'php/addProduct.php',
+                                        data: formData,
+                                        contentType: false,
+                                        processData: false,
+                                        success: function(response){
+                                            var data = JSON.parse(response);
+                                            productsTable.append(
+                                                `<tr>
+                                                    <td>${data.name}</td>
+                                                    <td>
+                                                        <img src="${data.image}" style="height: 50px; width: 50px;">
+                                                        <button id="imgLarge" class="btn btn-success" value="">View</button>
+                                                    </td>
+                                                    <td>${data.description}</td>
+                                                    <td>${data.quantity}</td>
+                                                    <td><span>&#8369</span>${data.price}</td>
+                                                    <td>
+                                                        <button class="edit-product btn btn-outline-danger" id="editButton" data-bs-toggle="modal" data-bs-target="#selectEditMethod" value="${data.id}">Edit</button>
+                                                        <button class="delete-product btn btn-outline-warning" id="deleteButton" value="${data.id}">Delete</button>
+                                                    </td>
+                                                </tr>`
+                                            );
+                                                                
+                                            var btnEdit = $('.edit-product');
+                                            var btnDelete = $('.delete-product');
+                                            btnEdit.click(function(){
+                                                globalProductId = $(this).val();
+                                                console.log(globalProductId)
+                                            });
+                                            btnDelete.click(function(){
+                                                var thisDelete = $(this);
+                                                globalProductId = $(this).val();
+                                                if(confirm('Are you sure you want to DELETE this product?') == true){
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: 'php/deleteProduct.php',
+                                                        data:
+                                                        {
+                                                            globalProductId: globalProductId,
+                                                        },
+                                                        success:function(response){
+                                                            thisDelete.parent().parent().remove();
+                                                            if(response == 'success'){
+                                                                alert('Data Deleted');
+                                                            }
+                                                        }
+                                                    })
+                                                }
+                                            });
+
+                                            alert('The New Product Is Inserted Successfully');
+                                            productName.val("");
+                                            productFile.val("");
+                                            productDescription.val("");
+                                            productQuantity.val("");
+                                            productPrice.val("");
+                                        }
+                                    })
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+
+                //reset button
+            resetAllFields.click(function(){
+                if(productName.val() || productFile.val() || productDescription.val() || productQuantity.val() || productPrice.val() != ""){
+                    if(confirm('Reset all Fields?') == true){
+                    productName.val("");
+                    productFile.val("");
+                    productDescription.val("");
+                    productQuantity.val("");
+                    productPrice.val("");
+                }
+                };
+            });
+            //dispay Orders
+            $.ajax({
+                    type: 'GET',
+                    url: 'php/displayOrder.php',
+                    success:function(response){
+                        var data = JSON.parse(response);
+                        $(data).each(function(index, value){
+                            ordersTable.append(`
+                                <tr>
+                                    <td id="customerName">${value.name}</td>
+                                    <td id="customerAddress">${value.address}</td>
+                                    <td id="orderedProduct">${value.quantity}</td>
+                                    <td id="orderDate">${value.createdAt}</td>
+                                    <td>
+                                        <button class="order-Process btn btn-outline-success" id="processButton" value="${value.id}">Process</button>
+                                        <button class="order-cancelled btn btn-outline-warning" id="cancelButton" value="${value.id}">Cancel</button>
+                                </tr>
+                            `)
+                        })
+                        var cancelButton = $('.order-cancelled');
+                        var processButton = $('.order-Process');
+                        cancelButton.click(function(){
+                            var thisDelete = $(this);
+                            globalProductId = $(this).val();
+                            if(confirm('Are you sure you want to CANCEL this order?') == true){
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/cancelOrder.php',
+                                            data:
+                                            {
+                                                globalProductId: globalProductId,
+                                            },
+                                            success:function(response){
+                                                thisDelete.parent().parent().remove();
+                                                if(response == 'success'){
+                                                    alert('Order Cancelled');
+                                                }
+                                            }
+                                        })
+                                    }
+                            
+                        });
+                    }
+                })
+        });
+    </script>
+</head>
+<style>
+    #logo-ni-lola{
+            display: none;
+        }
+
+        @media (min-width: 768px){
+            #logo-ni-lola{
+                display:inline;
+            }
+        }
+    #imgLarge{
+        height: 20px; 
+        width: 50px; 
+        font-size: 10px;
+        font-style:initial;
+        padding: 2px;
+        
+    }
+    *{
+        font-family: cursive;
+    }
+    /*add product button*/
+    #addProduct{
+        background-color: rgb(254,105,23);
+        transition-duration: .3s;
+    }
+    #addProduct:hover{
+        background-color: rgb(255, 128, 60);
+    }
+    #imgLarge{
+        margin: 10px;
+    }
+</style>
+<body>
+    <header class="sticky-top" style="background-color: rgb(254,105,23);">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <div class="navbar-brand m-0">
+                    <img id="logo-ni-lola" src="branding/received_727156111882599 page logo.png" height="70px" width="70px" alt="">
+                    <img class="shadow mt-2" value="0" id="LBL" src="Branding/brand.png" height="50px" width="300px" alt="">
+                </div>
+                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav-menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div id="nav-menu" class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link px-2" id="myProductsNav" style="color: white;">My Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link px-2" id="ordersNav" style="color:white;">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link btn btn-warning text-dark rounded-pill mx-5 px-3 shadow" id="logOut">Log Out</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section id="myProductsSection">
+            <div class="container">
+                <div class="card mt-5 rounded-5 shadow">
+                    <div class="card-header d-lg-flex">
+                        <h4 class="fw-bold m-3 mx-lg-5">My Products:</h4>
+                        <button id="addProduct" data-bs-toggle="modal" data-bs-target="#addProductModal" class="btn px-4 m-2 shadow">Add Product</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <th scope="col">Product Name</th>
+                                    <th scope="col">Product Image</th>
+                                    <th scope="col">Product Description</th>
+                                    <th scope="col">Available</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Operations</th>
+                                </thead>
+                                <tbody id="productsTable">
+                                    <!--Example only-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!--view Product Image-->
+                <div class="modal fade" id="viewProductImage">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background-color: rgb(254,105,23);">
+                                <div class="modal-title">
+                                    <h4 id="certainProductName"></h4>
+                                </div>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="text-center my-3">
+                                    <img id="certainProductImage" src="" alt="" height="300px" width="300px">
+                                </div>
+                                <p>
+                                    <strong>Description: </strong><span id="certainProductDescription"></span>
+                                </p>
+                                <p>
+                                    <strong>Available: </strong><span id="certainProductQuantity"></span>
+                                </p>
+                                <p>
+                                    <strong>Price: </strong><span>&#8369</span><span id="certainProductPrice"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                <!--edit select edit method modal-->
+                <div class="modal fade" id="selectEditMethod">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background-color: rgb(254,105,23);">
+                                <div class="modal-title">
+                                    <h4>Select Edit Method</h4>
+                                </div>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="d-flex m-3 justify-content-around">
+                                    <button class="btn btn-danger col-3 rounded mt-2" data-bs-toggle="modal" data-bs-target="#editProductModal" data-bs-dismiss="modal">Edit All Data</button>
+                                    <button  class="btn btn-danger col-3 mt-2 rounded" data-bs-toggle="modal" data-bs-target="#editCertainProductDataModal" data-bs-dismiss="modal">Edit Certain Data</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--edit Certain product data modal-->
+                <div class="modal fade" id="editCertainProductDataModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background-color: rgb(254,105,23);">
+                                <div class="modal-title justify-content-between">
+                                    <h4>Manual Data Edit</h4>
+                                </div>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <input type="text" class="form-control mt-3" id="manualNameEdit" placeholder="Product Name">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                    <button id="manualNameEditButton" class="btn btn-success rounded-pill mt-2">Update Name</button>
+                                </div>
+                                <hr>
+                                <div>
+                                    <input type="file" class="form-control mt-3" id="manualFileEdit" placeholder="Product File">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                    <button id="manualFileEditButton" class="btn btn-success rounded-pill mt-2">Update Image</button>
+                                </div>
+                                <hr>
+                                <div>
+                                    <input type="text" class="form-control mt-3" id="manualDescriptionEdit" placeholder="Product Description">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                    <button id="manualDescriptionEditButton" class="btn btn-success rounded-pill mt-2">Update Description</button>
+                                </div>
+                                <hr>
+                                <div>
+                                    <input type="number" class="form-control mt-3" id="manualQuantityEdit" placeholder="Product Quantity">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                    <button id="manualQuantityEditButton" class="btn btn-success rounded-pill mt-2">Update Quantity</button>
+                                </div>
+                                <hr>
+                                <div>
+                                    <input type="number" class="form-control mt-3" id="manualPriceEdit" placeholder="Product Price">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                    <button id="manualPriceEditButton" class="btn btn-success rounded-pill mt-2">Update Price</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--edit all product data modal-->
+                <div class="modal fade" id="editProductModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header"  style="background-color: rgb(254,105,23);">
+                                <div class="modal-title">
+                                    <h4>Edit Product</h4>
+                                </div>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <input class="form-control mt-3" id="editName" type="text" placeholder="Product Name">
+                                    <div class="invalid-feedback">Please Fill up this feild</div>
+                                </div>
+                                <div>
+                                    <input class="form-control mt-3" id="editFile" type="file">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                </div>
+                                <div>
+                                    <input class="form-control mt-3" id="editDescription" type="text" placeholder="Product Description">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                </div>
+                                <div>
+                                    <input class="form-control mt-3" id="editQuantity" type="number" placeholder="Quantity">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                </div>
+                                <div>
+                                    <input class="form-control mt-3" id="editPrice" type="number" placeholder="Price">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button id="confirmEditProduct" class="btn btn-outline-success col-3 rounded-pill mt-2">Update</button>
+                                    <button id="resetAllEditFields" class="btn btn-outline-danger col-3 rounded-pill mt-2">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--add product modal-->
+                <div class="modal fade" id="addProductModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header" style="background-color: rgb(254,105,23);">
+                                <div class="modal-title">
+                                    <h4>New Product</h4>
+                                </div>
+                                <button class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <input class="form-control mt-3" id="productName" type="text" placeholder="Product Name">
+                                    <div class="invalid-feedback">Please Fill up this feild</div>
+                                </div>
+                                <div>
+                                    <input class="form-control mt-3" id="productFile" type="file">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                </div>
+                                <div>
+                                    <input class="form-control mt-3" id="productDescription" type="text" placeholder="Product Description">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                </div>
+                                <div>
+                                    <input class="form-control mt-3" id="productQuantity" type="number" placeholder="Quantity">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                </div>
+                                <div>
+                                    <input class="form-control mt-3" id="productPrice" type="number" placeholder="Price">
+                                    <div class="invalid-feedback">Please Fill up this field</div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <button id="confirmNewProduct" class="btn btn-outline-success col-3 rounded-pill mt-2">Add Product</button>
+                                    <button id="resetAllFields" class="btn btn-outline-danger col-3 rounded-pill mt-2">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="ordersSection">
+            <div class="container">
+                <div class="card mt-5 rounded-5 shadow">
+                    <div class="card-header">
+                        <h4 class="fw-bold my-3 mx-5">Orders:</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <th scope="col">Customer Name</th>
+                                    <th scope="col">Customer Address</th>
+                                    <th scope="col">Product(s)</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Operations</th>
+                                </thead>
+                                <tbody id="ordersTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer></footer>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="Bootstrap/css/bootstrap.css">
+    <script src="jquery.js"></script>
+    <script>
+        $(document).ready(function(){
+            var adminLogIn = $('#adminLogIn');
+            var email = $('#email');
+            var password = $('#password');
+
+            email.on('keydown',function(){
+                email.removeClass('is-invalid');
+            });
+            password.on('keydown',function(){
+                password.removeClass('is-invalid');
+            });
+
+            adminLogIn.click(function(){
+                if(email.val() == ""){
+                    email.addClass('is-invalid');
+                }
+                if(password.val() == ""){
+                    password.addClass('is-invalid');
+                }
+                else{
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/login.php',
+                        data:
+                        {
+                            email: email.val(),
+                            password: password.val()
+                        },
+                        success: function(response){
+                            if(response == "main-page.html"){
+                                window.location.replace(response);
+                            }
+                            else{
+                                alert("This Account does not exist!");
+                            }
+                        }
+                    });
+                    password.removeClass('is-invalid');
+                }
+                
+            });
+        });
+    </script>
+</head>
+<style>
+    *{
+        font-family: cursive;
+        background-color: rgb(254,105,23);
+    }
+</style>
+<body>
+    <main>
+        <div class="container text-center mb-2">
+            <img class="shadow" src="Branding/brand.png" height="70px" width="400px" alt="" srcset="">
+            <div class="container text-center">
+                <div>
+                    <img src="Branding/received_727156111882599 page logo.png" height="300px" width="300px" alt="" srcset="">
+                </div>
+                <div class="container">
+                    <div class="card col-lg-4 mx-auto">
+                        <div class="card-body bg-light">
+                            <div class="bg-light">
+                                <input type="email" placeholder="Email" class="form-control rounded-pill" id="email">
+                                <div class="invalid-feedback bg-light">Please fill this input!</div>
+                            </div>
+                            <div class="bg-light">
+                                <input type="password" placeholder="Password" class="form-control rounded-pill mt-3" id="password">
+                                <div class="invalid-feedback bg-light">Please fill this input!</div>
+                            </div>
+                            <button class="btn-outline-danger btn mt-3 rounded-pill px-5" id="adminLogIn">Log-in</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
