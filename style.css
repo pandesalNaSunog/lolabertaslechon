@@ -2,13 +2,11 @@
     background-image: url('lechon1.jpg'); 
     background-size: contain; 
     background-repeat: no-repeat;
-    height:300px;
 }
 #pic2{
     background-image: url('lechon2.jpg'); 
     background-size: contain;
     background-repeat: no-repeat; 
-    height:300px;
 }
 
 
