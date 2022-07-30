@@ -29,7 +29,7 @@
                 $editQuantity = $_POST['editQuantity'];
                 $editPrice = $_POST['editPrice'];
 
-                $query = "UPDATE products SET name='$editName',quantity='$editQuantity',image='$editFile',description='$editDescription',updated_at='$today',price='$editPrice' WHERE id='$productId'";
+                $query = "UPDATE products SET name='$editName', quantity='$editQuantity',image='$editFile',description='$editDescription',updated_at='$today',price='$editPrice' WHERE id='$productId'";
 
                 $con->query($query) or die($con->error);
                 echo 'success';
