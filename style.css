@@ -3,13 +3,13 @@
     background-size: contain; 
     background-repeat: no-repeat;
     width: 100%;
-    height: auto; 
+    height: 30vh; 
 }
 #pic2{
     background-image: url('lechon2.jpg'); 
     background-size: contain;
     background-repeat: no-repeat;
     width: 100%;
-    height: auto;
+    height: 30vh;
 }
 
