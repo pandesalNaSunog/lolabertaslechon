@@ -7,9 +7,17 @@
 
         $customerName = $_POST['customerName'];
         $customerAddress = $_POST['customerAddress'];
-        $orderQuantity = $_POST['orderQuantity'];
+        $contactNumber = $_POST['CustomerContactNumber'];
+        $orderType = $_POST['customerOrderType'];
+        $productIds = $_POST['productIds'];
+        $productQuantities = $_POST['productQuantities'];
 
-        $query = "INSERT INTO `orders`(`customer_name`, `customer_address`, `product_id_and_quantity`, `created_at`) VALUES ('$customerName','$customerAddress','productId ($orderQuantity pcs)','$today')";
+        $newline = "";
+        foreach(array_combine($productIds, $productQuantities) as $f => $n) {
+            $newline .= "$f**$n****";
+        }
+
+        $query = "INSERT INTO `orders`(`customer_name`, `customer_address`, `product_id_and_quantity`,`contact_number`, `created_at`,`updated_at`,`order_type`,`date_and_time`) VALUES ('$customerName','$customerAddress','$newline','$contactNumber','$today','$today','$orderType','$today')";
         $con->query($query) or die($con->error);
             echo 'success';
     }else{

@@ -32,26 +32,134 @@
             var myOrderslist = $('#myOrderslist');
             var cartList = $('#cartList');
             var welcomeBlockquote = $('#welcomeCustomers');
-            
+            var confirmMyOrder = $('#confirm-my-order');
+            var customerName = $('#customerName');
+            var customerAddress = $('#CustomerAddr');
+            var CustomerContactNumber = $('#CustomerContactNumber');
+            var customerOrderType = $('#customerOrderType');
+            var mainCarouselImage = $('#mainCarouselImage');
+            var slideShowCarousel = $('#slide-show');
+            var facebookRedirect = $('#facebookRedirect');
+
+            facebookRedirect.hover(function(){
+                $(this).css('cursor','pointer');
+            });
+            facebookRedirect.click(function(){
+                location.replace('https://www.facebook.com/lolabertaslechon')
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: 'admin/php/displayMainCarousel.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        mainCarouselImage.append(`
+                            <img class="carouselImg" src="admin/${value.image}" width="100%">
+                        `);
+                    });
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: 'admin/php/displayCarousel.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        slideShowCarousel.append(`
+                        <div class="carousel-item">
+                            <img class="carouselImg" src="admin/${value.image}" width="100%">
+                        </div>
+                        `);
+                    })
+                }
+            });
+
+            customerName.on('keyup',function(){
+                customerName.removeClass('is-invalid');
+            })
+            customerAddress.on('keyup',function(){
+                customerAddress.removeClass('is-invalid');
+            })
+            CustomerContactNumber.on('keyup',function(){
+                CustomerContactNumber.removeClass('is-invalid');
+            })
+            confirmMyOrder.click(function(){
+                productIds = productIds.filter(function(obj){
+                    return obj != 'del';
+                });
+                productQuantities = productQuantities.filter(function(obj){
+                    return obj != 'del';
+                });
+                if(customerName.val() == ""){
+                    customerName.addClass('is-invalid');
+                }
+                if(customerAddress.val() == ""){
+                    customerAddress.addClass('is-invalid');
+                }
+
+                console.log(CustomerContactNumber.val().charAt(1));
+
+
+                if(CustomerContactNumber.val().length < 11 || CustomerContactNumber.val().length > 11 || CustomerContactNumber.val().charAt(0) != '0' || CustomerContactNumber.val().charAt(1) != '9'){
+                    CustomerContactNumber.addClass('is-invalid');
+                }
+                if(customerName.val() != "" && customerAddress.val() != "" && CustomerContactNumber.val() != "" && (CustomerContactNumber.val().charAt(0) == '0' && CustomerContactNumber.val().charAt(1) == '9' && CustomerContactNumber.val().length == 11)){
+                    if(confirm("Proceed?") == true){
+                        $.ajax({
+                            type: 'POST',
+                            url: 'admin/php/order.php',
+                            data:
+                            {
+                                customerName: customerName.val(),
+                                customerAddress: customerAddress.val(),
+                                CustomerContactNumber: CustomerContactNumber.val(),
+                                customerOrderType: customerOrderType.val(),
+                                productIds: productIds,
+                                productQuantities: productQuantities,
+                            },
+                            success:function(response){
+                                console.log(response);
+                                alert("Thank You for Ordering Here at Lola Berta's Lechon.");
+                                location.reload();
+                            }
+                        });
+                    }
+                }
+            })
             //myCart Position On Start
             if($(window).width() < 976){
                 cartPop.show();
                 mainCart.hide();
+                facebookRedirect.css('height','15px');
+                facebookRedirect.css('width','15px');
             }else{
                 mainCart.show();
                 cartPop.hide();
+                facebookRedirect.css('height','25px');
+                facebookRedirect.css('width','25px');
             }
             //myCart Position when window is resized
             $(window).mouseenter(function(){
                 if($(window).width() < 976){
-                cartPop.show('fast');
-                mainCart.hide('fast');
+                    cartPop.show('fast');
+                    mainCart.hide('fast');
+                    facebookRedirect.css('height','15px');
+                    facebookRedirect.css('width','15px');
                 }else{
                     mainCart.show('fast');
                     cartPop.hide('fast');
+                    facebookRedirect.css('height','25px');
+                    facebookRedirect.css('width','25px');
                 }
             });
             mainCart.click(function(){
+                productIds = productIds.filter(function(obj){
+                    return obj != 'del';
+                })
+                productQuantities = productQuantities.filter(function(obj){
+                    return obj != 'del';
+                })
                 if(productIds.length == 0 || productQuantities.length == 0){
                     alert('Your Cart is currently empty.');
                 }else{
@@ -69,16 +177,24 @@
                             var data = JSON.parse(response);
                             totalOfCart = data.total;
                             $(data.products).each(function(index, value){
-                                addToCartsList(value.id, value.name, value.description, value.image, value.quantity, value.price);
+                                addToCartsList(index,value.id, value.name, value.description, value.image, value.quantity, value.price);
                             })
                         }
                     });
                 }
             });
             myCart.on('click', function(){
+                productIds = productIds.filter(function(obj){
+                    return obj != 'del';
+                })
+                productQuantities = productQuantities.filter(function(obj){
+                    return obj != 'del';
+                })
                 if(productIds.length == 0 || productQuantities.length == 0){
                     alert('Your Cart is currently empty.');
                 }else{
+                    console.log("ProductIds: " + productIds);
+                    console.log("productQuantities: " + productQuantities);
                     myOrderslist.modal('show');
                     cartList.children().remove();
                     $.ajax({
@@ -93,7 +209,7 @@
                             var data = JSON.parse(response);
                             totalOfCart = data.total;
                             $(data.products).each(function(index, value){
-                                addToCartsList(value.id, value.name, value.description, value.image, value.quantity, value.price);
+                                addToCartsList(index,value.id, value.name, value.description, value.image, value.quantity, value.price);
                             })
                         }
                     });
@@ -101,26 +217,42 @@
             });
 
 
-            function addToCartsList(id, name, description, image, quantity, price){
+            function addToCartsList(index,id, name, description, image, quantity, price){
                 cartList.append(`<div class="card shadow">
                                     <div class="card-body" style="display: flex;">
                                         <div style="height: 100px; width: 100px;">
                                             <img class="img-fluid" style="width: 100px; height:100px;" src="admin/${image}">
                                         </div>
                                         
-                                            <div style="margin-left: 20px; width: 150px;">
-                                                <h5 style="margin-bottom: 0px;">${name}</h5>
-                                                <code style="margin-top: 0px;">(${description})</code>
-                                            </div>
-                                            <div style="margin-left: 20px;">
-                                                <p><strong>Quantity: </strong>${quantity}</p>
-                                                <p>
-                                                    <span>&#8369</span>${price}
-                                                </p>
-                                            </div>
-                                        
+                                        <div style="margin-left: 20px; width: 150px;">
+                                            <h5 style="margin-bottom: 0px;">${name}</h5>
+                                            <code style="margin-top: 0px;">(${description})</code>
+                                        </div>
+                                        <div style="margin-left: 20px;">
+                                            <p><strong>Quantity: </strong>${quantity}</p>
+                                            <p>
+                                                <span>&#8369</span>${price}
+                                            </p>
+                                            <button value="${index}" class="deleteCartButton btn btn-danger">Delete</button>
+                                        </div>
                                     </div>
-                                </div>`)
+                                </div>`);
+                var deleteCartButton = cartList.children().eq(index).find('.deleteCartButton');
+                deleteCartButton.click(function(){
+                    if(confirm('Are You Sure?') == true){
+                        globalProductId = $(this).val();
+                        $(this).val('del');
+                        productIds[globalProductId] = "del";
+                        productQuantities[globalProductId] = 'del';
+                        console.log(productIds);
+                        console.log('quantities: ' + productQuantities);
+                        $(this).parent().parent().parent().remove();
+                        console.log(cartList.children().length);
+                        if(cartList.children().length == 0){
+                            myOrderslist.modal('hide');
+                        }
+                    }
+                });
             }
             //page start
             $('#searchMessage').hide();
@@ -147,6 +279,7 @@
                             searchProductInput: searchProductInput.val()
                         },
                         success: function(response){
+                            console.log(response);
                             if (response != '[]'){
                                 searchMessageInput.css('color','black');
                                 searchMessageInput.text('Results for: ' + searchProductInput.val());
@@ -170,12 +303,14 @@
             function searchProductGrid(id, name, image, description, available, price){
                 searchProductList.append(
                             `<div id="item" class="card shadow col-md mx-auto rounded-4" style="width: 300px; margin: 20px;">
-                                <div class="card-header rounded-4 rounded-buttom text-light" style="background-color: rgb(254,105,23);">
-                                    <h5 class="text-truncate">${name}</h5>
+                                <div class="card-header rounded-4 rounded-bottom text-light" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
+                                    <center>
+                                        <h5 class="text-truncate" style="color: rgb(254,254,6);">${name}</h5>
+                                    </center>
                                 </div>
                                 <div class="card-body">
                                     <center>
-                                        <img style="border-radius: 5%;" src="admin/${image}" alt="" height="200px" width="200px" style="margin: 10px;">
+                                        <img style="border-radius: 5%; border: solid 5px rgb(255,191,8);" src="admin/${image}" alt="" height="200px" width="200px" style="margin: 10px;">
                                     </center>
                                     <p style="margin-left: 10px;margin-top: 5px;margin-bottom: 5px;" class="text-truncate"><strong>Description: </strong>${description}</p>
                                     <p style="margin-left: 10px;margin-bottom: 15px;"><strong>Available: </strong><span class="available">${available}</span></p>
@@ -214,7 +349,6 @@
             });
             //Order Confirm Button
             var customerName = $('#customerName');
-            var customerAddress = $('#customerAddress');
             var orderQuantity = $('#orderQuantity');
             var resetOrderFields = $('#resetOrderFields');
             var orderConfirmButton = $('#confirmOrder');
@@ -228,12 +362,14 @@
             function addToProductGrid(id, name, image, description, available, price){
                 productList.append(
                             `<div id="item" class="card shadow col-md mx-auto rounded-4" style="width: 300px; margin: 20px;">
-                                <div class="card-header rounded-4 rounded-buttom text-light" style="background-color: rgb(254,105,23);">
-                                    <h5 class="text-truncate">${name}</h5>
+                                <div class="card-header rounded-4 rounded-bottom text-light" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
+                                    <center>
+                                        <h5 class="text-truncate" style="color: rgb(254,254,6);">${name}</h5>
+                                    </center>
                                 </div>
                                 <div class="card-body">
                                     <center>
-                                        <img style="border-radius: 5%;" src="admin/${image}" alt="" height="200px" width="200px" style="margin: 10px;">
+                                        <img style="border-radius: 5%; border: solid 5px rgb(255,191,8);" src="admin/${image}" alt="" height="200px" width="200px" style="margin: 10px;">
                                     </center>
                                     <p style="margin-left: 10px;margin-top: 5px;margin-bottom: 5px;" class="text-truncate"><strong>Description: </strong>${description}</p>
                                     <p style="margin-left: 10px;margin-bottom: 15px;"><strong>Available: </strong><span class="available">${available}</span></p>
@@ -439,6 +575,16 @@
                 display:inline;
             }
         }
+        .carouselImg{
+            width: 100%;
+            height: auto;
+            max-height: 550px;
+        }
+        @media screen and (max-width: 50%) {
+            .carouselImg{
+                max-height: 100px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -460,11 +606,14 @@
                                 <button class="btn btn-warning mt-0" id="searchProduct">Search</button>
                             </div>
                         </li>
-                        <li id="mainCart" class="nav-item mx-5">
-                            <a class="btn btn-warning shadow" id="maincart" href="#">My Cart</a>
-                        </li>
                         <li class="nav-item mx-5">
+                            <a class="btn btn-warning shadow" id="mainCart" href="#">My Cart</a>
+                        </li>
+                        <li class="nav-item mx-2">
                             <a href="#" class="nav-link" id="showProductList" style="color: white;">All Products</a>
+                        </li>
+                        <li class="nav-item mx-3">
+                            <img class="m-2" id="facebookRedirect" src="facebook.svg" alt="" height="25px" width="25px">
                         </li>
                     </ul>
                 </div>
@@ -479,12 +628,8 @@
     
     <section id="welcomeCustomers" class="text-center text-md-start">
         <div id="carouselExampleFade" class="carousel slide carousel-fade mb-5" data-bs-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div id="pic1"></div>
-                </div>
-                <div class="carousel-item">
-                    <div id="pic2"></div>
+            <div id="slide-show" class="carousel-inner">
+                <div id="mainCarouselImage" class="carousel-item active">
                 </div>
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleFade" data-bs-slide="prev">
@@ -531,13 +676,13 @@
             <div class="modal-content">
                 <div class="modal-header" style="background-color: rgb(254,105,23);">
                     <div class="modal-title">
-                        <h4 id="productName"></h4>
+                        <h4 id="productName" class="text-light"></h4>
                     </div>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <div class="text-center my-3">
-                        <img class="img-fluid" id="productImage" style="width:300px; height:auto;" src="" alt="">
+                        <img class="img-fluid" id="productImage" style="width:300px; height:auto;border: solid 5px rgb(255,191,8);border-radius: 10%;" src="" alt="">
                     </div>
                     <p>
                         <strong>Description: </strong>
@@ -552,7 +697,6 @@
                         <span>&#8369</span><span id="productPrice"></span>
                     </p>
                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-warning" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#orderModal">Add to Cart</button>
                     </div>
                 </div>
             </div>
@@ -567,11 +711,36 @@
                     </div>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div style="display: flex;flex-direction:column;" class="modal-body">
                     <div id="cartList" style="margin-bottom: 20px;">
 
                     </div>
-                    <button class="btn btn-outline-success" id="confirm-my-order">Confirm Order</button>
+                    <div class="mt-4 shadow" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
+                        <center>
+                            <h4 style="margin-top: 5px;color: rgb(254,254,6);">Customer Information</h4>
+                        </center>
+                    </div>
+                    <div class="shadow" style="padding: 10px;">
+                        <div>
+                            <input class="form-control mt-3" type="text" id="customerName" placeholder="Customer Name">
+                            <div class="invalid-feedback">Please Fill Up This Field</div>
+                        </div>
+                        <div>
+                            <input class="form-control mt-3" type="text" id="CustomerAddr" placeholder="Customer Address">
+                            <div class="invalid-feedback">Please Fill Up This Field</div>
+                        </div>
+                        <div>
+                            <input class="form-control mt-3" type="number" id="CustomerContactNumber" placeholder="Contact Number">
+                            <div class="invalid-feedback">Invalid Contact Number</div>
+                        </div>
+                        <div>
+                            <select class="form-select mt-3" id="customerOrderType">
+                                <option value="Delivery">Delivery</option>
+                                <option value="Pick-up">Pick-up</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline-success mt-3" id="confirm-my-order">Confirm Order</button>
                 </div>
             </div>
         </div>

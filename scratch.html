@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="jquery.js"></script>
+</head>
+<script>
+    $(document).ready(function(){
+        var btn = $('#btn');
+        var select = $('#select');
+        btn.click(function(){
+            alert(select.val());
+        });
+    });
+</script>
+<body>
+    <h1>helo world</h1>
+    <select id="select">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+    </select>
+    <button id="btn">define</button>
+    <div>
+        <div style="display: flex;flex-direction:column; height: fit-content; width: fit-content;">
+            <center>
+                <div>
+                    <img src="${image}" height="200px" width="200px">
+                </div>
+            </center>
+                <div>
+                    <code>${created_at}</code>
+                </div>
+                <div>
+                    <button class="btn btn-outline-danger" value="${id}">Delete</button>
+                </div>
+        </div>
+    </div>
+</body>
+
+</html>

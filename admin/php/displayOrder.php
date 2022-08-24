@@ -10,12 +10,14 @@
                 $id = $row['id'];
                 $customer_name = $row['customer_name'];
                 $customer_address = $row['customer_address'];
+                $contact_number = $row['contact_number'];
                 $product_id_and_quantity = $row['product_id_and_quantity'];
                 $created_at = $row['created_at'];
                 $ordersArray[] = array(
                     'id' => $id,
                     'name' => $customer_name,
                     'address' => $customer_address,
+                    'contact_number' => $contact_number,
                     'quantity' => $product_id_and_quantity,
                     'createdAt' => $created_at,
                 );

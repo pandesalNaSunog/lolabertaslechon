@@ -25,27 +25,230 @@
                 }
             });
             //Jquery Nav Animation
-            $('#myProductsSection').hide();
+            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection').hide();
             var globalProductId = 0;
             var ordersTable = $('#ordersTable');
             var productsTable = $('#productsTable');
             var myProductsNav = $('#myProductsNav');
+            var pageCustomizationNav = $('#pageCustomizationNav');
             var ordersNav = $('#ordersNav');
             var myProductSection = $('#myProductsSection');
             var ordersSection = $('#ordersSection');
+            var customerPageCustomizationSection = $('#customerPageCustomizationSection');
             var welcomeSection = $('#welcomeSection');
             var editButton = $('#editButton');
+            var editCarouselButton = $('#editCarouselButton');
+            var editCarouselSection = $('#editCarouselSection');
+            var CPCbtn = $('.CPCbtn');
+            var organizationalChartButton = $('#organizationalChartButton');
+            var organizationalChartSection = $('#organizationalChartSection');
+            var addCarouselImageButton = $('#addCarouselImageButton');
+            var additionalCarouselFile = $('#additionalCarouselFile');
+            var addedCarouselList = $('#addedCarouselList');
+            var mainCarousel = $('#mainCarousel');
+            var editMainCarouselFile = $('#editMainCarouselFile');
+            var editMainCarouselImageButton = $('#editMainCarouselImageButton');
+            var ordersDataName = $('#ordersDataName');
+            var ordersDataAddress = $('#ordersDataAddress');
+            var ordersDataContactNumber = $('#ordersDataContactNumber');
+            var ordersDataOrderType = $('#ordersDataOrderType');
+            var ordersDataDateOrdered = $('#ordersDataDateOrdered');
+            var ordersDataCartList = $('#ordersDataCartList');
+            var ordersTotalPrice = $('#ordersTotalPrice');
 
+            editMainCarouselFile.click(function(){
+                $(this).removeClass('is-invalid');
+            });
+            editMainCarouselImageButton.click(function(){
+                if(editMainCarouselFile.val() == ""){
+                    editMainCarouselFile.addClass('is-invalid');
+                }
+                if(editMainCarouselFile.val() != ""){
+                    if(confirm('Are You Sure?') == true){
+                        var form = new FormData();
+                        form.append('carouselFile', editMainCarouselFile[0].files[0]);
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/updateMainCarousel.php',
+                            data:form,
+                            contentType:false,
+                            processData:false,
+                            success:function(response){
+
+                                var data = JSON.parse(response);
+                                alert('Main Image Updated.');
+
+                                mainCarousel.children().remove();
+                                showMainCarousel(data.main_image,data.created_at)
+                            }
+                        });
+                    }
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: 'php/displayMainCarousel.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        showMainCarousel(value.image,value.created_at)
+                    })
+                }
+            });
+            function showMainCarousel(image,created_at){
+                mainCarousel.append(`
+                    <img src="${image}" height="300px" width="480px">
+                    <br>
+                    <code style="color: black;">Date Updated: </code>
+                    <code>${created_at}</code>
+                `);
+            }
+            $.ajax({
+                type: 'POST',
+                url: 'php/displayCarousel.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    
+                    $(data).each(function(index,value){
+                        addToCarouselGrid(value.id, value.image, value.created_at);
+                    });
+                    var deleteAddedCarouselBtn = $('.deleteAddedCarouselBtn');
+                    deleteAddedCarouselBtn.click(function(){
+                        globalProductId = $(this).val();
+                        var thisDeleteCarouselButton = $(this);
+                        if(confirm('Are You Sure?') == true){
+                            $.ajax({
+                                type: 'POST',
+                                url: 'php/deleteCarousel.php',
+                                data:
+                                {
+                                    globalProductId: globalProductId,
+                                },
+                                success:function(response){
+                                    alert('Slide-show Image Deleted.');
+                                    thisDeleteCarouselButton.parent().parent().remove();
+                                    console.log(response);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            function addToCarouselGrid(id,image,created_at){
+                addedCarouselList.append(`
+                    <div class="mb-3" style="display: flex;flex-direction:column; height: fit-content; width: fit-content;background-color: white;padding: 8px;border-radius: 10px;">
+                        <center>
+                            <div>
+                                <img src="${image}" height="150px" width="240px">
+                            </div>
+                        </center>
+                        <div>
+                            <code style="color: black">Date Added: </code><code>${created_at}</code>
+                        </div>
+                        <div>
+                            <button class="deleteAddedCarouselBtn btn btn-outline-danger" value="${id}">Delete</button>
+                        </div>
+                    </div>
+                `);
+            }
+            additionalCarouselFile.click(function(){
+                $(this).removeClass('is-invalid');
+            });
+            addCarouselImageButton.click(function(){
+                if(additionalCarouselFile.val() == ""){
+                    additionalCarouselFile.addClass('is-invalid');
+                }
+                if(additionalCarouselFile.val() != ""){
+                    if(confirm('Proceed?') == true){
+                        var form = new FormData();
+                        form.append('carouselFile', additionalCarouselFile[0].files[0]);
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/addCarousel.php',
+                            data: form,
+                            contentType: false,
+                            processData: false,
+                            success:function(response){
+                                alert('Additional Carousel Inserted.');
+                                var data = JSON.parse(response);
+                                console.log('triggered');
+                                addedCarouselList.append(`
+                                <div class="mb-3" style="display: flex;flex-direction:column; height: fit-content; width: fit-content;background-color: grey;padding: 8px;border-radius: 10px;">
+                                    <center>
+                                        <div>
+                                            <img src="${data.image}" height="150px" width="240px">
+                                        </div>
+                                    </center>
+                                    <div>
+                                        <code style="color: black">Date Added: </code><code class="text-warning">${data.created_at}</code>
+                                    </div>
+                                    <div>
+                                        <button class="deleteAddedCarousel btn btn-danger" value="${data.id}">Delete</button>
+                                    </div>
+                                </div>
+                                `);
+                                var deleteAddedCarousel = $('.deleteAddedCarousel');
+                                deleteAddedCarousel.click(function(){
+                                    globalProductId = $(this).val();
+                                    var thisNewDeleteCarouselButton = $(this);
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/deleteCarousel.php',
+                                            data:
+                                            {
+                                                globalProductId: globalProductId,
+                                            },
+                                            success:function(response){
+                                                thisNewDeleteCarouselButton.parent().parent().remove();
+                                                console.log(response);
+                                            }
+                                        });
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+            editCarouselButton.click(function(){
+                organizationalChartButton.show('slow');
+                $(this).hide('fast');
+                organizationalChartSection.slideUp('fast');
+                editCarouselSection.slideDown('slow');
+            });
+            organizationalChartButton.click(function(){
+                editCarouselButton.show('slow');
+                $(this).hide('fast');
+                editCarouselSection.slideUp('fast');
+                organizationalChartSection.slideDown('slow');
+            })
             //navigational Buttons
-            myProductsNav.click(function(){
+            pageCustomizationNav.click(function(){
                 $(this).css('color','dimgrey');
                 $(this).css('-webkit-text-fill-color','transparent');
                 $(this).css('-webkit-text-stroke-width','1px');
                 ordersNav.css('color','white');
                 ordersNav.css('-webkit-text-stroke-width','0px');
                 ordersNav.css('-webkit-text-fill-color','white');
+                myProductsNav.css('color','white');
+                myProductsNav.css('-webkit-text-stroke-width','0px');
+                myProductsNav.css('-webkit-text-fill-color','white');
+                myProductSection.slideUp('fast');
+                ordersSection.slideUp('fast');
+                customerPageCustomizationSection.slideDown('slow');
+            });
+            myProductsNav.click(function(){
+                $(this).css('color','dimgrey');
+                $(this).css('-webkit-text-fill-color','transparent');
+                $(this).css('-webkit-text-stroke-width','1px');
+                pageCustomizationNav.css('color','white');
+                pageCustomizationNav.css('-webkit-text-stroke-width','0px');
+                pageCustomizationNav.css('-webkit-text-fill-color','white');
+                ordersNav.css('color','white');
+                ordersNav.css('-webkit-text-stroke-width','0px');
+                ordersNav.css('-webkit-text-fill-color','white');
                 myProductSection.slideDown('slow');
                 ordersSection.slideUp('fast');
+                customerPageCustomizationSection.slideUp('fast');
             });
             ordersNav.click(function(){
                 $(this).css('color','dimgrey');
@@ -54,8 +257,12 @@
                 myProductsNav.css('color','white');
                 myProductsNav.css('-webkit-text-stroke-width','0px');
                 myProductsNav.css('-webkit-text-fill-color','white');
+                pageCustomizationNav.css('color','white');
+                pageCustomizationNav.css('-webkit-text-stroke-width','0px');
+                pageCustomizationNav.css('-webkit-text-fill-color','white');
                 ordersSection.slideDown('slow');
                 myProductSection.slideUp('fast');
+                customerPageCustomizationSection.slideUp('fast');
             });
             //view Certain product variables
             var certainProductName = $('#certainProductName');
@@ -492,7 +699,6 @@
                                             var btnDelete = $('.delete-product');
                                             btnEdit.click(function(){
                                                 globalProductId = $(this).val();
-                                                console.log(globalProductId)
                                             });
                                             btnDelete.click(function(){
                                                 var thisDelete = $(this);
@@ -553,16 +759,76 @@
                                 <tr>
                                     <td id="customerName">${value.name}</td>
                                     <td id="customerAddress">${value.address}</td>
-                                    <td id="orderedProduct">${value.quantity}</td>
+                                    <td id="contactNumber">${value.contact_number}</td>
                                     <td id="orderDate">${value.createdAt}</td>
                                     <td>
-                                        <button class="order-Process btn btn-outline-success" id="processButton" value="${value.id}">Process</button>
+                                        <button class="viewOrder btn btn-outline-success" id="processButton" value="${value.id}" data-bs-toggle="modal" data-bs-target="#viewOrderModal">View Order</button>
                                         <button class="order-cancelled btn btn-outline-warning" id="cancelButton" value="${value.id}">Cancel</button>
                                 </tr>
                             `)
-                        })
+                        });
+                        
                         var cancelButton = $('.order-cancelled');
-                        var processButton = $('.order-Process');
+                        var viewOrder = $('.viewOrder');
+                        viewOrder.click(function(){
+                            ordersDataCartList.children().remove();
+                            globalProductId = $(this).val();
+                            $.ajax({
+                                type: 'POST',
+                                url: 'php/viewOrder.php',
+                                data:
+                                {
+                                    productId: globalProductId,
+                                },
+                                success:function(response){
+                                    var data = JSON.parse(response);
+                                    $(data).each(function(index, value){
+                                        ordersDataName.text(`
+                                            ${value.customer_name}
+                                        `);
+                                        ordersDataAddress.text(`
+                                            ${value.customer_address}
+                                        `);
+                                        ordersDataContactNumber.text(`
+                                            ${value.contact_number}
+                                        `);
+                                        ordersDataOrderType.text(`
+                                            ${value.order_type}
+                                        `);
+                                        ordersDataDateOrdered.text(`
+                                            ${value.created_at}
+                                        `);
+                                        ordersTotalPrice.text(`
+                                            ${value.total_price}
+                                        `);
+
+                                        $(value.products).each(function(index, element){
+                                            ordersDataCartList.append(`
+                                                <div class="card shadow justify-content-around">
+                                                    <div class="card-body" style="display: flex;">
+                                                        <div style="height: 100px; width: 100px;">
+                                                            <img class="img-fluid" style="width: 100px; height:100px;" src="${element.product.image}">
+                                                        </div>
+                                                        
+                                                        <div style="margin-left: 20px; width: 150px;">
+                                                            <h5 style="margin-bottom: 0px;">${element.product.name}</h5>
+                                                            <code style="margin-top: 0px;">(${element.product.description})</code>
+                                                        </div>
+                                                        <div style="margin-left: 20px;">
+                                                            <p><strong>Quantity: </strong>${element.quantity}</p>
+                                                            <p>
+                                                                <strong>Price: </strong><span>&#8369</span>${element.product.price}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            `);
+                                        })
+                                        
+                                    });
+                                }
+                            });
+                        });
                         cancelButton.click(function(){
                             var thisDelete = $(this);
                             globalProductId = $(this).val();
@@ -618,6 +884,13 @@
     #addProduct:hover{
         background-color: rgb(255, 128, 60);
     }
+    .customizedButton{
+        background-color: rgb(254,105,23);
+        transition-duration: .3s;
+    }
+    .customizedButton:hover{
+        background-color: rgb(255, 128, 60);
+    }
     #imgLarge{
         margin: 10px;
     }
@@ -636,6 +909,9 @@
                 <div id="nav-menu" class="collapse navbar-collapse">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
+                            <a href="#" class="nav-link px-2" id="pageCustomizationNav" style="color: white;">Page Customization</a>
+                        </li>
+                        <li class="nav-item">
                             <a href="#" class="nav-link px-2" id="myProductsNav" style="color: white;">My Products</a>
                         </li>
                         <li class="nav-item">
@@ -650,6 +926,75 @@
         </nav>
     </header>
     <main>
+        <section id="customerPageCustomizationSection">
+            <div class="container">
+                <div class="card mt-5 shadow">
+                    <div class="card-header text-center" style="background-color: rgb(41,22,5); border-top:solid 10px rgb(254,105,23);border-bottom: solid 10px rgb(254,105,23);">
+                        <center>
+                            <h4 class="mt-2" style="color: rgb(253,255,5);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">CUSTOMER PAGE CUSTOMIZATION</h4>
+                        </center>
+                    </div>
+                    <div class="card-body" style="background-color: rgb(255,191,8);">
+                        <div class="shadow text-center pt-3 pb-3 rounded-5" style="background-color: rgb(41,22,5);">
+                            <button class="CPCbtn btn btn-danger text-light shadow" id="editCarouselButton">Slide-show</button>
+                            <button class="CPCbtn btn btn-danger" id="organizationalChartButton">Organizational Chart</button>
+                        </div>
+                        <section id="editCarouselSection">
+                            <div class="container">
+                                <div class="card mt-3 rounded-5 shadow">
+                                    <div class="card-header d-flex">
+                                        <h4 class="fw-bold my-3 mx-5">Slide-show:</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <th scope="col">Main Image <button class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);" data-bs-toggle="modal" data-bs-target="#editMainCarouselModal">Update Main Image</button></th>
+                                                </thead>
+                                                <tbody>
+                                                    <td class="m-3">
+                                                        <center>
+                                                            <div id="mainCarousel">
+                                                            </div>
+                                                        </center>
+                                                    </td>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <th scope="col">Additional Images <button data-bs-toggle="modal" data-bs-target="#addCarouselModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);">Add Photo</button></th>
+                                                </thead>
+                                                <tbody>
+                                                    <td id="addedCarouselList" style="display: grid; grid-template-columns: repeat(auto-fill,minmax(250px,1fr));">
+                                                        
+                                                    </td>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="organizationalChartSection">
+                            <div class="container">
+                                <div class="card mt-3 rounded-5 shadow">
+                                    <div class="card-header d-flex text-center">
+                                        <h4 class="fw-bold my-3 mx-5">Organizational Chart</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <center>
+                                            <code class="bg-warning text-danger p-2 rounded-4">Area Under Construction</code>
+                                        </center>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
         <section id="myProductsSection">
             <div class="container">
                 <div class="card mt-5 rounded-5 shadow">
@@ -858,7 +1203,7 @@
                                 <thead>
                                     <th scope="col">Customer Name</th>
                                     <th scope="col">Customer Address</th>
-                                    <th scope="col">Product(s)</th>
+                                    <th scope="col">Contact Number</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Operations</th>
                                 </thead>
@@ -873,4 +1218,85 @@
     </main>
     <footer></footer>
 </body>
+    <!--add carousel-->
+    <div class="modal fade" id="addCarouselModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Add Slide-show Image</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" id="additionalCarouselFile" type="file">
+                    <div class="invalid-feedback">Please Select Image</div>
+                </div>
+                <div>
+                    <button id="addCarouselImageButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Add Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--view order modal-->
+    <div class="modal fade" id="viewOrderModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Order Information</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-light p-3 shadow mb-1" style="background-color: rgb(40, 24, 5);border-top: solid 10px rgb(254,105,23);border-bottom: solid 10px rgb(254,105,23);">
+                        <h6 style="color: rgb(254, 254, 6);">Name: 
+                            <span id="ordersDataName" style="color: white;">Loading...</span>
+                        </h6>
+                        <h6 style="color: rgb(254, 254, 6);">Address: <span id="ordersDataAddress" style="color: white;">Loading...</span></h6>
+                        <h6 style="color: rgb(254, 254, 6);">Contact #: <span id="ordersDataContactNumber" style="color: white;">Loading...</span></h6>
+                        <h6 style="color: rgb(254,254,6);">Date Ordered: <span id="ordersDataDateOrdered" style="color:white;">01-05-22</span></h6>
+                        <h6 style="color: rgb(254,254,6);">Type: <span id="ordersDataOrderType" style="color: white;">Loading...</span></h6>
+                    </div>
+                    <div style="display: flex;">
+                        <div style="width: 30%;">
+                            <hr>
+                        </div>
+                        <h6 class="text-center mt-1" style="margin-left: 10px;margin-right: 10px;">Ordered Products:</h6>
+                        <div style="width: 30%;">
+                            <hr>
+                        </div>
+                    </div>
+                    <div id="ordersDataCartList">
+                    </div>
+                </div>
+                <div style="display: flex;justify-content: space-between;">
+                    <button class="ProcessOrderButton btn btn-success m-2 mt-1 my-3 mx-3">Process Order</button>
+                    <h6 class="mx-5 mt-2">
+                        <code style="color: orange;padding: 5px;background-color: black;border-radius: 25%;">Total Price</code> &#8369<span id="ordersTotalPrice"></span>
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--dit main carousel-->
+    <div class="modal fade" id="editMainCarouselModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Edit Main Image</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" id="editMainCarouselFile" type="file">
+                    <div class="invalid-feedback">Please Select Image</div>
+                </div>
+                <div>
+                    <button id="editMainCarouselImageButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Update Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </html>
