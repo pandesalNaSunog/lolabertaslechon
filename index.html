@@ -55,7 +55,7 @@
                     var data = JSON.parse(response);
                     $(data).each(function(index,value){
                         mainCarouselImage.append(`
-                            <img class="carouselImg" src="admin/${value.image}" width="100%">
+                            <img class="carouselImg" src="admin/${value.image}" style="width:100%; height: auto">
                         `);
                     });
                 }
@@ -68,7 +68,7 @@
                     $(data).each(function(index,value){
                         slideShowCarousel.append(`
                         <div class="carousel-item">
-                            <img class="carouselImg" src="admin/${value.image}" width="100%">
+                            <img class="carouselImg" src="admin/${value.image}" style="width:100%; height: auto">
                         </div>
                         `);
                     })
