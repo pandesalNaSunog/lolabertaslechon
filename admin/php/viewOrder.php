@@ -1,12 +1,11 @@
 <?php
-
-    if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
-        include('connection.php');
-        $con = connect();
-        $product_id = $_POST['productId'];
-        $query = "SELECT * FROM orders WHERE id='$product_id'";
-        $result = mysqli_query($con,$query);
-        $productArray = array();
+if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
+    include('connection.php');
+    $con = connect();
+    $product_id = $_POST['productId'];
+    $query = "SELECT * FROM orders WHERE id='$product_id'";
+    $result = mysqli_query($con,$query);
+    $productArray = array();
         if($result){
             while($row = mysqli_fetch_assoc($result)){
                 $id = $row['id'];
@@ -50,7 +49,7 @@
                     'customer_address' => $customer_address,
                     'products' => $eachProductResponse,
                     'total_price' => $total,
-                    'created_at' => date_format(date_create($created_at), "M d, Y h:i A"),
+                    'created_at' => $created_at,
                     'updated_at' => $updated_at,
                     'order_type' => $order_type,
                     'date_and_time' => $date_and_time,
@@ -59,8 +58,7 @@
             }
             echo json_encode($productArray);
         }
-    }else{
-        echo header('HTTP/1.1 403 Forbidden');
-    }
-    
+}else{
+    echo header('HTTP/1.1 403 Forbidden');
+}
 ?>

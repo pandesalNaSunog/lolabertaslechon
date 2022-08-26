@@ -11,6 +11,8 @@
     <script src="jquery.js"></script>
     <script>
         $(document).ready(function(){
+            var mainOrder = $('#mainOrder');
+            var orderPop = $('#orderPop');
             var totalOfCart = 0;
             var productIds = [];
             var productQuantities = [];
@@ -39,7 +41,61 @@
             var customerOrderType = $('#customerOrderType');
             var mainCarouselImage = $('#mainCarouselImage');
             var slideShowCarousel = $('#slide-show');
-            var facebookRedirect = $('#facebookRedirect');
+            var facebookRedirect = $('.facebookRedirect');
+            var orderNowButton = $('.ONB');
+            var main = $('#main');
+
+            $('#mainCart,#cartPop,#searchNav,#showProductList,#main,#mainOrder,#orderPop').hide();
+            // mainOrder.click(function(){
+            //     alert('tester')
+            // });
+            //myCart Position On Start
+            if($(window).width() < 976){
+                orderPop.show();
+                mainOrder.hide();
+                facebookRedirect.css('height','15px');
+                facebookRedirect.css('width','15px');
+            }else{
+                mainOrder.show();
+                orderPop.hide();
+                facebookRedirect.css('height','25px');
+                facebookRedirect.css('width','25px');
+            }
+            //myCart Position when window is resized
+            $(window).hover(function(){
+                if(!orderNowButton.hasClass('onOrder')){
+                    if($(window).width() < 976){
+                        orderPop.show('fast');
+                        mainOrder.hide('fast');
+                        facebookRedirect.css('height','15px');
+                        facebookRedirect.css('width','15px');
+                    }else{
+                        mainOrder.show('fast');
+                        orderPop.hide('fast');
+                        facebookRedirect.css('height','25px');
+                        facebookRedirect.css('width','25px');
+                    }
+                }
+                else{
+                    if($(window).width() < 976){
+                        cartPop.show('fast');
+                        mainCart.hide('fast');
+                        facebookRedirect.css('height','15px');
+                        facebookRedirect.css('width','15px');
+                    }else{
+                        mainCart.show('fast');
+                        cartPop.hide('fast');
+                        facebookRedirect.css('height','25px');
+                        facebookRedirect.css('width','25px');
+                    }
+                }
+            });
+
+            orderNowButton.click(function(){
+                $(orderNowButton).addClass('onOrder');
+                $('#mainOrder,#orderPop').hide('fast');
+                $('#searchNav,#showProductList,main').show('slow');
+            });
 
             facebookRedirect.hover(function(){
                 $(this).css('cursor','pointer');
@@ -55,7 +111,7 @@
                     var data = JSON.parse(response);
                     $(data).each(function(index,value){
                         mainCarouselImage.append(`
-                            <img class="carouselImg" src="admin/${value.image}">
+                            <img class="carouselImg" src="admin/${value.image}" height="fit-content" width="100%">
                         `);
                     });
                 }
@@ -68,7 +124,7 @@
                     $(data).each(function(index,value){
                         slideShowCarousel.append(`
                         <div class="carousel-item">
-                            <img class="carouselImg" src="admin/${value.image}">
+                            <img class="carouselImg" src="admin/${value.image}" height="fit-content" width="100%">
                         </div>
                         `);
                     })
@@ -127,32 +183,6 @@
                     }
                 }
             })
-            //myCart Position On Start
-            if($(window).width() < 976){
-                cartPop.show();
-                mainCart.hide();
-                facebookRedirect.css('height','15px');
-                facebookRedirect.css('width','15px');
-            }else{
-                mainCart.show();
-                cartPop.hide();
-                facebookRedirect.css('height','25px');
-                facebookRedirect.css('width','25px');
-            }
-            //myCart Position when window is resized
-            $(window).mouseenter(function(){
-                if($(window).width() < 976){
-                    cartPop.show('fast');
-                    mainCart.hide('fast');
-                    facebookRedirect.css('height','15px');
-                    facebookRedirect.css('width','15px');
-                }else{
-                    mainCart.show('fast');
-                    cartPop.hide('fast');
-                    facebookRedirect.css('height','25px');
-                    facebookRedirect.css('width','25px');
-                }
-            });
             mainCart.click(function(){
                 productIds = productIds.filter(function(obj){
                     return obj != 'del';
@@ -183,7 +213,7 @@
                     });
                 }
             });
-            myCart.on('click', function(){
+            cartPop.on('click', function(){
                 productIds = productIds.filter(function(obj){
                     return obj != 'del';
                 })
@@ -259,12 +289,12 @@
             searchProductList.hide();
             //Product list button on header navigations
             showProductList.click(function(){
-                location.reload();
+                alert('test');
             });
             //search product
             searchProduct.click(function(){
                 if(searchProductInput.val() != ""){
-                    welcomeBlockquote.slideUp('fast');
+
                     $('#ListMessage').slideUp('fast');
                     $('#searchMessage').slideDown('slow');
                     searchProductList.children().remove();
@@ -576,19 +606,23 @@
             }
         }
         .carouselImg{
-            width: 100%;
-            height: auto;
-            max-height: 95vh;
-            background-size: cover;
+            max-height: 600px;
         }
-        @media screen and (max-width: 50%) {
+        /* @media screen and (max-width: 50%) {
             .carouselImg{
                 max-height: 100px;
             }
+        } */
+        #footerImage{
+            max-height: 225px;
+            max-width: 450px;
+        }
+        body{
+            background-image: url('polish.jpg');
         }
     </style>
 </head>
-<body>
+<body style="margin-bottom: 0px;">
     <header class="sticky-top" style="background-color: rgb(254,105,23);">
         <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="padding: 0px;">
             <div class="container">
@@ -601,34 +635,40 @@
                 </button>
                 <div id="nav-menu" class="collapse navbar-collapse mt-3">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
+                        <li id="searchNav" class="nav-item">
                             <div class="input-group col-8 shadow">
                                 <input type="text" class="form-control mt-0 mb-0" id="searchProductInput" placeholder="Search...">
                                 <button class="btn btn-warning mt-0" id="searchProduct">Search</button>
                             </div>
                         </li>
                         <li class="nav-item mx-5">
-                            <a class="btn btn-warning shadow" id="mainCart" href="#">My Cart</a>
+                            <a class="myCart btn btn-warning shadow" id="mainCart" href="#">My Cart</a>
                         </li>
                         <li class="nav-item mx-2">
                             <a href="#" class="nav-link" id="showProductList" style="color: white;">All Products</a>
                         </li>
+                        <li class="nav-item mx-2">
+                            <a href="#main" class="ONB nav-link text-warning" id="mainOrder" style="color: white;">Order Now</a>
+                        </li>
                         <li class="nav-item mx-3">
-                            <img class="m-2" id="facebookRedirect" src="facebook.svg" alt="" height="25px" width="25px">
+                            <img class="facebookRedirect m-2" src="facebook.svg" alt="" height="25px" width="25px">
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div id="cartPop" style="display: flex;flex-direction: row-reverse;">
-        <a class="myCart btn btn-warning shadow" style="position: fixed;margin-top: 0px;width: 100px;z-index: 100; margin-left: 10px;border-radius: 0 0 50% 50%;margin-right: 5%;border-top: 0px;border-bottom:thin black;border-left: ridge black;border-right:ridge black;" href="#" class="nav-link">
+    <div style="display: flex;flex-direction: row-reverse;">
+        <a id="cartPop" class=" myCart btn btn-warning shadow" style="position: fixed;margin-top: 0px;width: 100px;z-index: 100; margin-left: 10px;border-radius: 0 0 50% 50%;margin-right: 5%;border-top: 0px;border-bottom:thin black;border-left: ridge black;border-right:ridge black;" href="#" class="nav-link">
             <h6>My Cart</h6>
+        </a>
+        <a id="orderPop" class="ONB btn btn-danger shadow" style="position: fixed;margin-top: 0px;width: 100px;z-index: 100; margin-left: 10px;border-radius: 0 0 50% 50%;margin-right: 5%;border-top: 0px;border-bottom:thin black;border-left: ridge black;border-right:ridge black;" href="#main" class="nav-link">
+            <h6>Order Now</h6>
         </a>
     </div>
     
-    <section id="welcomeCustomers" class="text-center text-md-start">
-        <div id="carouselExampleFade" class="carousel slide carousel-fade mb-5" data-bs-ride="carousel">
+    <section id="welcomeCustomers" class="text-center text-md-start mb-0">
+        <div id="carouselExampleFade" class="carousel slide carousel-fade mb-0" data-bs-ride="carousel">
             <div id="slide-show" class="carousel-inner">
                 <div id="mainCarouselImage" class="carousel-item active">
                 </div>
@@ -641,9 +681,9 @@
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
-            </div>
+        </div>
     </section>
-    <main class="container">
+    <main id="main" class="container mt-5">
         <section>
             <div id="ListMessage" style="display: flex; justify-content:space-between">
                 <hr style="width: 40%;color: linear-gradient(orange,blue,yellow);margin-right: 10px;">
@@ -670,8 +710,6 @@
             <div id="searchProductList" style="display: grid; grid-template-columns:  repeat(auto-fill,minmax(320px,1fr));"></div>
         </section>
     </main>
-    <footer></footer>
-
     <div class="modal fade" id="viewProduct">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -746,5 +784,30 @@
             </div>
         </div>
     </div>
+    <footer class="shadow mt-0" style="background-color: rgb(224, 100, 28);margin-bottom: 0px; height: fit-content;">
+        <section style="display: column;justify-content:space-between;margin: 30px;margin-bottom: 0px;padding-bottom: 50px;">
+            <div style="display: column;">
+                <center>
+                    <div>
+                        <img id="footerImage" src="footer.png" height="100%" width="100%">
+                    </div>
+                </center>
+            </div>
+            <div style="margin: 50px;margin-bottom: 0px;">
+                <p  style="margin: 50px;margin-bottom: 0px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto totam eaque sint ipsa sed harum at, non voluptate reiciendis nemo, perferendis voluptatem natus mollitia voluptatum iure odio quos sunt quisquam? Rerum, excepturi aliquam molestias sit ullam vero? Qui sint rem accusantium est, ad quo a beatae alias veritatis eum harum necessitatibus consectetur quisquam modi cupiditate dicta minima iusto tenetur id velit quam incidunt quia. Nesciunt sed illum eum dignissimos eaque sint quos eveniet reprehenderit itaque, velit consequatur, molestias ducimus dolorem deserunt magnam, error delectus facere! Quia assumenda alias unde non excepturi commodi exercitationem quidem, in ipsa dolor, corporis ratione dolores!</p>
+            </div>
+            <hr>
+            <div>
+                <div>
+                    <p>Like us on: 
+                        <div class="btn btn-primary btn-sm">
+                            <img src="facebook.svg">
+                            <span> Facebook</span>
+                        </div>
+                    </p>    
+                </div>
+            </div>
+        </section>
+    </footer>
 </body>
 </html>
