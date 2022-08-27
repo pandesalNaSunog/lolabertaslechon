@@ -39,7 +39,7 @@
                 $query = "DELETE FROM orders WHERE id = '$orderId'";
                 $con->query($query) or die($con->error);
 
-                $query = "INSERT INTO sales(`order_id`,`amount`,`created_at`,`updated_at`)VALUES('$orderId','$amount','$today','$today')";
+                $query = "INSERT INTO sales(`order_id`,`amount`,`created_at`,`updated_at`)VALUES('$orderId','$total','$today','$today')";
                 $con->query($query) or die($con->error);
                 echo 'ok';
             }else{
