@@ -27,7 +27,7 @@
 
             
             //Jquery Nav Animation
-            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection').hide();
+            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection,#addSliderASection').hide();
             var globalProductId = 0;
             var globalOrderId = 0;
             var ordersTable = $('#ordersTable');
@@ -82,7 +82,96 @@
             })
 
             
+            var editSliderAButton = $('#editSliderAButton');
+            var addSliderASection = $('#addSliderASection');
+            var addSliderAButton = $('#addSliderAButton');
+            var additionalSliderAButton = $('#additionalSliderAButton');
+            var additionalSliderATitle = $('#additionalSliderATitle');
+            var additionalSliderAFile = $('#additionalSliderAFile');
+            var additionalSliderACaption = $('#additionalSliderACaption');
+            var day, month , year;
+            var sliderAdateInput = $('#slider-a-date-input');
 
+            additionalSliderATitle.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            additionalSliderAFile.click(function(){
+                $(this).removeClass('is-invalid');
+            });
+            additionalSliderACaption.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            sliderAdateInput.click(function(){
+                $(this).removeClass('is-invalid');
+            });
+            additionalSliderAButton.click(function(){
+                var date = $('#slider-a-date-input').val().split("-");
+                day = date[2];
+                month = date[1];
+                year = date[0];
+                if(month == 1){
+                    var lmonth = "January";
+                }else if(month == 2){
+                    var lmonth = "February";
+                }else if(month == 3){
+                    var lmonth = "March";
+                }else if(month == 4){
+                    var lmonth = "April";
+                }else if(month == 5){
+                    var lmonth = "May";
+                }else if(month == 6){
+                    var lmonth = "June";
+                }else if(month == 7){
+                    var lmonth = "July";
+                }else if(month == 8){
+                    var lmonth = "August";
+                }else if(month == 9){
+                    var lmonth = "September";
+                }else if(month == 10){
+                    var lmonth = "October";
+                }else if(month == 11){
+                    var lmonth = "November";
+                }else if(month == 12){
+                    var lmonth = "December";
+                }
+                dateCreated = lmonth + "-" + day + "-" + year;
+                if(additionalSliderATitle.val() == ""){
+                    additionalSliderATitle.addClass('is-invalid');
+                }
+                if(additionalSliderAFile.val() == ""){
+                    additionalSliderAFile.addClass('is-invalid');
+                }
+                if(additionalSliderACaption.val() == ""){
+                    additionalSliderACaption.addClass('is-invalid');
+                }
+                if(sliderAdateInput.val() == ""){
+                    dateInput.addClass('is-invalid');
+                }
+                if(additionalSliderATitle.val() && additionalSliderAFile.val() && additionalSliderACaption.val() && sliderAdateInput.val() != ""){
+                    if(confirm("Add This Image?") == true){
+                        var formData = new FormData();        
+                            formData.append("additionalSliderATitle", additionalSliderATitle.val());
+                            formData.append("additionalSliderAFile", additionalSliderAFile[0].files[0]);
+                            formData.append("additionalSliderACaption", additionalSliderACaption.val());
+                            formData.append("sliderAdateInput", dateCreated);
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/addSliderA.php',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function(response){
+                                console.log(response);
+                                alert('The New Product Is Inserted Successfully');
+                                additionalSliderATitle.val("");
+                                additionalSliderAFile.val("");
+                                additionalSliderACaption.val("");
+                                sliderAdateInput.val("");
+                            }
+                        });
+                    }
+                }
+            });
             editMainCarouselFile.click(function(){
                 $(this).removeClass('is-invalid');
             });
@@ -237,17 +326,29 @@
                 }
             });
             editCarouselButton.click(function(){
-                organizationalChartButton.show('slow');
+                organizationalChartButton.show('fast');
                 $(this).hide('fast');
                 organizationalChartSection.slideUp('fast');
+                editSliderAButton.show('fast');
                 editCarouselSection.slideDown('slow');
+                editSliderAButton.show('fast');
+                addSliderASection.slideUp('fast');
             });
             organizationalChartButton.click(function(){
                 editCarouselButton.show('slow');
+                editSliderAButton.show('fast');
                 $(this).hide('fast');
                 editCarouselSection.slideUp('fast');
+                addSliderASection.slideUp('fast');
                 organizationalChartSection.slideDown('slow');
-            })
+            });
+            editSliderAButton.click(function(){
+                addSliderASection.slideDown('slow');
+                $(this).hide('fast');
+                $('#organizationalChartButton,#editCarouselButton').show('slow');
+                editCarouselSection.slideUp('fast');
+                organizationalChartSection.slideUp('fast');
+            });
             //navigational Buttons
             pageCustomizationNav.click(function(){
                 $(this).css('color','dimgrey');
@@ -965,6 +1066,7 @@
                     <div class="card-body" style="background-color: rgb(255,191,8);">
                         <div class="shadow text-center pt-3 pb-3 rounded-5" style="background-color: rgb(41,22,5);">
                             <button class="CPCbtn btn btn-danger text-light shadow" id="editCarouselButton">Slide-show</button>
+                            <button class="CPCbtn btn btn-danger text-light shadow" id="editSliderAButton">First Slider</button>
                             <button class="CPCbtn btn btn-danger" id="organizationalChartButton">Organizational Chart</button>
                         </div>
                         <section id="editCarouselSection">
@@ -1010,6 +1112,21 @@
                                 <div class="card mt-3 rounded-5 shadow">
                                     <div class="card-header d-flex text-center">
                                         <h4 class="fw-bold my-3 mx-5">Organizational Chart</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <center>
+                                            <code class="bg-warning text-danger p-2 rounded-4">Area Under Construction</code>
+                                        </center>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="addSliderASection">
+                            <div class="container">
+                                <div class="card mt-3 rounded-5 shadow">
+                                    <div class="card-header d-flex text-center">
+                                        <h4 class="fw-bold my-3 mx-5">First Slider: </h4>
+                                        <button data-bs-toggle="modal" data-bs-target="#addSliderAModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);" id="addSliderAButton">Add Image</button>
                                     </div>
                                     <div class="card-body">
                                         <center>
@@ -1262,6 +1379,40 @@
                 </div>
                 <div>
                     <button id="addCarouselImageButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Add Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--add sliderA modal-->
+    <div class="modal fade" id="addSliderAModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Add First Slider Image</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <input class="form-control mt-3" type="text" id="additionalSliderATitle" placeholder="Image Title">
+                        <div class="invalid-feedback">Please Fill Up this Field</div>
+                    </div>
+                    <div>
+                        <input class="form-control mt-3" id="additionalSliderAFile" type="file">
+                        <div class="invalid-feedback">Please Select Image</div>
+                    </div>
+                    <div>
+                        <input class="form-control mt-3" type="text" id="additionalSliderACaption" placeholder="Image Caption">
+                        <div class="invalid-feedback">Please Fill Up this Field</div>
+                    </div>
+                    <div>
+                        <input id="slider-a-date-input" class="form-control mt-3" type="date">
+                        <div class="invalid-feedback">Please Select Date</div>
+                    </div>
+                </div>
+                <div>
+                    <button id="additionalSliderAButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Add Image</button>
                 </div>
             </div>
         </div>
