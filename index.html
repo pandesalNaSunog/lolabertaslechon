@@ -44,8 +44,22 @@
             var facebookRedirect = $('.facebookRedirect');
             var orderNowButton = $('.ONB');
             var main = $('#main');
+            var homeNav = $('#homeNav');
+            var searchNav = $('#searchNav');
+            var sliderA = $('#sliderA');
+            var toastImageTitle = $('#toastImageTitle');
+            var toastImageDateAdded = $('#toastImageDateAdded');
+            var toastMessage = $('#toastMessage');
+            var toastImage = $('#toastImage');
+            const toastTrigger = $('.liveToastBtn');
+            const toastLiveExample = $('#liveToast');
+            
+            toastTrigger.click(function(){
+                const toast = new bootstrap.Toast(toastLiveExample)
+                toast.show();
+            });
 
-            $('#mainCart,#cartPop,#searchNav,#showProductList,#main,#mainOrder,#orderPop').hide();
+            $('#mainCart,#cartPop,#searchNav,#showProductList,#main,#mainOrder,#orderPop,#homeNav').hide();
             // mainOrder.click(function(){
             //     alert('tester')
             // });
@@ -90,11 +104,44 @@
                     }
                 }
             });
-
+            homeNav.click(function(){
+                $(this).hide('fast');
+                orderNowButton.removeClass('onOrder');
+                showProductList.hide('fast');
+                myCart.hide('fast');
+                main.hide('fast');
+                searchNav.hide('fast');
+                if($(window).width() < 976){
+                        orderPop.show('fast');
+                        mainOrder.hide('fast');
+                        facebookRedirect.css('height','15px');
+                        facebookRedirect.css('width','15px');
+                    }else{
+                        mainOrder.show('fast');
+                        orderPop.hide('fast');
+                        facebookRedirect.css('height','25px');
+                        facebookRedirect.css('width','25px');
+                    }
+            });
             orderNowButton.click(function(){
+                if(searchProduct.hasClass('onSearch')){
+                    showProductList.show('fast');
+                }
+                if($(window).width() < 976){
+                        orderPop.show('fast');
+                        mainOrder.hide('fast');
+                        facebookRedirect.css('height','15px');
+                        facebookRedirect.css('width','15px');
+                    }else{
+                        mainOrder.show('fast');
+                        orderPop.hide('fast');
+                        facebookRedirect.css('height','25px');
+                        facebookRedirect.css('width','25px');
+                    }
                 $(orderNowButton).addClass('onOrder');
                 $('#mainOrder,#orderPop').hide('fast');
-                $('#searchNav,#showProductList,main').show('slow');
+                $('#homeNav').show('fast');
+                $('#searchNav,main').show('slow');
             });
 
             facebookRedirect.hover(function(){
@@ -103,7 +150,57 @@
             facebookRedirect.click(function(){
                 location.replace('https://www.facebook.com/lolabertaslechon')
             });
-
+            $.ajax({
+                type: 'POST',
+                url: 'admin/php/displaySliderA.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        sliderA.append(`
+                        <div class="item">
+                            <img class="liveToastBtn" src="admin/${value.image}" alt="Slider Image">
+                            <button style="position:fixed; z-index:-100;height:1opx;width:10px;margin:0px;opacity:0px;" value="${value.id}"></button>
+                        </div>
+                        `);
+                    });
+                    const toastTrigger = $('.liveToastBtn');
+                    const toastLiveExample = $('#liveToast');
+                    
+                    toastTrigger.click(function(){
+                        globalProductId = $(this).parent().children().eq(1).val();
+                        const toast = new bootstrap.Toast(toastLiveExample)
+                        toast.show();
+                        $.ajax({
+                            type: 'POST',
+                            url: 'admin/php/viewSliderA.php',
+                            data:
+                            {
+                                image_id: globalProductId,
+                            },
+                            success:function(response){
+                                console.log(globalProductId)
+                                var imgData = JSON.parse(response);
+                                console.log(imgData);
+                                toastImage.children().remove();
+                                $(imgData).each(function(index,value){
+                                    toastImageTitle.text(`
+                                        ${value.slider_title}
+                                    `);
+                                    toastImageDateAdded.text(`
+                                        ${value.date_captured}
+                                    `);
+                                    toastMessage.text(`
+                                        ${value.slider_caption}
+                                    `);
+                                    toastImage.append(`
+                                        <img src="admin/${value.slider_image}" style="max-height:300px;" class="rounded me-2" alt="...">
+                                    `)
+                                });
+                            }
+                        });
+                    });
+                }
+            });
             $.ajax({
                 type: 'POST',
                 url: 'admin/php/displayMainCarousel.php',
@@ -289,12 +386,18 @@
             searchProductList.hide();
             //Product list button on header navigations
             showProductList.click(function(){
-                alert('test');
+                searchProduct.removeClass('onSearch');
+                $(this).hide('fast');
+                searchProductList.hide('fast');
+                $('#searchMessage').hide('fast');
+                productList.show('slow');
+                $('#ListMessage').slideDown('fast');
             });
             //search product
             searchProduct.click(function(){
                 if(searchProductInput.val() != ""){
-
+                    $(this).addClass('onSearch');
+                    showProductList.show('fast');
                     $('#ListMessage').slideUp('fast');
                     $('#searchMessage').slideDown('slow');
                     searchProductList.children().remove();
@@ -620,6 +723,42 @@
         body{
             background-image: url('polish.jpg');
         }
+        .wrapper{
+            height: fit-content;
+            display: flex;
+            overflow-x: auto;
+        }
+        ::-webkit-scrollbar{
+            width: 12px;
+            /* background-color: rgb(254,105,23); */
+        }
+        .wrapper::-webkit-scrollbar{
+            width: 12px;
+            height: 10px;
+            /* background-color: rgb(254,105,23); */
+        }
+        ::-webkit-scrollbar-track{
+            border-radius: 10px;
+            background-color: #F5F5F5;
+        }
+        ::-webkit-scrollbar-thumb{
+            border-radius: 10px;
+            background-color:  rgb(224, 100, 28);
+        }
+        .wrapper .item{
+            min-width: max-content;
+            height: 200px;
+            line-height: 110px;
+            text-align: center;
+        }
+        .wrapper .item img{
+            max-width: max-content;
+            max-height: 200px;
+        }
+        #gridGallery .gridItem{
+            min-width: 250px;
+            min-height: 200px;
+        }
     </style>
 </head>
 <body style="margin-bottom: 0px;">
@@ -635,20 +774,23 @@
                 </button>
                 <div id="nav-menu" class="collapse navbar-collapse mt-3">
                     <ul class="navbar-nav ms-auto">
-                        <li id="searchNav" class="nav-item">
+                        <li id="searchNav" class="nav-item mx-2">
                             <div class="input-group col-8 shadow">
                                 <input type="text" class="form-control mt-0 mb-0" id="searchProductInput" placeholder="Search...">
-                                <button class="btn btn-warning mt-0" id="searchProduct">Search</button>
+                                <button class="btn btn-warning mt-0" id="searchProduct"><a href="#main" style="text-decoration: none;color:black;">Search</a></button>
                             </div>
                         </li>
-                        <li class="nav-item mx-5">
+                        <li class="nav-item mx-2">
                             <a class="myCart btn btn-warning shadow" id="mainCart" href="#">My Cart</a>
                         </li>
                         <li class="nav-item mx-2">
-                            <a href="#" class="nav-link" id="showProductList" style="color: white;">All Products</a>
+                            <a href="#main" class="nav-link" id="showProductList" style="color: white;">All Products</a>
                         </li>
                         <li class="nav-item mx-2">
                             <a href="#main" class="ONB nav-link text-warning" id="mainOrder" style="color: white;">Order Now</a>
+                        </li>
+                        <li class="nav-item mx-2">
+                            <a href="#" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
                         </li>
                         <li class="nav-item mx-3">
                             <img class="facebookRedirect m-2" src="facebook.svg" alt="" height="25px" width="25px">
@@ -666,7 +808,6 @@
             <h6>Order Now</h6>
         </a>
     </div>
-    
     <section id="welcomeCustomers" class="text-center text-md-start mb-0">
         <div id="carouselExampleFade" class="carousel slide carousel-fade mb-0" data-bs-ride="carousel">
             <div id="slide-show" class="carousel-inner">
@@ -682,30 +823,91 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
+        <div id="sliderA" class="wrapper">
+        </div>
+        <div class="row row-cols-xm-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-2 m-0" id="gridGallery" style="width: 100%;background-color:rgb(224, 100, 28);">     
+            <div class="gridItem col m-0 p-0">
+                    <h5 class="mx-5" style="z-index: 100;position: absolute; ">hello1</h5>
+                <img class="liveToastBtn" src="lechon1.jpg" alt="" width="100%" height="100%">
+            </div>
+            <div class="gridItem col m-0 p-0">
+                <center>
+                    <h1 style="z-index: 100;position: absolute; ">hello1</h1>
+                </center>
+                <img src="lechon1.jpg" alt="" width="100%" height="100%">
+            </div>
+            <div class="gridItem col m-0 p-0">
+                <center>
+                    <h1 style="z-index: 100;position: absolute; ">hello1</h1>
+                </center>
+                <img src="lechon1.jpg" alt="" width="100%" height="100%">
+            </div>
+            <div class="gridItem col m-0 p-0">
+                <center>
+                    <h1 style="z-index: 100;position: absolute; ">hello1</h1>
+                </center>
+                <img src="lechon1.jpg" alt="" width="100%" height="100%">
+            </div>
+        </div>
+        <div id="sliderB" class="wrapper">
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+            <div class="item">
+                <img src="lechon1.jpg">
+            </div>
+        </div>
     </section>
     <main id="main" class="container mt-5">
         <section>
             <div id="ListMessage" style="display: flex; justify-content:space-between">
-                <hr style="width: 40%;color: linear-gradient(orange,blue,yellow);margin-right: 10px;">
+                <hr style="width: 40%;height: 1px;background-color: aliceblue; border: none;margin-right: 10px;">
                 <center>
                     <h5> 
-                        <span style="margin-right:10px;">All Products</span>
+                        <span class="text-light" style="margin-right:10px;">All Products</span>
                     </h5>
                 </center>
-                <hr style="width: 40%;margin-left: 10px;">
+                <hr style="width: 40%;margin-left: 10px;height: 1px;background-color: aliceblue; border: none;">
             </div>
             <div id="productList" style="display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr));"></div>
         </section>
         <!--searchBar Results-->
         <section style="margin-top: 25px;">
             <div id="searchMessage" style="display: flex;justify-content: space-between;">
-                <hr style="width: 40%;margin-right: 10px;">
+                <hr style="width: 40%;margin-right: 10px;height: 1px;background-color: aliceblue; border: none;">
                 <center>
-                    <h6> 
-                        <span id="searchMessageInput" style="margin-right:10px;"></span>
+                    <h6 style="color:white;"> 
+                        <span id="searchMessageInput" class="text-light" style="margin-right:10px;color: white;"></span>
                     </h6>
                 </center>
-                <hr style="width: 40%;margin-left: 10px;">
+                <hr style="width: 40%;margin-left: 10px;height: 1px;background-color: aliceblue; border: none;">
             </div>
             <div id="searchProductList" style="display: grid; grid-template-columns:  repeat(auto-fill,minmax(320px,1fr));"></div>
         </section>
@@ -794,11 +996,9 @@
                 </center>
             </div>
             <div style="margin: 50px;margin-bottom: 0px;">
-                <p  style="margin: 50px;margin-bottom: 0px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto totam eaque sint ipsa sed harum at, non voluptate reiciendis nemo, perferendis voluptatem natus mollitia voluptatum iure odio quos sunt quisquam? Rerum, excepturi aliquam molestias sit ullam vero? Qui sint rem accusantium est, ad quo a beatae alias veritatis eum harum necessitatibus consectetur quisquam modi cupiditate dicta minima iusto tenetur id velit quam incidunt quia. Nesciunt sed illum eum dignissimos eaque sint quos eveniet reprehenderit itaque, velit consequatur, molestias ducimus dolorem deserunt magnam, error delectus facere! Quia assumenda alias unde non excepturi commodi exercitationem quidem, in ipsa dolor, corporis ratione dolores!</p>
-            </div>
-            <hr>
-            <div>
-                <div>
+                <p  class="mb-0 m-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto totam eaque sint ipsa sed harum at, non voluptate reiciendis nemo, perferendis voluptatem natus mollitia voluptatum iure odio quos sunt quisquam? Rerum, excepturi aliquam molestias sit ullam vero? Qui sint rem accusantium est, ad quo a beatae alias veritatis eum harum necessitatibus consectetur quisquam modi cupiditate dicta minima iusto tenetur id velit quam incidunt quia. Nesciunt sed illum eum dignissimos eaque sint quos eveniet reprehenderit itaque, velit consequatur, molestias ducimus dolorem deserunt magnam, error delectus facere! Quia assumenda alias unde non excepturi commodi exercitationem quidem, in ipsa dolor, corporis ratione dolores!</p>
+                <hr>
+                <div class="container mx-5">
                     <p>Like us on: 
                         <div class="btn btn-primary btn-sm">
                             <img src="facebook.svg">
@@ -809,5 +1009,23 @@
             </div>
         </section>
     </footer>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div style="width: 500px;" id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header text-light" style="background-color: rgb(254,105,23);">
+            <strong id="toastImageTitle" class="me-auto">Loading...</strong>
+            <code class="text-dark">Date Captured: <span id="toastImageDateAdded">Loading...</span></code>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+            <div id="toastMessage">Loading...</div>
+            <br>
+            <center>
+                <div id="toastImage" style="height: fit-content;width:fit-content">
+                    <img src="footer.png" height="100px" width="200px" class="rounded me-2" alt="...">
+                </div>
+            </center>
+          </div>
+        </div>
+    </div>
 </body>
 </html>
