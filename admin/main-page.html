@@ -24,9 +24,12 @@
                     }
                 }
             });
+
+            
             //Jquery Nav Animation
             $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection,#addSliderASection').hide();
             var globalProductId = 0;
+            var globalOrderId = 0;
             var ordersTable = $('#ordersTable');
             var productsTable = $('#productsTable');
             var myProductsNav = $('#myProductsNav');
@@ -55,6 +58,30 @@
             var ordersDataDateOrdered = $('#ordersDataDateOrdered');
             var ordersDataCartList = $('#ordersDataCartList');
             var ordersTotalPrice = $('#ordersTotalPrice');
+            var confirmAmount = $('#confirm-amount');
+            var amountRenderred = $('#amount-renderred');
+
+            confirmAmount.on('click', function(){
+                if(amountRenderred.val() == ""){
+                    amountRenderred.addClass('is-invalid');
+                }else{
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/insertSales.php',
+                        data:{
+                            order_id: globalOrderId,
+                            amount: amountRenderred.val(),
+                        },
+                        success: function(response){
+                            if(response == 'ok'){
+                                alert('Transaction Successful.')
+                            }
+                        }
+                    })
+                }
+            })
+
+            
             var editSliderAButton = $('#editSliderAButton');
             var addSliderASection = $('#addSliderASection');
             var addSliderAButton = $('#addSliderAButton');
@@ -874,6 +901,7 @@
                         viewOrder.click(function(){
                             ordersDataCartList.children().remove();
                             globalProductId = $(this).val();
+                            globalOrderId = $(this).val();
                             $.ajax({
                                 type: 'POST',
                                 url: 'php/viewOrder.php',
@@ -1421,11 +1449,15 @@
                     <div id="ordersDataCartList">
                     </div>
                 </div>
-                <div style="display: flex;justify-content: space-between;">
-                    <button class="ProcessOrderButton btn btn-success m-2 mt-1 my-3 mx-3">Process Order</button>
-                    <h6 class="mx-5 mt-2">
-                        <code style="color: orange;padding: 5px;background-color: black;border-radius: 25%;">Total Price</code> &#8369<span id="ordersTotalPrice"></span>
+                <div class="modal-footer">
+                    
+                    <h6>
+                        <code style="color: orange;padding: 5px;background-color: black;border-radius: 25%;">Total Price</code> &#8369<span id="ordersTotalPrice" class="fw-bold" style="font-size: 20px"></span>
                     </h6>
+                    <div class="input-group mt-3">
+                        <input type="number" class="form-control" id="amount-renderred" placeholder="Amount Renderred">
+                        <button id="confirm-amount" class="btn btn-success">Confirm</button>
+                    </div>
                 </div>
             </div>
         </div>
