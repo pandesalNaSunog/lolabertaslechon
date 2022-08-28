@@ -47,6 +47,7 @@
             var homeNav = $('#homeNav');
             var searchNav = $('#searchNav');
             var sliderA = $('#sliderA');
+            var sliderB = $('#sliderB');
             var toastImageTitle = $('#toastImageTitle');
             var toastImageDateAdded = $('#toastImageDateAdded');
             var toastMessage = $('#toastMessage');
@@ -158,15 +159,15 @@
                     $(data).each(function(index,value){
                         sliderA.append(`
                         <div class="item">
-                            <img class="liveToastBtn" src="admin/${value.image}" alt="Slider Image">
-                            <button style="position:fixed; z-index:-100;height:1opx;width:10px;margin:0px;opacity:0px;" value="${value.id}"></button>
+                            <img class="liveToastBtn1" src="admin/${value.image}" alt="Slider Image">
+                            <button style="position:fixed; z-index:-100;height:1opx;width:10px;margin:0px;opacity:0;" value="${value.id}"></button>
                         </div>
                         `);
                     });
-                    const toastTrigger = $('.liveToastBtn');
+                    const toastTriggerA = $('.liveToastBtn1');
                     const toastLiveExample = $('#liveToast');
                     
-                    toastTrigger.click(function(){
+                    toastTriggerA.click(function(){
                         globalProductId = $(this).parent().children().eq(1).val();
                         const toast = new bootstrap.Toast(toastLiveExample)
                         toast.show();
@@ -193,7 +194,7 @@
                                         ${value.slider_caption}
                                     `);
                                     toastImage.append(`
-                                        <img src="admin/${value.slider_image}" style="max-height:300px;" class="rounded me-2" alt="...">
+                                        <img src="admin/${value.slider_image}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
                                     `)
                                 });
                             }
@@ -201,6 +202,58 @@
                     });
                 }
             });
+            $.ajax({
+                type: 'POST',
+                url: 'admin/php/displaySliderB.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        sliderB.append(`
+                        <div class="item">
+                            <img class="liveToastBtn" src="admin/${value.image}" alt="Slider Image">
+                            <button style="position:fixed; z-index:-100;height:1opx;width:10px;margin:0px;opacity:0;" value="${value.id}"></button>
+                        </div>
+                        `);
+                    });
+                    const toastTrigger = $('.liveToastBtn');
+                    const toastLiveExample = $('#liveToast');
+                    
+                    toastTrigger.click(function(){
+                        globalProductId = $(this).parent().children().eq(1).val();
+                        const toast = new bootstrap.Toast(toastLiveExample)
+                        toast.show();
+                        $.ajax({
+                            type: 'POST',
+                            url: 'admin/php/viewSliderB.php',
+                            data:
+                            {
+                                image_id: globalProductId,
+                            },
+                            success:function(response){
+                                console.log(response);
+                                var imgBData = JSON.parse(response);
+                                console.log(imgBData);
+                                toastImage.children().remove();
+                                $(imgBData).each(function(index,value){
+                                    toastImageTitle.text(`
+                                        ${value.slider_title}
+                                    `);
+                                    toastImageDateAdded.text(`
+                                        ${value.date_captured}
+                                    `);
+                                    toastMessage.text(`
+                                        ${value.slider_caption}
+                                    `);
+                                    toastImage.append(`
+                                        <img src="admin/${value.slider_image}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                    `)
+                                });
+                            }
+                        });
+                    });
+                }
+            });
+            
             $.ajax({
                 type: 'POST',
                 url: 'admin/php/displayMainCarousel.php',
@@ -754,6 +807,7 @@
         .wrapper .item img{
             max-width: max-content;
             max-height: 200px;
+            cursor: pointer;
         }
         #gridGallery .gridItem{
             min-width: 250px;
@@ -850,39 +904,6 @@
             </div>
         </div>
         <div id="sliderB" class="wrapper">
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
-            <div class="item">
-                <img src="lechon1.jpg">
-            </div>
         </div>
     </section>
     <main id="main" class="container mt-5">
@@ -1009,10 +1030,10 @@
             </div>
         </section>
     </footer>
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="height: fit-content;width: fit-content;">
         <div style="width: 500px;" id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="toast-header text-light" style="background-color: rgb(254,105,23);">
-            <strong id="toastImageTitle" class="me-auto">Loading...</strong>
+            <strong id="toastImageTitle" class="h5 me-auto">Loading...</strong>
             <code class="text-dark">Date Captured: <span id="toastImageDateAdded">Loading...</span></code>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>

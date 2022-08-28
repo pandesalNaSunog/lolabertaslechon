@@ -27,7 +27,7 @@
 
             
             //Jquery Nav Animation
-            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection,#addSliderASection').hide();
+            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection,#addSliderASection,#addSliderBSection').hide();
             var globalProductId = 0;
             var globalOrderId = 0;
             var ordersTable = $('#ordersTable');
@@ -97,6 +97,177 @@
             var additionalSliderACaption = $('#additionalSliderACaption');
             var day, month , year;
             var sliderAdateInput = $('#slider-a-date-input');
+            var addedSliderAList = $('#addedSliderAList');
+            var toastImageTitle = $('#toastImageTitle');
+            var toastImageDateAdded = $('#toastImageDateAdded');
+            var toastMessage = $('#toastMessage');
+            var toastImage = $('#toastImage');
+            var editSliderBButton = $('#editSliderBButton');
+            var addSliderBSection = $('#addSliderBSection');
+            var addSliderBButton = $('#addSliderBButton');
+            const toastTrigger = $('.liveToastBtn');
+            const toastLiveExample = $('#liveToast');
+            var additionalSliderBButton = $('#additionalSliderBButton');
+            var additionalSliderBTitle = $('#additionalSliderBTitle');
+            var additionalSliderBFile = $('#additionalSliderBFile');
+            var additionalSliderBCaption = $('#additionalSliderBCaption');
+            var sliderBdateInput = $('#slider-b-date-input');
+            var addedSliderBList = $('#addedSliderBList');
+            
+            additionalSliderBTitle.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            })
+            additionalSliderBFile.click(function(){
+                $(this).removeClass('is-invalid');
+            })
+            additionalSliderBCaption.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            })
+            sliderBdateInput.click(function(){
+                $(this).removeClass('is-invalid');
+            })
+            
+            additionalSliderBButton.click(function(){
+                var date = $('#slider-b-date-input').val().split("-");
+                    day = date[2];
+                    month = date[1];
+                    year = date[0];
+                    if(month == 1){
+                        var lmonth = "January";
+                    }else if(month == 2){
+                        var lmonth = "February";
+                    }else if(month == 3){
+                        var lmonth = "March";
+                    }else if(month == 4){
+                        var lmonth = "April";
+                    }else if(month == 5){
+                        var lmonth = "May";
+                    }else if(month == 6){
+                        var lmonth = "June";
+                    }else if(month == 7){
+                        var lmonth = "July";
+                    }else if(month == 8){
+                        var lmonth = "August";
+                    }else if(month == 9){
+                        var lmonth = "September";
+                    }else if(month == 10){
+                        var lmonth = "October";
+                    }else if(month == 11){
+                        var lmonth = "November";
+                    }else if(month == 12){
+                        var lmonth = "December";
+                    }
+                    dateCreated = lmonth + "-" + day + "-" + year;
+                if(additionalSliderBTitle.val() == ""){
+                    additionalSliderBTitle.addClass('is-invalid');
+                }
+                if(additionalSliderBFile.val() == ""){
+                    additionalSliderBFile.addClass('is-invalid');
+                }
+                if(additionalSliderBCaption.val() == ""){
+                    additionalSliderBCaption.addClass('is-invalid');
+                }
+                if(sliderBdateInput.val() == ""){
+                    sliderBdateInput.addClass('is-invalid');
+                }
+                if(additionalSliderBTitle.val() && additionalSliderBFile.val() && additionalSliderBCaption.val() && sliderBdateInput.val() != ""){
+                    if(confirm('Add This Image') == true){
+                        var formData = new FormData();        
+                            formData.append("additionalSliderBTitle", additionalSliderBTitle.val());
+                            formData.append("additionalSliderBFile", additionalSliderBFile[0].files[0]);
+                            formData.append("additionalSliderBCaption", additionalSliderBCaption.val());
+                            formData.append("sliderBdateInput", dateCreated);
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/addSliderB.php',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function(response){
+                                alert('The New Slider Image Is Inserted Successfully');
+                                additionalSliderBTitle.val("");
+                                additionalSliderBFile.val("");
+                                additionalSliderBCaption.val("");
+                                sliderBdateInput.val("");
+                                var data = JSON.parse(response);
+                                $(data).each(function(index,value){
+                                    addedSliderBList.append(`
+                                    <div class="p-2 m-1" style="height:fit-content;width:fit-content;border-radius:10px;background-color:grey;">
+                                        <div>
+                                            <center>
+                                                <h5>${value.slider_title}</h5>
+                                                <img src="${value.slider_image}" height="200px" width="100%" alt="Slider Img">
+                                            </center>
+                                            <code style="color: black;">Date Added: </code><code class="text-warning">${value.created_at}</code>
+                                            <br>
+                                        </div>
+                                        <div class="justify-content-between">
+                                            <button class="liveToastBtnB1 btn btn-success" value="${value.id}">View</button>
+                                            <button class="deleteNewSliderB btn btn-danger" value="${value.id}">Delete</button>
+                                        </div>
+                                    </div>
+                                    `);
+                                    const toastTriggerB1 = $('.liveToastBtnB1');
+                                    const toastLiveExample = $('#liveToast');
+                                    
+                                    toastTriggerB1.click(function(){
+                                        globalProductId = $(this).val();
+                                        const toast = new bootstrap.Toast(toastLiveExample)
+                                        toast.show();
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/viewSliderB.php',
+                                            data:
+                                            {
+                                                image_id: globalProductId,
+                                            },
+                                            success:function(response){
+                                                var imgData = JSON.parse(response);
+                                                toastImage.children().remove();
+                                                $(imgData).each(function(index,value){
+                                                    toastImageTitle.text(`
+                                                        ${value.slider_title}
+                                                    `);
+                                                    toastImageDateAdded.text(`
+                                                        ${value.date_captured}
+                                                    `);
+                                                    toastMessage.text(`
+                                                        ${value.slider_caption}
+                                                    `);
+                                                    toastImage.append(`
+                                                        <img src="${value.slider_image}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                                    `)
+                                                });
+                                            }
+                                        });
+                                    });
+                                    var deleThisNewSliderB = $('.deleteNewSliderB');
+                                    deleThisNewSliderB.click(function(){
+                                        var thisNewestSliderB = $(this).parent().parent();
+                                        globalProductId = $(this).val();
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/deleteSliderB.php',
+                                            data:
+                                            {
+                                                image_id: globalProductId,
+                                            },
+                                            success:function(response){
+                                                thisNewestSliderB.remove();
+                                            }
+                                        });
+                                    });
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+
+            toastTrigger.click(function(){
+                const toast = new bootstrap.Toast(toastLiveExample)
+                toast.show();
+            });
 
             additionalSliderATitle.on('keydown',function(){
                 $(this).removeClass('is-invalid');
@@ -167,17 +338,86 @@
                             contentType: false,
                             processData: false,
                             success: function(response){
-                                console.log(response);
-                                alert('The New Product Is Inserted Successfully');
+                                alert('The New Slider Image Is Inserted Successfully');
                                 additionalSliderATitle.val("");
                                 additionalSliderAFile.val("");
                                 additionalSliderACaption.val("");
                                 sliderAdateInput.val("");
+                                var data = JSON.parse(response);
+                                $(data).each(function(index,value){
+                                    addedSliderAList.append(`
+                                    <div class="p-2 m-1" style="height:fit-content;width:fit-content;border-radius:10px;background-color:grey;">
+                                        <div>
+                                            <center>
+                                                <h5>${value.slider_title}</h5>
+                                                <img src="${value.slider_image}" height="200px" width="100%" alt="Slider Img">
+                                            </center>
+                                            <code style="color: black;">Date Added: </code><code class="text-warning">${value.created_at}</code>
+                                            <br>
+                                        </div>
+                                        <div class="justify-content-between">
+                                            <button class="liveToastBtnA1 btn btn-success" value="${value.id}">View</button>
+                                            <button class="deleteNewSliderA btn btn-danger" value="${value.id}">Delete</button>
+                                        </div>
+                                    </div>
+                                    `);
+                                    const toastTriggerA1 = $('.liveToastBtnA1');
+                                    const toastLiveExample = $('#liveToast');
+                                    
+                                    toastTriggerA1.click(function(){
+                                        globalProductId = $(this).val();
+                                        const toast = new bootstrap.Toast(toastLiveExample)
+                                        toast.show();
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/viewSliderA.php',
+                                            data:
+                                            {
+                                                image_id: globalProductId,
+                                            },
+                                            success:function(response){
+                                                var imgData = JSON.parse(response);
+                                                toastImage.children().remove();
+                                                $(imgData).each(function(index,value){
+                                                    toastImageTitle.text(`
+                                                        ${value.slider_title}
+                                                    `);
+                                                    toastImageDateAdded.text(`
+                                                        ${value.date_captured}
+                                                    `);
+                                                    toastMessage.text(`
+                                                        ${value.slider_caption}
+                                                    `);
+                                                    toastImage.append(`
+                                                        <img src="${value.slider_image}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                                    `)
+                                                });
+                                            }
+                                        });
+                                    });
+                                    var deleThisNewSliderA = $('.deleteNewSliderA');
+                                    deleThisNewSliderA.click(function(){
+                                        var thisNewestSliderA = $(this).parent().parent();
+                                        globalProductId = $(this).val();
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/deleteSliderA.php',
+                                            data:
+                                            {
+                                                image_id: globalProductId,
+                                            },
+                                            success:function(response){
+                                                thisNewestSliderA.remove();
+                                            }
+                                        });
+                                    });
+                                });
                             }
                         });
                     }
                 }
             });
+            
             editMainCarouselFile.click(function(){
                 $(this).removeClass('is-invalid');
             });
@@ -224,6 +464,170 @@
                     <code style="color: black;">Date Updated: </code>
                     <code>${created_at}</code>
                 `);
+            }
+            $.ajax({
+                type: 'POST',
+                url: 'php/displaySliderA.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        showSliderA(value.id,value.title,value.image,value.caption,value.created_at,value.updated_at,value.date_captured);
+                    });
+                    const toastTriggerA = $('.liveToastBtnA');
+                    const toastLiveExample = $('#liveToast');
+                    
+                    toastTriggerA.click(function(){
+                        globalProductId = $(this).val();
+                        const toast = new bootstrap.Toast(toastLiveExample)
+                        toast.show();
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/viewSliderA.php',
+                            data:
+                            {
+                                image_id: globalProductId,
+                            },
+                            success:function(response){
+                                var imgData = JSON.parse(response);
+                                toastImage.children().remove();
+                                $(imgData).each(function(index,value){
+                                    toastImageTitle.text(`
+                                        ${value.slider_title}
+                                    `);
+                                    toastImageDateAdded.text(`
+                                        ${value.date_captured}
+                                    `);
+                                    toastMessage.text(`
+                                        ${value.slider_caption}
+                                    `);
+                                    toastImage.append(`
+                                        <img src="${value.slider_image}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                    `)
+                                });
+                            }
+                        });
+                    });
+                    var deleteSliderAButton = $('.deleteSliderA');
+                    deleteSliderAButton.click(function(){
+                        if(confirm('Are you sure?') == true){
+                            var thisSliderADelete = $(this);
+                            globalProductId = $(this).val();
+                            $.ajax({
+                                type: 'POST',
+                                url: 'php/deleteSliderA.php',
+                                data:
+                                {
+                                    image_id: globalProductId,
+                                },
+                                success:function(response){
+                                    alert('Slider Image Deleted');
+                                    thisSliderADelete.parent().parent().remove();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: 'php/displaySliderB.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        showSliderB(value.id,value.title,value.image,value.caption,value.created_at,value.updated_at,value.date_captured);
+                    });
+                    const toastTriggerB = $('.liveToastBtnB');
+                    const toastLiveExample = $('#liveToast');
+                    
+                    toastTriggerB.click(function(){
+                        globalProductId = $(this).val();
+                        const toast = new bootstrap.Toast(toastLiveExample)
+                        toast.show();
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/viewSliderB.php',
+                            data:
+                            {
+                                image_id: globalProductId,
+                            },
+                            success:function(response){
+                                var imgData = JSON.parse(response);
+                                toastImage.children().remove();
+                                $(imgData).each(function(index,value){
+                                    toastImageTitle.text(`
+                                        ${value.slider_title}
+                                    `);
+                                    toastImageDateAdded.text(`
+                                        ${value.date_captured}
+                                    `);
+                                    toastMessage.text(`
+                                        ${value.slider_caption}
+                                    `);
+                                    toastImage.append(`
+                                        <img src="${value.slider_image}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                    `)
+                                });
+                            }
+                        });
+                    });
+                    var deleteSliderBButton = $('.deleteSliderB');
+                    deleteSliderBButton.click(function(){
+                        if(confirm('Are you sure?') == true){
+                            var thisSliderBDelete = $(this);
+                            globalProductId = $(this).val();
+                            $.ajax({
+                                type: 'POST',
+                                url: 'php/deleteSliderB.php',
+                                data:
+                                {
+                                    image_id: globalProductId,
+                                },
+                                success:function(response){
+                                    alert('Slider Image Deleted');
+                                    thisSliderBDelete.parent().parent().remove();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            function showSliderA(id,title,image,caption,created_at,updated_at,date_captured){
+                addedSliderAList.append(`
+                <div class="bg-light p-2 m-1" style="height:fit-content;width:fit-content;border-radius:10px;">
+                    <div>
+                        <center>
+                            <h5>${title}</h5>
+                            <img src="${image}" height="200px" width="100%" alt="Slider Img">
+                        </center>
+                        <code style="color: black;">Date Added: </code><code>${created_at}</code>
+                        <br>
+                    </div>
+                    <div class="justify-content-between">
+                        <button class="liveToastBtnA btn btn-success" value="${id}">View</button>
+                        <button class="deleteSliderA btn btn-outline-danger" value="${id}">Delete</button>
+                    </div>
+                </div>
+                `);
+
+            }
+            function showSliderB(id,title,image,caption,created_at,updated_at,date_captured){
+                addedSliderBList.append(`
+                <div class="bg-light p-2 m-1" style="height:fit-content;width:fit-content;border-radius:10px;">
+                    <div>
+                        <center>
+                            <h5>${title}</h5>
+                            <img src="${image}" height="200px" width="100%" alt="Slider Img">
+                        </center>
+                        <code style="color: black;">Date Added: </code><code>${created_at}</code>
+                        <br>
+                    </div>
+                    <div class="justify-content-between">
+                        <button class="liveToastBtnB btn btn-success" value="${id}">View</button>
+                        <button class="deleteSliderB btn btn-outline-danger" value="${id}">Delete</button>
+                    </div>
+                </div>
+                `);
+
             }
             $.ajax({
                 type: 'POST',
@@ -339,6 +743,8 @@
                 editCarouselSection.slideDown('slow');
                 editSliderAButton.show('fast');
                 addSliderASection.slideUp('fast');
+                addSliderBSection.slideUp('fast');
+                editSliderBButton.show('slow');
             });
             organizationalChartButton.click(function(){
                 editCarouselButton.show('slow');
@@ -347,13 +753,28 @@
                 editCarouselSection.slideUp('fast');
                 addSliderASection.slideUp('fast');
                 organizationalChartSection.slideDown('slow');
+                addSliderBSection.slideUp('fast');
+                editSliderBButton.show('slow');
             });
             editSliderAButton.click(function(){
                 addSliderASection.slideDown('slow');
                 $(this).hide('fast');
+                editSliderBButton.show('slow');
                 $('#organizationalChartButton,#editCarouselButton').show('slow');
                 editCarouselSection.slideUp('fast');
                 organizationalChartSection.slideUp('fast');
+                addSliderBSection.slideUp('fast');
+            });
+    
+            editSliderBButton.click(function(){
+                $(this).hide('fast');
+                addSliderBSection.slideDown('slow');
+                addSliderASection.slideUp('fast');
+                editCarouselSection.slideUp('fast');
+                organizationalChartSection.slideUp('fast');
+                editSliderAButton.show('slow');
+                editCarouselButton.show('slow');
+                organizationalChartButton.show('slow');
             });
             //navigational Buttons
             pageCustomizationNav.click(function(){
@@ -1073,6 +1494,7 @@
                         <div class="shadow text-center pt-3 pb-3 rounded-5" style="background-color: rgb(41,22,5);">
                             <button class="CPCbtn btn btn-danger text-light shadow" id="editCarouselButton">Slide-show</button>
                             <button class="CPCbtn btn btn-danger text-light shadow" id="editSliderAButton">First Slider</button>
+                            <button class="CPCbtn btn btn-danger text-light shadow" id="editSliderBButton">Second Slider Slider</button>
                             <button class="CPCbtn btn btn-danger" id="organizationalChartButton">Organizational Chart</button>
                         </div>
                         <section id="editCarouselSection">
@@ -1132,12 +1554,45 @@
                                 <div class="card mt-3 rounded-5 shadow">
                                     <div class="card-header d-flex text-center">
                                         <h4 class="fw-bold my-3 mx-5">First Slider: </h4>
-                                        <button data-bs-toggle="modal" data-bs-target="#addSliderAModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);" id="addSliderAButton">Add Image</button>
                                     </div>
                                     <div class="card-body">
-                                        <center>
-                                            <code class="bg-warning text-danger p-2 rounded-4">Area Under Construction</code>
-                                        </center>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <th scope="col">Added Images <button data-bs-toggle="modal" data-bs-target="#addSliderAModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);" id="addSliderAButton">Add Image</button></th>
+                                                </thead>
+                                                <tbody>
+                                                    <td class="m-3">
+                                                        <div id="addedSliderAList" style="display: grid; grid-template-columns:  repeat(auto-fill,minmax(250px,1fr));">
+                                                        </div>
+                                                    </td>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="addSliderBSection">
+                            <div class="container">
+                                <div class="card mt-3 rounded-5 shadow">
+                                    <div class="card-header d-flex text-center">
+                                        <h4 class="fw-bold my-3 mx-5">Second Slider: </h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <th scope="col">Added Images <button data-bs-toggle="modal" data-bs-target="#addSliderBModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);" id="addSliderBButton">Add Image</button></th>
+                                                </thead>
+                                                <tbody>
+                                                    <td class="m-3">
+                                                        <div id="addedSliderBList" style="display: grid; grid-template-columns:  repeat(auto-fill,minmax(250px,1fr));">
+                                                        </div>
+                                                    </td>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1423,6 +1878,40 @@
             </div>
         </div>
     </div>
+    <!--add sliderB modal-->
+    <div class="modal fade" id="addSliderBModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Add Second Slider Image</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <input class="form-control mt-3" type="text" id="additionalSliderBTitle" placeholder="Image Title">
+                        <div class="invalid-feedback">Please Fill Up this Field</div>
+                    </div>
+                    <div>
+                        <input class="form-control mt-3" id="additionalSliderBFile" type="file">
+                        <div class="invalid-feedback">Please Select Image</div>
+                    </div>
+                    <div>
+                        <input class="form-control mt-3" type="text" id="additionalSliderBCaption" placeholder="Image Caption">
+                        <div class="invalid-feedback">Please Fill Up this Field</div>
+                    </div>
+                    <div>
+                        <input id="slider-b-date-input" class="form-control mt-3" type="date">
+                        <div class="invalid-feedback">Please Select Date</div>
+                    </div>
+                </div>
+                <div>
+                    <button id="additionalSliderBButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Add Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!--view order modal-->
     <div class="modal fade" id="viewOrderModal">
         <div class="modal-dialog">
@@ -1486,6 +1975,24 @@
                     <button id="editMainCarouselImageButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Update Image</button>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="height: fit-content;width: fit-content;">
+        <div style="width: 500px;" id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header text-light" style="background-color: rgb(254,105,23);">
+            <strong id="toastImageTitle" class="h5 me-auto">Loading...</strong>
+            <code class="text-dark">Date Captured: <span id="toastImageDateAdded">Loading...</span></code>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+            <div id="toastMessage">Loading...</div>
+            <br>
+            <center>
+                <div id="toastImage" style="height: fit-content;width:fit-content">
+                    <img src="../footer.png" height="100px" width="200px" class="rounded me-2" alt="...">
+                </div>
+            </center>
+          </div>
         </div>
     </div>
 </html>
