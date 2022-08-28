@@ -3,7 +3,7 @@
         // include('connection.php');
         // $con = connect();
         $con = new mysqli ("localhost","root","","lechon-database");
-        $query = "SELECT * FROM `slider_a`";
+        $query = "SELECT * FROM `slider_b`";
         $result = mysqli_query($con,$query);
         $productArray = array();
         if($result){
