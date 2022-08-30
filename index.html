@@ -114,6 +114,7 @@
                 myCart.hide('fast');
                 main.hide('fast');
                 searchNav.hide('fast');
+                $('#customSliderTitle,#sliderA,#sliderB,#ourHistorySliderTitle,#gridGallery,#welcomeCustomers,#aboutUsSection').slideDown('slow');
                 if($(window).width() < 976){
                         orderPop.show('fast');
                         mainOrder.hide('fast');
@@ -143,6 +144,9 @@
                     }
                 $(orderNowButton).addClass('onOrder');
                 $('#mainOrder,#orderPop').hide('fast');
+
+                $('#customSliderTitle,#sliderA,#sliderB,#ourHistorySliderTitle,#gridGallery,#welcomeCustomers,#aboutUsSection').slideUp('fast');
+
                 $('#homeNav').show('fast');
                 $('#searchNav,main').show('slow');
             });
@@ -160,11 +164,11 @@
                     var data = JSON.parse(response);
                     $(data).each(function(index,value){
                         gridGallery.append(`
-                            <div style="padding: 0px;">
-                                <div class="containera gridItem m-0" style="width: fit-content;margin: 0px;">
-                                    <img src="admin/${value.image_file}" alt="Grid-Image" style="height:auto;width:100%">
+                            <div class="gimg shadow" style="padding: 0px;">
+                                <div class="containera gridItem m-0" style="width: 100%;margin: 0px;">
+                                    <img src="admin/${value.image_file}" alt="Grid-Image" style="height:auto;width: 100%;border-radius: 10px;">
                                     <div class="td" style="display: table;">
-                                        <div class="text-block overflow-auto pt-2" style="max-height: 25%;">
+                                        <div class="text-block overflow-auto pt-2" style="max-height: 25%;border-radius:10px;">
                                             <h4 style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${value.image_title}</h4>
                                             <p class="mb-1">${value.image_details}</p>
                                         </div>
@@ -209,6 +213,10 @@
                     
                     toastTriggerA.click(function(){
                         globalProductId = $(this).parent().children().eq(1).val();
+                        toastImage.children().remove();
+                        toastImageTitle.text(`Loading...`);
+                        toastImageDateAdded.text(`Loading...`);
+                        toastMessage.text(`Loading...`);
                         const toast = new bootstrap.Toast(toastLiveExample)
                         toast.show();
                         $.ajax({
@@ -220,7 +228,6 @@
                             },
                             success:function(response){
                                 var imgData = JSON.parse(response);
-                                toastImage.children().remove();
                                 $(imgData).each(function(index,value){
                                     toastImageTitle.text(`
                                         ${value.slider_title}
@@ -258,6 +265,7 @@
                     
                     toastTrigger.click(function(){
                         globalProductId = $(this).parent().children().eq(1).val();
+                        
                         const toast = new bootstrap.Toast(toastLiveExample)
                         toast.show();
                         $.ajax({
@@ -816,7 +824,7 @@
         }
         .wrapper::-webkit-scrollbar{
             width: 12px;
-            height: 10px;
+            height: 8px;
             /* background-color: rgb(254,105,23); */
         }
         ::-webkit-scrollbar-track{
@@ -862,8 +870,11 @@
             width: 5px;
         }
         .td{
-            padding-bottom: 10px;
             background-color: rgba(0, 0, 0, 0.658);
+        }
+        .gimg{
+            border-bottom: solid 2.5px rgba(0, 0, 255, 0);
+            border-right: solid 10px rgba(0, 0, 255, 0);
         }
     </style>
 </head>
@@ -873,7 +884,7 @@
             <div class="container">
                 <div class="navbar-brand" style="margin: 0;">
                     <img style="margin: 0px;" id="logo-ni-lola" src="admin/Branding/received_727156111882599 page logo.png" height="70px" width="70px" alt="" srcset="">
-                    <img class="shadow mt-2" src="admin/Branding/brand.png" height="50px" width="280px" alt="">
+                    <img class="shadow mt-2" src="admin/Branding/LLLL.png" height="50px" width="280px" alt="">
                 </div>
                 <button class="navbar-toggler shadow" style="border: solid 2px rgb(255, 124, 36);border-radius: 25%;" data-bs-toggle="collapse" data-bs-target="#nav-menu">
                     <span class="navbar-toggler-icon"></span>
@@ -883,17 +894,17 @@
                         <li id="searchNav" class="nav-item mx-2">
                             <div class="input-group col-8 shadow">
                                 <input type="text" class="form-control mt-0 mb-0" id="searchProductInput" placeholder="Search...">
-                                <button class="btn btn-warning mt-0" id="searchProduct"><a href="#main" style="text-decoration: none;color:black;">Search</a></button>
+                                <button class="btn btn-warning mt-0" id="searchProduct"><a href="#" style="text-decoration: none;color:black;">Search</a></button>
                             </div>
                         </li>
                         <li class="nav-item mx-2">
                             <a class="myCart btn btn-warning shadow" id="mainCart" href="#">My Cart</a>
                         </li>
                         <li class="nav-item mx-2">
-                            <a href="#main" class="nav-link" id="showProductList" style="color: white;">All Products</a>
+                            <a href="#" class="nav-link" id="showProductList" style="color: white;">All Products</a>
                         </li>
                         <li class="nav-item mx-2">
-                            <a href="#main" class="ONB nav-link text-warning" id="mainOrder" style="color: white;">Order Now</a>
+                            <a href="#" class="ONB nav-link text-warning" id="mainOrder" style="color: white;">Order Now</a>
                         </li>
                         <li class="nav-item mx-2">
                             <a href="#" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
@@ -913,7 +924,7 @@
         <a id="cartPop" class=" myCart btn btn-warning shadow" style="position: fixed;margin-top: 0px;width: 100px;z-index: 100; margin-left: 10px;border-radius: 0 0 50% 50%;margin-right: 5%;border-top: 0px;border-bottom:thin black;border-left: ridge black;border-right:ridge black;" href="#" class="nav-link">
             <h6>My Cart</h6>
         </a>
-        <a id="orderPop" class="ONB btn btn-danger shadow" style="position: fixed;margin-top: 0px;width: 100px;z-index: 100; margin-left: 10px;border-radius: 0 0 50% 50%;margin-right: 5%;border-top: 0px;border-bottom:thin black;border-left: ridge black;border-right:ridge black;" href="#main" class="nav-link">
+        <a id="orderPop" class="ONB btn btn-danger shadow" style="position: fixed;margin-top: 0px;width: 100px;z-index: 100; margin-left: 10px;border-radius: 0 0 50% 50%;margin-right: 5%;border-top: 0px;border-bottom:thin black;border-left: ridge black;border-right:ridge black;" href="#" class="nav-link">
             <h6>Order Now</h6>
         </a>
     </div>
@@ -936,10 +947,10 @@
         </div>
         <div id="sliderA" class="wrapper">
         </div>
-        <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-2 m-0" id="gridGallery" style="width: 100%;">     
+        <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-2 m-0 g-2" id="gridGallery" style="width: 100%;border-top: solid 5px rgba(0, 0, 255, 0);border-left: solid 10px rgba(0, 0, 255, 0);border-bottom: solid 2.5px rgba(0, 0, 255, 0);">     
             
         </div>
-        <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
+        <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);" id="ourHistorySliderTitle">
             <center>
                 <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">OUR HISTORY</h4>
             </center>
@@ -1049,37 +1060,41 @@
         </div>
     </div>
     
-    <footer id="aboutUs" class="shadow m-0" style="padding-top: 50px;">
-        <section  class="m-0 pb-0 p-5 text-dark" style="background: rgb(224,100,28);background: linear-gradient(180deg, rgba(224,100,28,0) 0%, rgba(224,100,28,0.4429369159773284) 20%, rgba(224,100,29,0.6642254313834909) 40%, rgba(224,100,28,1) 85%, rgba(224,100,28,1) 100%);">
-            <p style="margin-bottom: 0px;padding-top: 50px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus nobis pariatur odit! Quo obcaecati iste impedit officiis quasi totam cum fuga iusto dolorum quia, qui consectetur voluptatum assumenda magni consequatur, unde amet quaerat nesciunt aut eaque quos veritatis quod. Magnam reprehenderit voluptatibus, suscipit architecto deserunt, soluta reiciendis iste illo laudantium quibusdam molestiae esse nisi quaerat modi iusto, velit quia similique? Rerum quasi, ad laboriosam quas distinctio voluptatem accusantium rem, libero labore, sunt dolorum aperiam. Eligendi numquam neque quo unde quisquam dignissimos est perferendis tempora, officiis molestias necessitatibus! Impedit tempore cupiditate atque, tempora consequuntur porro magni voluptatibus dolores, unde, quam eveniet?Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere repellendus necessitatibus molestiae quos? Dicta blanditiis sequi sint veritatis animi nemo soluta exercitationem! Eveniet ullam, odit culpa unde rem quo. Similique. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Placeat qui ex quae sunt officiis mollitia fugiat distinctio consectetur, odit adipisci ab neque doloremque. Voluptas consequatur provident facere officiis, quia laudantium hic reiciendis delectus possimus laboriosam ut nulla, quasi consectetur aperiam nisi sequi, exercitationem quaerat maxime adipisci! Delectus, nostrum! Eius, at?</p>
-        </section>
-        <section style="display: column;justify-content:space-between;margin: 0px;margin-bottom: 0px;padding-bottom: 50px;background-color: rgb(224,100,28);">
-            <div style="display: column;">
+    <footer id="aboutUs" class="shadow m-0" style="padding-top: 50px;background: rgb(224,100,28);background: linear-gradient(180deg, rgba(224,100,28,0) 0%, rgba(224,100,28,0.4429369159773284) 20%, rgba(224,100,29,0.6642254313834909) 40%, rgba(224,100,28,1) 85%, rgba(224,100,28,1) 100%, rgba(224,100,28,1) 100%, rgba(224,100,28,1) 100%);">
+        <div class="container">
+            <section id="aboutUsSection"  class="m-0 pb-0 text-dark">
                 <center>
-                    <div>
-                        <img id="footerImage" src="footer.png" height="100%" width="100%">
-                    </div>
+                    <p class="px-5" style="margin-bottom: 0px;padding-top: 50px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus nobis pariatur odit! Quo obcaecati iste impedit officiis quasi totam cum fuga iusto dolorum quia, qui consectetur voluptatum assumenda magni consequatur, unde amet quaerat nesciunt aut eaque quos veritatis quod. Magnam reprehenderit voluptatibus, suscipit architecto deserunt, soluta reiciendis iste illo laudantium quibusdam molestiae esse nisi quaerat modi iusto, velit quia similique? Rerum quasi, ad laboriosam quas distinctio voluptatem accusantium rem, libero labore, sunt dolorum aperiam. Eligendi numquam neque quo unde quisquam dignissimos est perferendis tempora, officiis molestias necessitatibus! Impedit tempore cupiditate atque, tempora consequuntur porro magni voluptatibus dolores, unde, quam eveniet?Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere repellendus necessitatibus molestiae quos? Dicta blanditiis sequi sint veritatis animi nemo soluta exercitationem! Eveniet ullam, odit culpa unde rem quo. Similique. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Placeat qui ex quae sunt officiis mollitia fugiat distinctio consectetur, odit adipisci ab neque doloremque. Voluptas consequatur provident facere officiis, quia laudantium hic reiciendis delectus possimus laboriosam ut nulla, quasi consectetur aperiam nisi sequi, exercitationem quaerat maxime adipisci! Delectus, nostrum! Eius, at?</p>
                 </center>
-            </div>
-            <div style="margin: 50px;margin-bottom: 0px;">
-                <p  class="mb-0 m-5">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto totam eaque sint ipsa sed harum at, non voluptate reiciendis nemo, perferendis voluptatem natus mollitia voluptatum iure odio quos sunt quisquam? Rerum, excepturi aliquam molestias sit ullam vero? Qui sint rem accusantium est, ad quo a beatae alias veritatis eum harum necessitatibus consectetur quisquam modi cupiditate dicta minima iusto tenetur id velit quam incidunt quia. Nesciunt sed illum eum dignissimos eaque sint quos eveniet reprehenderit itaque, velit consequatur, molestias ducimus dolorem deserunt magnam, error delectus facere! Quia assumenda alias unde non excepturi commodi exercitationem quidem, in ipsa dolor, corporis ratione dolores!</p>
-                <hr>
-                <div class="container mx-5">
-                    <p>Like us on: 
-                        <div class="btn btn-primary btn-sm">
-                            <img src="facebook.svg">
-                            <span> Facebook</span>
+            </section>
+            <section style="display: column;justify-content:space-between;margin: 0px;margin-bottom: 0px;padding-bottom: 50px;">
+                <div style="display: column;">
+                    <center>
+                        <div>
+                            <img id="footerImage" src="footer.png" height="100%" width="100%">
                         </div>
-                    </p>    
+                    </center>
                 </div>
-            </div>
-        </section>
+                <div style="margin: 50px;margin-bottom: 0px;">
+                    <p  class="mb-0 mx-1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto totam eaque sint ipsa sed harum at, non voluptate reiciendis nemo, perferendis voluptatem natus mollitia voluptatum iure odio quos sunt quisquam? Rerum, excepturi aliquam molestias sit ullam vero? Qui sint rem accusantium est, ad quo a beatae alias veritatis eum harum necessitatibus consectetur quisquam modi cupiditate dicta minima iusto tenetur id velit quam incidunt quia. Nesciunt sed illum eum dignissimos eaque sint quos eveniet reprehenderit itaque, velit consequatur, molestias ducimus dolorem deserunt magnam, error delectus facere! Quia assumenda alias unde non excepturi commodi exercitationem quidem, in ipsa dolor, corporis ratione dolores!</p>
+                    <hr>
+                    <div class="container mx-5">
+                        <p>Like us on: 
+                            <div class="btn btn-primary btn-sm">
+                                <img src="facebook.svg">
+                                <span> Facebook</span>
+                            </div>
+                        </p>    
+                    </div>
+                </div>
+            </section>
+        </div>
     </footer>
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="height: fit-content;width: fit-content;">
         <div style="width: 500px;" id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
           <div class="toast-header text-light" style="background-color: rgb(254,105,23);">
             <strong id="toastImageTitle" class="h5 me-auto">Loading...</strong>
-            <code class="text-dark">Date Captured: <span id="toastImageDateAdded">Loading...</span></code>
+            <code class="text-dark">Date: <span id="toastImageDateAdded">Loading...</span></code>
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>
           <div class="toast-body">

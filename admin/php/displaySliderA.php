@@ -1,8 +1,7 @@
 <?php
-    // if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
-        // include('connection.php');
-        // $con = connect();
-        $con = new mysqli ("localhost","root","","lechon-database");
+    if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
+        include('connection.php');
+        $con = connect();
         $query = "SELECT * FROM `slider_a`";
         $result = mysqli_query($con,$query);
         $productArray = array();
@@ -27,7 +26,7 @@
             }
             echo json_encode($productArray);
         }
-    // }else{
-    //     echo header('HTTP/1.1 403 Forbidden');
-    // }
+    }else{
+        echo header('HTTP/1.1 403 Forbidden');
+    }
 ?>

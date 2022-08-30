@@ -25,7 +25,7 @@
                 }
             });
             //Jquery Nav Animation
-            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection,#addSliderASection,#addSliderBSection,#editImageGridSection,#salesReportSection').hide();
+            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#addSliderASection,#addSliderBSection,#editImageGridSection,#salesReportSection').hide();
             var globalProductId = 0;
             var ordersTable = $('#ordersTable');
             var productsTable = $('#productsTable');
@@ -41,8 +41,6 @@
             var editCarouselButton = $('#editCarouselButton');
             var editCarouselSection = $('#editCarouselSection');
             var CPCbtn = $('.CPCbtn');
-            var organizationalChartButton = $('#organizationalChartButton');
-            var organizationalChartSection = $('#organizationalChartSection');
             var addCarouselImageButton = $('#addCarouselImageButton');
             var additionalCarouselFile = $('#additionalCarouselFile');
             var addedCarouselList = $('#addedCarouselList');
@@ -91,6 +89,7 @@
             var imageGridFileInput = $('#imageGridFileInput');
             var imageGridDetailsInput = $('#imageGridDetailsInput');
             var salesReportNav = $('#salesReportNav');
+            var addedImageGridList = $('#addedImageGridList');
 
             imageGridTitleInput.on('keydown',function(){
                 $(this).removeClass('is-invalid');
@@ -125,6 +124,44 @@
                             processData: false,
                             success:function(response){
                                 alert('Image Successfully Added to the Grid.');
+                                var data = JSON.parse(response);
+                                $(data).each(function(index,value){
+                                    addedImageGridList.append(`
+                                        <div style="background-color: grey;padding: 10px;fit-content;margin:5px;heigth:fit-content;border-radius:10px;">
+                                            <div class="containera gridItem m-0" style="width: fit-content;margin: 0px;">
+                                                <img src="${value.image_file}" alt="Grid-Image" width="100%" style="align-self:center;">
+                                                <div class="td" style="display: table;">
+                                                    <div class="text-block overflow-auto pt-2" style="max-height: 25%;">
+                                                        <h4 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"><strong>Title: </strong>${value.image_title}</h4>
+                                                        <details>
+                                                            <summary>
+                                                                <strong>Details:</strong>    
+                                                            </summary>
+                                                            <p class="mb-1">${value.image_details}</p>
+                                                        </details>
+                                                        <button class="deleteNewGridImageButton btn btn-outline-danger m-1" value="${value.id}">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `);
+                                var deleteNewGridImageButton = $('.deleteNewGridImageButton');
+                                deleteNewGridImageButton.click(function(){
+                                        var thisNewGridDeleteButton = $(this);
+                                        globalProductId = $(this).val();
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/deleteGridImage.php',
+                                            data:
+                                            {
+                                                image_id: globalProductId,
+                                            },
+                                            success:function(response){
+                                                thisNewGridDeleteButton.parent().parent().parent().parent().remove();
+                                            }
+                                        });
+                                })
+                                });
                             }
                         });
                     }
@@ -553,6 +590,53 @@
             });
             $.ajax({
                 type: 'POST',
+                url: 'php/displayGridImages.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        addedImageGridList.append(`
+                            <div style="background-color: white;padding: 10px;fit-content;margin:5px;heigth:fit-content;border-radius:10px;">
+                                <div class="containera gridItem m-0" style="width: fit-content;margin: 0px;">
+                                    <img src="${value.image_file}" alt="Grid-Image" width="100%" style="align-self:center;">
+                                    <div class="td" style="display: table;">
+                                        <div class="text-block overflow-auto pt-2" style="max-height: 25%;">
+                                            <h4 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"><strong>Title: </strong>${value.image_title}</h4>
+                                            <details>
+                                                <summary>
+                                                    <strong>Details:</strong>    
+                                                </summary>
+                                                <p class="mb-1">${value.image_details}</p>
+                                            </details>
+                                            <button class="deleteGridImageButton btn btn-outline-danger m-1" value="${value.id}">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    });
+                    var deleteGridImageButton = $('.deleteGridImageButton');
+                    deleteGridImageButton.click(function(){
+                        if(confirm('Delete This Grid Image?') == true){
+                            var thisGridDeleteButton = $(this);
+                            globalProductId = $(this).val();
+                            $.ajax({
+                                type: 'POST',
+                                url: 'php/deleteGridImage.php',
+                                data:
+                                {
+                                    image_id: globalProductId,
+                                },
+                                success:function(response){
+                                    thisGridDeleteButton.parent().parent().parent().parent().remove();
+                                    alert('Grid Image Deleted.');
+                                }
+                            });
+                        }
+                    })
+                }
+            });
+            $.ajax({
+                type: 'POST',
                 url: 'php/displaySliderA.php',
                 success:function(response){
                     var data = JSON.parse(response);
@@ -837,9 +921,7 @@
                 }
             });
             editCarouselButton.click(function(){
-                organizationalChartButton.show('fast');
                 $(this).hide('fast');
-                organizationalChartSection.slideUp('fast');
                 editSliderAButton.show('fast');
                 editCarouselSection.slideDown('slow');
                 editSliderAButton.show('fast');
@@ -849,25 +931,12 @@
                 editImageGridSection.slideUp('fast');
                 editImageGridButton.show('fast');
             });
-            organizationalChartButton.click(function(){
-                editCarouselButton.show('slow');
-                editSliderAButton.show('fast');
-                $(this).hide('fast');
-                editCarouselSection.slideUp('fast');
-                addSliderASection.slideUp('fast');
-                organizationalChartSection.slideDown('slow');
-                addSliderBSection.slideUp('fast');
-                editSliderBButton.show('slow');
-                editImageGridSection.slideUp('fast');
-                editImageGridButton.show('fast');
-            });
             editSliderAButton.click(function(){
                 addSliderASection.slideDown('slow');
                 $(this).hide('fast');
                 editSliderBButton.show('slow');
-                $('#organizationalChartButton,#editCarouselButton').show('slow');
+                $('#editCarouselButton').show('slow');
                 editCarouselSection.slideUp('fast');
-                organizationalChartSection.slideUp('fast');
                 addSliderBSection.slideUp('fast');
                 editImageGridSection.slideUp('fast');
                 editImageGridButton.show('fast');
@@ -877,12 +946,10 @@
                 editImageGridSection.slideDown('slow');
                 editSliderBButton.show('slow');
                 editSliderAButton.show('slow');
-                organizationalChartButton.show('slow');
                 editCarouselButton.show('slow');
                 addSliderBSection.slideUp('fast');
                 addSliderASection.slideUp('fast');
                 editCarouselSection.slideUp('fast');
-                organizationalChartSection.slideUp('fast');
             });
     
             editSliderBButton.click(function(){
@@ -890,10 +957,8 @@
                 addSliderBSection.slideDown('slow');
                 addSliderASection.slideUp('fast');
                 editCarouselSection.slideUp('fast');
-                organizationalChartSection.slideUp('fast');
                 editSliderAButton.show('slow');
                 editCarouselButton.show('slow');
-                organizationalChartButton.show('slow');
                 editImageGridSection.slideUp('fast');
                 editImageGridButton.show('fast');
             });
@@ -1650,7 +1715,6 @@
                             <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editSliderAButton">Custom Slider</button>
                             <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editImageGridButton">Image Grid</button>
                             <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editSliderBButton">Our History Slider</button>
-                            <button class="CPCbtn btn btn-danger mt-1" id="organizationalChartButton">Organizational Chart</button>
                         </div>
                         <section id="editCarouselSection">
                             <div class="container">
@@ -1686,20 +1750,6 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                        <section id="organizationalChartSection">
-                            <div class="container">
-                                <div class="card mt-3 rounded-5 shadow">
-                                    <div class="card-header d-flex text-center">
-                                        <h4 class="fw-bold my-3 mx-5">Organizational Chart</h4>
-                                    </div>
-                                    <div class="card-body">
-                                        <center>
-                                            <code class="bg-warning text-danger p-2 rounded-4">Area Under Construction</code>
-                                        </center>
                                     </div>
                                 </div>
                             </div>
@@ -1777,7 +1827,7 @@
                                                 </thead>
                                                 <tbody>
                                                     <td class="m-3">
-                                                        <div id="addedImageGridList">
+                                                        <div id="addedImageGridList" style="display: grid; grid-template-columns:  repeat(auto-fill,minmax(500px,1fr));">
                                                         </div>
                                                     </td>
                                                 </tbody>
@@ -2214,15 +2264,15 @@
                 </div>
                 <div class="modal-body">
                     <div>
-                        <input class="form-control mt-1" id="imageGridTitleInput" type="text" placeholder="Image Grid Title">
+                        <input class="form-control mt-3" id="imageGridTitleInput" type="text" placeholder="Image Grid Title">
                         <div class="invalid-feedback">Please Fill Up This Field</div>
                     </div>
                     <div>
-                        <input class="form-control mt-1" id="imageGridFileInput" type="file">
+                        <input class="form-control mt-3" id="imageGridFileInput" type="file">
                         <div class="invalid-feedback">Please Fill Up This Field</div>
                     </div>
                     <div>
-                        <textarea class="form-control mt-1" id="imageGridDetailsInput" type="text" placeholder="Image Grid Details" style="height: fit-content;"></textarea>
+                        <textarea class="form-control mt-3" id="imageGridDetailsInput" type="text" placeholder="Image Grid Details" style="height: fit-content;"></textarea>
                         <div class="invalid-feedback">Please Fill Up This Field</div>
                     </div>
                 </div>
