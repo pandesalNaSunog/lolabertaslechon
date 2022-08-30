@@ -7,25 +7,30 @@
             $year = $_POST['year'];
             $months = array();
             $sales = array();
-            $query = "SELECT * FROM sales WHERE created_at LIKE %'$year'% ORDER BY created_at ASC";
-            $previousMonth = "";
+            $query = "SELECT * FROM sales WHERE created_at LIKE '%$year%' ORDER BY created_at ASC";
             $salesQuery = $con->query($query) or die($con->error);
-
+            $previousMonth = "";
             $salesPerMonth = 0;
+            $index = 0;
             while($salesRow = $salesQuery->fetch_assoc()){
-
-
-                $currentMonth = date_create(date_format($salesRow['created_at'], "M"));
-                if($previousMonth != $currentMonth){
-                    $previousMonth = $currentMonth;
-
+                
+                
+                
+                $currentMonth = date_format(date_create($salesRow['created_at']), "M");
+                if($previousMonth != $currentMonth && $previousMonth != ""){
                     $months[] = $previousMonth;
                     $sales[] = $salesPerMonth;
                     $salesPerMonth = 0;
                 }
-
                 $salesPerMonth += $salesRow['amount'];
+
+                $previousMonth = $currentMonth;
+                $index++;
             }
+
+            $months[] = $previousMonth;
+            $sales[] = $salesPerMonth;
+            $salesPerMonth = 0;
 
             $response = array(
                 'months' => $months,
