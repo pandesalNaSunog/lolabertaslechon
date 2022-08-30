@@ -52,6 +52,8 @@
             var toastImageDateAdded = $('#toastImageDateAdded');
             var toastMessage = $('#toastMessage');
             var toastImage = $('#toastImage');
+            var customSliderTitle = $('#customSliderTitle');
+            var gridGallery = $('#gridGallery');
             const toastTrigger = $('.liveToastBtn');
             const toastLiveExample = $('#liveToast');
             
@@ -153,14 +155,52 @@
             });
             $.ajax({
                 type: 'POST',
+                url: 'admin/php/displayGridImages.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        gridGallery.append(`
+                            <div style="padding: 0px;">
+                                <div class="containera gridItem m-0" style="width: fit-content;margin: 0px;">
+                                    <img src="admin/${value.image_file}" alt="Grid-Image" style="height:auto;width:100%">
+                                    <div class="td" style="display: table;">
+                                        <div class="text-block overflow-auto pt-2" style="max-height: 25%;">
+                                            <h4 style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${value.image_title}</h4>
+                                            <p class="mb-1">${value.image_details}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            `);
+                    });
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: 'admin/php/displayCustomSliderTitle.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        customSliderTitle.append(`
+                        <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
+                            <center>
+                                <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${value.slider_title}</h4>
+                            </center>
+                        </div>
+                        `);
+                    });
+                }
+            });
+            $.ajax({
+                type: 'POST',
                 url: 'admin/php/displaySliderA.php',
                 success:function(response){
                     var data = JSON.parse(response);
                     $(data).each(function(index,value){
                         sliderA.append(`
                         <div class="item">
-                            <img class="liveToastBtn1" src="admin/${value.image}" alt="Slider Image">
-                            <button style="position:fixed; z-index:-100;height:1opx;width:10px;margin:0px;opacity:0;" value="${value.id}"></button>
+                            <img class="liveToastBtn1 shadow" src="admin/${value.image}" alt="Slider Image">
+                            <button style="position:fixed; z-index:-100;height:10px;width:10px;margin:0px;opacity:0;" value="${value.id}"></button>
                         </div>
                         `);
                     });
@@ -179,9 +219,7 @@
                                 image_id: globalProductId,
                             },
                             success:function(response){
-                                console.log(globalProductId)
                                 var imgData = JSON.parse(response);
-                                console.log(imgData);
                                 toastImage.children().remove();
                                 $(imgData).each(function(index,value){
                                     toastImageTitle.text(`
@@ -230,9 +268,7 @@
                                 image_id: globalProductId,
                             },
                             success:function(response){
-                                console.log(response);
                                 var imgBData = JSON.parse(response);
-                                console.log(imgBData);
                                 toastImage.children().remove();
                                 $(imgBData).each(function(index,value){
                                     toastImageTitle.text(`
@@ -325,7 +361,6 @@
                                 productQuantities: productQuantities,
                             },
                             success:function(response){
-                                console.log(response);
                                 alert("Thank You for Ordering Here at Lola Berta's Lechon.");
                                 location.reload();
                             }
@@ -373,8 +408,6 @@
                 if(productIds.length == 0 || productQuantities.length == 0){
                     alert('Your Cart is currently empty.');
                 }else{
-                    console.log("ProductIds: " + productIds);
-                    console.log("productQuantities: " + productQuantities);
                     myOrderslist.modal('show');
                     cartList.children().remove();
                     $.ajax({
@@ -424,10 +457,7 @@
                         $(this).val('del');
                         productIds[globalProductId] = "del";
                         productQuantities[globalProductId] = 'del';
-                        console.log(productIds);
-                        console.log('quantities: ' + productQuantities);
                         $(this).parent().parent().parent().remove();
-                        console.log(cartList.children().length);
                         if(cartList.children().length == 0){
                             myOrderslist.modal('hide');
                         }
@@ -465,7 +495,6 @@
                             searchProductInput: searchProductInput.val()
                         },
                         success: function(response){
-                            console.log(response);
                             if (response != '[]'){
                                 searchMessageInput.css('color','black');
                                 searchMessageInput.text('Results for: ' + searchProductInput.val());
@@ -782,7 +811,7 @@
             overflow-x: auto;
         }
         ::-webkit-scrollbar{
-            width: 12px;
+            width: 10px;
             /* background-color: rgb(254,105,23); */
         }
         .wrapper::-webkit-scrollbar{
@@ -813,10 +842,33 @@
             min-width: 250px;
             min-height: 200px;
         }
+        .containera {
+            position: relative;
+            font-family: Arial;
+            margin: 0px;
+            
+        }
+        .text-block {
+            position: absolute;
+            max-width: fit-content;
+            bottom: 0px;
+            right: 0px;
+            background-color: rgba(0, 0, 0, 0.658);
+            color: white;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+        .text-block::-webkit-scrollbar{
+            width: 5px;
+        }
+        .td{
+            padding-bottom: 10px;
+            background-color: rgba(0, 0, 0, 0.658);
+        }
     </style>
 </head>
 <body style="margin-bottom: 0px;">
-    <header class="sticky-top" style="background-color: rgb(254,105,23);">
+    <header class="sticky-top shadow" style="background-color: rgb(254,105,23);">
         <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="padding: 0px;">
             <div class="container">
                 <div class="navbar-brand" style="margin: 0;">
@@ -845,6 +897,9 @@
                         </li>
                         <li class="nav-item mx-2">
                             <a href="#" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
+                        </li>
+                        <li class="nav-item mx-1">
+                            <a href="#aboutUs" class="nav-link text-light" style="color: white;">About Us</a>
                         </li>
                         <li class="nav-item mx-3">
                             <img class="facebookRedirect m-2" src="facebook.svg" alt="" height="25px" width="25px">
@@ -877,31 +932,17 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
+        <div id="customSliderTitle">
+        </div>
         <div id="sliderA" class="wrapper">
         </div>
-        <div class="row row-cols-xm-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-2 m-0" id="gridGallery" style="width: 100%;background-color:rgb(224, 100, 28);">     
-            <div class="gridItem col m-0 p-0">
-                    <h5 class="mx-5" style="z-index: 100;position: absolute; ">hello1</h5>
-                <img class="liveToastBtn" src="lechon1.jpg" alt="" width="100%" height="100%">
-            </div>
-            <div class="gridItem col m-0 p-0">
-                <center>
-                    <h1 style="z-index: 100;position: absolute; ">hello1</h1>
-                </center>
-                <img src="lechon1.jpg" alt="" width="100%" height="100%">
-            </div>
-            <div class="gridItem col m-0 p-0">
-                <center>
-                    <h1 style="z-index: 100;position: absolute; ">hello1</h1>
-                </center>
-                <img src="lechon1.jpg" alt="" width="100%" height="100%">
-            </div>
-            <div class="gridItem col m-0 p-0">
-                <center>
-                    <h1 style="z-index: 100;position: absolute; ">hello1</h1>
-                </center>
-                <img src="lechon1.jpg" alt="" width="100%" height="100%">
-            </div>
+        <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-2 m-0" id="gridGallery" style="width: 100%;">     
+            
+        </div>
+        <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
+            <center>
+                <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">OUR HISTORY</h4>
+            </center>
         </div>
         <div id="sliderB" class="wrapper">
         </div>
@@ -1007,8 +1048,12 @@
             </div>
         </div>
     </div>
-    <footer class="shadow mt-0" style="background-color: rgb(224, 100, 28);margin-bottom: 0px; height: fit-content;">
-        <section style="display: column;justify-content:space-between;margin: 30px;margin-bottom: 0px;padding-bottom: 50px;">
+    
+    <footer id="aboutUs" class="shadow m-0" style="padding-top: 50px;">
+        <section  class="m-0 pb-0 p-5 text-dark" style="background: rgb(224,100,28);background: linear-gradient(180deg, rgba(224,100,28,0) 0%, rgba(224,100,28,0.4429369159773284) 20%, rgba(224,100,29,0.6642254313834909) 40%, rgba(224,100,28,1) 85%, rgba(224,100,28,1) 100%);">
+            <p style="margin-bottom: 0px;padding-top: 50px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus nobis pariatur odit! Quo obcaecati iste impedit officiis quasi totam cum fuga iusto dolorum quia, qui consectetur voluptatum assumenda magni consequatur, unde amet quaerat nesciunt aut eaque quos veritatis quod. Magnam reprehenderit voluptatibus, suscipit architecto deserunt, soluta reiciendis iste illo laudantium quibusdam molestiae esse nisi quaerat modi iusto, velit quia similique? Rerum quasi, ad laboriosam quas distinctio voluptatem accusantium rem, libero labore, sunt dolorum aperiam. Eligendi numquam neque quo unde quisquam dignissimos est perferendis tempora, officiis molestias necessitatibus! Impedit tempore cupiditate atque, tempora consequuntur porro magni voluptatibus dolores, unde, quam eveniet?Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere repellendus necessitatibus molestiae quos? Dicta blanditiis sequi sint veritatis animi nemo soluta exercitationem! Eveniet ullam, odit culpa unde rem quo. Similique. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Placeat qui ex quae sunt officiis mollitia fugiat distinctio consectetur, odit adipisci ab neque doloremque. Voluptas consequatur provident facere officiis, quia laudantium hic reiciendis delectus possimus laboriosam ut nulla, quasi consectetur aperiam nisi sequi, exercitationem quaerat maxime adipisci! Delectus, nostrum! Eius, at?</p>
+        </section>
+        <section style="display: column;justify-content:space-between;margin: 0px;margin-bottom: 0px;padding-bottom: 50px;background-color: rgb(224,100,28);">
             <div style="display: column;">
                 <center>
                     <div>

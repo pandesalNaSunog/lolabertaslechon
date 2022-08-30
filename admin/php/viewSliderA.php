@@ -2,7 +2,6 @@
     if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'){
         include('connection.php');
         $con = connect();
-        $con = new mysqli ('localhost','root','','lechon-database');
         $productId = $_POST['image_id'];
         $query = "SELECT * FROM slider_a WHERE id='$productId'";
         $specificProduct = $con->query($query) or die($con->error);

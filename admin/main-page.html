@@ -27,7 +27,7 @@
 
             
             //Jquery Nav Animation
-            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection,#addSliderASection,#addSliderBSection').hide();
+            $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#organizationalChartSection,#addSliderASection,#addSliderBSection,#editImageGridSection,#salesReportSection').hide();
             var globalProductId = 0;
             var globalOrderId = 0;
             var ordersTable = $('#ordersTable');
@@ -37,6 +37,7 @@
             var ordersNav = $('#ordersNav');
             var myProductSection = $('#myProductsSection');
             var ordersSection = $('#ordersSection');
+            var salesReportSection = $('#salesReportSection');
             var customerPageCustomizationSection = $('#customerPageCustomizationSection');
             var welcomeSection = $('#welcomeSection');
             var editButton = $('#editButton');
@@ -113,6 +114,100 @@
             var additionalSliderBCaption = $('#additionalSliderBCaption');
             var sliderBdateInput = $('#slider-b-date-input');
             var addedSliderBList = $('#addedSliderBList');
+            var addedSliderATitleList = $('#addedSliderATitleList');
+            var editSliderATitleInput = $('#editSliderATitleInput');
+            var editSliderATitleButton = $('#editSliderATitleButton');
+            var editImageGridButton = $('#editImageGridButton');
+            var editImageGridSection = $('#editImageGridSection');
+            var addImageGridButton = $('#addImageGridButton');
+            var imageGridTitleInput = $('#imageGridTitleInput');
+            var imageGridFileInput = $('#imageGridFileInput');
+            var imageGridDetailsInput = $('#imageGridDetailsInput');
+            var salesReportNav = $('#salesReportNav');
+
+            imageGridTitleInput.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            imageGridFileInput.click(function(){
+                $(this).removeClass('is-invalid');
+            });
+            imageGridDetailsInput.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            addImageGridButton.click(function(){
+                if(imageGridTitleInput.val() == ""){
+                    imageGridTitleInput.addClass('is-invalid');
+                }
+                if(imageGridFileInput.val() == ""){
+                    imageGridFileInput.addClass('is-invalid');
+                }
+                if(imageGridDetailsInput.val() == ""){
+                    imageGridDetailsInput.addClass('is-invalid');
+                }
+                if(imageGridTitleInput.val() && imageGridFileInput.val() && imageGridDetailsInput.val() != ""){
+                    if(confirm('Add Image?') == true){
+                        var formData = new FormData();
+                            formData.append("title", imageGridTitleInput.val());
+                            formData.append("file", imageGridFileInput[0].files[0]);
+                            formData.append("details", imageGridDetailsInput.val());
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/addImageGrid.php',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success:function(response){
+                                alert('Image Successfully Added to the Grid.');
+                            }
+                        });
+                    }
+                }
+                
+            });
+            editSliderATitleInput.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            editSliderATitleButton.click(function(){
+                if(editSliderATitleInput.val() == ""){
+                    editSliderATitleInput.addClass('is-invalid');
+                }
+                if(editSliderATitleInput.val() != ""){
+                    if(confirm('Update Slider Title?') == true){
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/updateCustomSliderTitle.php',
+                            data:
+                            {
+                                sliderTitle: editSliderATitleInput.val(),
+                            },
+                            success:function(response){
+                                alert('Custom Slider Title Updated.');
+                                editSliderATitleInput.val("");
+                                $('#editSliderATitleModal').modal('hide');
+                                addedSliderATitleList.children().remove();
+                                var data = JSON.parse(response);
+                                $(data).each(function(index,value){
+                                    showCustomSliderTitle(value.id,value.slider_title,value.updated_at);
+                                });
+                                var deleteCustomSliderTitleBtn = $('.deleteCustomSliderTitleBtn');
+                                deleteCustomSliderTitleBtn.click(function(){
+                                    if(confirm('Are You Sure?') == true){
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/deleteCustomSliderTitle.php',
+                                            success:function(response){
+                                                alert('Custom Slider Deleted.');
+                                                var thisDeletedTitle = deleteCustomSliderTitleBtn.parent().parent();
+                                                thisDeletedTitle.remove();
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
             
             additionalSliderBTitle.on('keydown',function(){
                 $(this).removeClass('is-invalid');
@@ -467,6 +562,30 @@
             }
             $.ajax({
                 type: 'POST',
+                url: 'php/displayCustomSliderTitle.php',
+                success:function(response){
+                    var data = JSON.parse(response);
+                    $(data).each(function(index,value){
+                        showCustomSliderTitle(value.id,value.slider_title,value.updated_at);
+                    });
+                    var deleteCustomSliderTitleBtn = $('.deleteCustomSliderTitleBtn');
+                    deleteCustomSliderTitleBtn.click(function(){
+                        if(confirm('Are You Sure?') == true){
+                            $.ajax({
+                                type: 'POST',
+                                url: 'php/deleteCustomSliderTitle.php',
+                                success:function(response){
+                                    alert('Custom Slider Deleted.');
+                                    var thisDeletedTitle = deleteCustomSliderTitleBtn.parent().parent();
+                                    thisDeletedTitle.remove();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            $.ajax({
+                type: 'POST',
                 url: 'php/displaySliderA.php',
                 success:function(response){
                     var data = JSON.parse(response);
@@ -591,6 +710,21 @@
                     });
                 }
             });
+            function showCustomSliderTitle(id,slider_title,updated_at){
+                addedSliderATitleList.append(`
+                <div>
+                    <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
+                        <center>
+                            <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${slider_title}</h4>
+                        </center>
+                    </div>
+                    <div style="display: flex;justify-content:space-between">
+                        <button class="deleteCustomSliderTitleBtn btn btn-outline-danger m-1">Delete</button>
+                        <code><code class="text-dark">Updated At: </code>${updated_at}</code>
+                    </div>
+                </div>
+                `);
+            }
             function showSliderA(id,title,image,caption,created_at,updated_at,date_captured){
                 addedSliderAList.append(`
                 <div class="bg-light p-2 m-1" style="height:fit-content;width:fit-content;border-radius:10px;">
@@ -745,6 +879,8 @@
                 addSliderASection.slideUp('fast');
                 addSliderBSection.slideUp('fast');
                 editSliderBButton.show('slow');
+                editImageGridSection.slideUp('fast');
+                editImageGridButton.show('fast');
             });
             organizationalChartButton.click(function(){
                 editCarouselButton.show('slow');
@@ -755,6 +891,8 @@
                 organizationalChartSection.slideDown('slow');
                 addSliderBSection.slideUp('fast');
                 editSliderBButton.show('slow');
+                editImageGridSection.slideUp('fast');
+                editImageGridButton.show('fast');
             });
             editSliderAButton.click(function(){
                 addSliderASection.slideDown('slow');
@@ -764,6 +902,20 @@
                 editCarouselSection.slideUp('fast');
                 organizationalChartSection.slideUp('fast');
                 addSliderBSection.slideUp('fast');
+                editImageGridSection.slideUp('fast');
+                editImageGridButton.show('fast');
+            });
+            editImageGridButton.click(function(){
+                $(this).hide('fast');
+                editImageGridSection.slideDown('slow');
+                editSliderBButton.show('slow');
+                editSliderAButton.show('slow');
+                organizationalChartButton.show('slow');
+                editCarouselButton.show('slow');
+                addSliderBSection.slideUp('fast');
+                addSliderASection.slideUp('fast');
+                editCarouselSection.slideUp('fast');
+                organizationalChartSection.slideUp('fast');
             });
     
             editSliderBButton.click(function(){
@@ -775,6 +927,8 @@
                 editSliderAButton.show('slow');
                 editCarouselButton.show('slow');
                 organizationalChartButton.show('slow');
+                editImageGridSection.slideUp('fast');
+                editImageGridButton.show('fast');
             });
             //navigational Buttons
             pageCustomizationNav.click(function(){
@@ -787,6 +941,10 @@
                 myProductsNav.css('color','white');
                 myProductsNav.css('-webkit-text-stroke-width','0px');
                 myProductsNav.css('-webkit-text-fill-color','white');
+                salesReportNav.css('color','white');
+                salesReportNav.css('-webkit-text-stroke-width','0px');
+                salesReportNav.css('-webkit-text-fill-color','white');
+                salesReportSection.slideUp('fast');
                 myProductSection.slideUp('fast');
                 ordersSection.slideUp('fast');
                 customerPageCustomizationSection.slideDown('slow');
@@ -801,9 +959,13 @@
                 ordersNav.css('color','white');
                 ordersNav.css('-webkit-text-stroke-width','0px');
                 ordersNav.css('-webkit-text-fill-color','white');
+                salesReportNav.css('color','white');
+                salesReportNav.css('-webkit-text-stroke-width','0px');
+                salesReportNav.css('-webkit-text-fill-color','white');
                 myProductSection.slideDown('slow');
                 ordersSection.slideUp('fast');
                 customerPageCustomizationSection.slideUp('fast');
+                salesReportSection.slideUp('fast');
             });
             ordersNav.click(function(){
                 $(this).css('color','dimgrey');
@@ -815,10 +977,33 @@
                 pageCustomizationNav.css('color','white');
                 pageCustomizationNav.css('-webkit-text-stroke-width','0px');
                 pageCustomizationNav.css('-webkit-text-fill-color','white');
+                salesReportNav.css('color','white');
+                salesReportNav.css('-webkit-text-stroke-width','0px');
+                salesReportNav.css('-webkit-text-fill-color','white');
                 ordersSection.slideDown('slow');
                 myProductSection.slideUp('fast');
                 customerPageCustomizationSection.slideUp('fast');
+                salesReportSection.slideUp('fast');
             });
+            salesReportNav.click(function(){
+                $(this).css('color','dimgrey');
+                $(this).css('-webkit-text-fill-color','transparent');
+                $(this).css('-webkit-text-stroke-width','1px');
+                myProductsNav.css('color','white');
+                myProductsNav.css('-webkit-text-stroke-width','0px');
+                myProductsNav.css('-webkit-text-fill-color','white');
+                pageCustomizationNav.css('color','white');
+                pageCustomizationNav.css('-webkit-text-stroke-width','0px');
+                pageCustomizationNav.css('-webkit-text-fill-color','white');
+                ordersNav.css('color','white');
+                ordersNav.css('-webkit-text-stroke-width','0px');
+                ordersNav.css('-webkit-text-fill-color','white');
+                ordersSection.slideUp('fast');
+                myProductSection.slideUp('fast');
+                customerPageCustomizationSection.slideUp('fast');
+                salesReportSection.slideDown('slow');
+            });
+            
             //view Certain product variables
             var certainProductName = $('#certainProductName');
             var certainProductImage = $('#certainProductImage');
@@ -1471,6 +1656,9 @@
                             <a href="#" class="nav-link px-2" id="myProductsNav" style="color: white;">My Products</a>
                         </li>
                         <li class="nav-item">
+                            <a href="#" class="nav-link px-2" id="salesReportNav" style="color:white;">Sales Report</a>
+                        </li>
+                        <li class="nav-item">
                             <a href="#" class="nav-link px-2" id="ordersNav" style="color:white;">Orders</a>
                         </li>
                         <li class="nav-item">
@@ -1492,10 +1680,11 @@
                     </div>
                     <div class="card-body" style="background-color: rgb(255,191,8);">
                         <div class="shadow text-center pt-3 pb-3 rounded-5" style="background-color: rgb(41,22,5);">
-                            <button class="CPCbtn btn btn-danger text-light shadow" id="editCarouselButton">Slide-show</button>
-                            <button class="CPCbtn btn btn-danger text-light shadow" id="editSliderAButton">First Slider</button>
-                            <button class="CPCbtn btn btn-danger text-light shadow" id="editSliderBButton">Second Slider Slider</button>
-                            <button class="CPCbtn btn btn-danger" id="organizationalChartButton">Organizational Chart</button>
+                            <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editCarouselButton">Slide-show</button>
+                            <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editSliderAButton">Custom Slider</button>
+                            <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editImageGridButton">Image Grid</button>
+                            <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editSliderBButton">Our History Slider</button>
+                            <button class="CPCbtn btn btn-danger mt-1" id="organizationalChartButton">Organizational Chart</button>
                         </div>
                         <section id="editCarouselSection">
                             <div class="container">
@@ -1553,10 +1742,21 @@
                             <div class="container">
                                 <div class="card mt-3 rounded-5 shadow">
                                     <div class="card-header d-flex text-center">
-                                        <h4 class="fw-bold my-3 mx-5">First Slider: </h4>
+                                        <h4 class="fw-bold my-3 mx-5">Custom Slider: </h4>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <th scope="col">Slider Title <button data-bs-toggle="modal" data-bs-target="#editSliderATitleModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);">Update Slider Title</button></th>
+                                                </thead>
+                                                <tbody>
+                                                    <td class="m-3">
+                                                        <div id="addedSliderATitleList">
+                                                        </div>
+                                                    </td>
+                                                </tbody>
+                                            </table>
                                             <table class="table table-striped">
                                                 <thead>
                                                     <th scope="col">Added Images <button data-bs-toggle="modal" data-bs-target="#addSliderAModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);" id="addSliderAButton">Add Image</button></th>
@@ -1577,7 +1777,7 @@
                             <div class="container">
                                 <div class="card mt-3 rounded-5 shadow">
                                     <div class="card-header d-flex text-center">
-                                        <h4 class="fw-bold my-3 mx-5">Second Slider: </h4>
+                                        <h4 class="fw-bold my-3 mx-5">History Images: </h4>
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
@@ -1588,6 +1788,30 @@
                                                 <tbody>
                                                     <td class="m-3">
                                                         <div id="addedSliderBList" style="display: grid; grid-template-columns:  repeat(auto-fill,minmax(250px,1fr));">
+                                                        </div>
+                                                    </td>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section id="editImageGridSection">
+                            <div class="container">
+                                <div class="card mt-3 rounded-5 shadow">
+                                    <div class="card-header d-flex text-center">
+                                        <h4 class="fw-bold my-3 mx-5">Image Grid</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <th scope="col">Images <button data-bs-toggle="modal" data-bs-target="#editImageGridModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);">Add Image Grid</button></th>
+                                                </thead>
+                                                <tbody>
+                                                    <td class="m-3">
+                                                        <div id="addedImageGridList">
                                                         </div>
                                                     </td>
                                                 </tbody>
@@ -1821,6 +2045,26 @@
                 </div>
             </div>
         </section>
+        <section id="salesReportSection">
+            <div class="container">
+                <div class="card mt-5 rounded-5 shadow">
+                    <div class="card-header">
+                        <h4 class="fw-bold my-3 mx-5">Sales Report:</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <th scope="col">hello world</th>
+                                </thead>
+                                <tbody id="salesReportTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
     <footer></footer>
 </body>
@@ -1973,6 +2217,55 @@
                 </div>
                 <div>
                     <button id="editMainCarouselImageButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Update Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--sliderA Title-->
+    <div class="modal fade" id="editSliderATitleModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Update Slider Title</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" id="editSliderATitleInput" type="text" placeholder="Slider Title">
+                    <div class="invalid-feedback">Please Fill Up This Field</div>
+                </div>
+                <div>
+                    <button id="editSliderATitleButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Update Title</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editImageGridModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Add Image Grid</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <input class="form-control mt-1" id="imageGridTitleInput" type="text" placeholder="Image Grid Title">
+                        <div class="invalid-feedback">Please Fill Up This Field</div>
+                    </div>
+                    <div>
+                        <input class="form-control mt-1" id="imageGridFileInput" type="file">
+                        <div class="invalid-feedback">Please Fill Up This Field</div>
+                    </div>
+                    <div>
+                        <textarea class="form-control mt-1" id="imageGridDetailsInput" type="text" placeholder="Image Grid Details" style="height: fit-content;"></textarea>
+                        <div class="invalid-feedback">Please Fill Up This Field</div>
+                    </div>
+                </div>
+                <div>
+                    <button id="addImageGridButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Add Image</button>
                 </div>
             </div>
         </div>
