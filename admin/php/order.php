@@ -19,7 +19,34 @@
 
         $query = "INSERT INTO `orders`(`customer_name`, `customer_address`, `product_id_and_quantity`,`contact_number`, `created_at`,`updated_at`,`order_type`,`date_and_time`) VALUES ('$customerName','$customerAddress','$newline','$contactNumber','$today','$today','$orderType','$today')";
         $con->query($query) or die($con->error);
-            echo 'success';
+
+
+        $query = "SELECT * FROM orders WHERE id = LAST_INSERT_ID()";
+        $orderQuery = $con->query($query) or die($con->error);
+        $orderRow = $orderQuery->fetch_assoc();
+
+        $productIdsAndQuantities = $orderRow['product_id_and_quantity'];
+
+
+        $productArray = explode("****", $productIdsAndQuantities);
+
+        foreach($productArray as $product){
+            if($product != ""){
+                $productDetails = explode("**", $product);
+                $productQuantity = $productDetails[1];
+                $productId = $productDetails[0];
+                $query = "SELECT * FROM products WHERE id = '$productId'";
+                $productQuery = $con->query($query) or die($con->error);
+                $productRow = $productQuery->fetch_assoc();
+                $currentProductQuantity = $productRow['quantity'];
+
+                $updatedQuantity = $currentProductQuantity - $productQuantity;
+                
+                $query = "UPDATE products SET quantity = $updatedQuantity WHERE id = '$productId'";
+                $con->query($query) or die($con->error);
+            }
+        }
+        echo 'success';
     }else{
         echo header('HTTP/1.1 403 Forbidden');
     }
