@@ -46,14 +46,41 @@
           <p>What a beautiful sunrise loremLorem ipsum dolor sit amet consectetur adipisicing elit. Rem, veniam labore provident ratione et illum blanditiis similique necessitatibus. Deserunt earum provident quibusdam modi unde velit autem dicta assumenda sed eligendi?</p>
         </div>
     </div>
-    <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
-      <center>
-          <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${slider_title}</h4>
-      </center>
+    <div>
+      <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
+        <center>
+            <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${slider_title}</h4>
+        </center>
+      </div>
+      <div style="display: flex;justify-content:space-between">
+        <code>${updated_at}</code>
+        <button class="deleteCustomSliderTitleBtn btn btn-outline-danger">Delete</button>
+      </div>
     </div>
-    <div style="display: flex;justify-content:space-between">
-      <code>${updated_at}</code>
-      <button class="deleteCustomSliderTitleBtn btn btn-outline-danger">Delete</button>
-    </div>
+
+
+
+
+
+
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="height: fit-content;width: fit-content;">
+      <div style="width: 500px;" id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header text-light" style="background-color: rgb(254,105,23);">
+          <h6 id="toastImageTitle" class="h5 me-auto">Loading...</h6>
+          <code class="text-dark">Date: <span id="toastImageDateAdded">Loading...</span></code>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          <div id="toastMessage">Loading...</div>
+          <br>
+          <center>
+              <div id="toastImage" style="height: fit-content;width:fit-content">
+                  <img src="footer.png" height="100px" width="200px" class="rounded me-2" alt="...">
+              </div>
+          </center>
+        </div>
+      </div>
+  </div>
     </body>
     </html> 
