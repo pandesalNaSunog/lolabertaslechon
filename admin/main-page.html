@@ -7,6 +7,9 @@
     <title>Lola Berta's Lechon</title>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
     <script src="jquery.js"></script>
     <script>
         $(document).ready(function(){
@@ -24,9 +27,58 @@
                     }
                 }
             });
+
+            
+            function getMonthlySales(year, instructions){
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'php/getMonthlySales.php',
+                    data:{
+                        year: year,
+                    },
+                    success: function(response){
+                        instructions.hide();
+                        salesChart.show();
+                        var data = JSON.parse(response);
+
+                        var xValues = [];
+                        var yValues = [];
+                        $(data.months).each(function(index, value){
+                            xValues.push(value)
+                        })
+                        $(data.sales).each(function(index, value){
+                            yValues.push(value)
+                        })
+
+                        new Chart("sales-chart", {
+                            type: "line",
+                            data: {
+                                labels: xValues,
+                                datasets: [{
+                                fill: false,
+                                lineTension: 0,
+                                backgroundColor: "rgba(0,0,255,1.0)",
+                                borderColor: "rgba(0,0,255,0.1)",
+                                data: yValues
+                                }]
+                            },
+                            options: {
+                                legend: {display: false},
+                                scales: {
+                                yAxes: [{ticks: {min: 1, max:70000}}],
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+
+            
             //Jquery Nav Animation
             $('#myProductsSection,#customerPageCustomizationSection,#editCarouselSection,#addSliderASection,#addSliderBSection,#editImageGridSection,#salesReportSection').hide();
             var globalProductId = 0;
+            var globalOrderId = 0;
             var ordersTable = $('#ordersTable');
             var productsTable = $('#productsTable');
             var myProductsNav = $('#myProductsNav');
@@ -54,6 +106,51 @@
             var ordersDataDateOrdered = $('#ordersDataDateOrdered');
             var ordersDataCartList = $('#ordersDataCartList');
             var ordersTotalPrice = $('#ordersTotalPrice');
+            var confirmAmount = $('#confirm-amount');
+            var amountRenderred = $('#amount-renderred');
+            var yearSales = $('#year-sales');
+            var generateSalesReport = $('#generate-sales-report');
+            var instructions = $('#instructions');
+            var salesChart = $('#sales-chart');
+
+            salesChart.hide();
+
+            generateSalesReport.on('click', function(){
+                if(yearSales.val() == "" || parseInt(yearSales.val()) < 2022 || yearSales.val().length > 4){
+                    yearSales.addClass('is-invalid');
+                }else{
+                    getMonthlySales(yearSales.val(), instructions)
+                }
+                
+            })
+
+            confirmAmount.on('click', function(){
+                if(amountRenderred.val() == ""){
+                    amountRenderred.addClass('is-invalid');
+                }else{
+                    $.ajax({
+                        type: 'POST',
+                        url: 'php/insertSales.php',
+                        data:{
+                            order_id: globalOrderId,
+                            amount: amountRenderred.val(),
+                        },
+                        success: function(response){
+                            if(response == 'ok'){
+                                alert('Transaction Successful.');
+                                amountRenderred.val('');
+                                location.reload();
+                            }else if(response == 'insufficient funds'){
+                                alert('Insufficient Funds');
+                            }else{
+                                alert('Something Went Wrong')
+                            }
+                        }
+                    })
+                }
+            })
+
+            
             var editSliderAButton = $('#editSliderAButton');
             var addSliderASection = $('#addSliderASection');
             var addSliderAButton = $('#addSliderAButton');
@@ -89,6 +186,7 @@
             var imageGridFileInput = $('#imageGridFileInput');
             var imageGridDetailsInput = $('#imageGridDetailsInput');
             var salesReportNav = $('#salesReportNav');
+
             var addedImageGridList = $('#addedImageGridList');
 
             imageGridTitleInput.on('keydown',function(){
@@ -1545,6 +1643,7 @@
                         viewOrder.click(function(){
                             ordersDataCartList.children().remove();
                             globalProductId = $(this).val();
+                            globalOrderId = $(this).val();
                             $.ajax({
                                 type: 'POST',
                                 url: 'php/viewOrder.php',
@@ -2068,15 +2167,19 @@
                         <h4 class="fw-bold my-3 mx-5">Sales Report:</h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <th scope="col">hello world</th>
-                                </thead>
-                                <tbody id="salesReportTable">
-                                </tbody>
-                            </table>
+
+                        
+                        <input id="year-sales" type="number" class="mb-4 form-control" placeholder="Specify Year">
+
+                        <div id="instructions" class="text-center" style="padding: 400px">
+                            <p class="text-secondary">
+                                Specify the year then click "Generate Sales Report" to view sales chart
+                            </p>
                         </div>
+                        <canvas id="sales-chart" style="width:100%;"></canvas>
+                    </div>
+                    <div class="card-footer">
+                        <button id="generate-sales-report" class="btn btn-success rounded-pill px-5">Generate Sales Report</button>
                     </div>
                 </div>
             </div>
@@ -2204,11 +2307,15 @@
                     <div id="ordersDataCartList">
                     </div>
                 </div>
-                <div style="display: flex;justify-content: space-between;">
-                    <button class="ProcessOrderButton btn btn-success m-2 mt-1 my-3 mx-3">Process Order</button>
-                    <h6 class="mx-5 mt-2">
-                        <code style="color: orange;padding: 5px;background-color: black;border-radius: 25%;">Total Price</code> &#8369<span id="ordersTotalPrice"></span>
+                <div class="modal-footer">
+                    
+                    <h6>
+                        <code style="color: orange;padding: 5px;background-color: black;border-radius: 25%;">Total Price</code> &#8369<span id="ordersTotalPrice" class="fw-bold" style="font-size: 20px"></span>
                     </h6>
+                    <div class="input-group mt-3">
+                        <input type="number" class="form-control" id="amount-renderred" placeholder="Amount Renderred">
+                        <button id="confirm-amount" class="btn btn-success">Confirm</button>
+                    </div>
                 </div>
             </div>
         </div>
