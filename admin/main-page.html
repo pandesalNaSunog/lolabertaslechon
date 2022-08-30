@@ -29,7 +29,7 @@
             });
 
             
-            function getMonthlySales(year){
+            function getMonthlySales(year, instructions){
 
                 $.ajax({
                     type: 'POST',
@@ -38,6 +38,7 @@
                         year: year,
                     },
                     success: function(response){
+                        instructions.hide();
                         var data = JSON.parse(response);
 
                         var xValues = [];
@@ -110,12 +111,13 @@
             var amountRenderred = $('#amount-renderred');
             var yearSales = $('#year-sales');
             var generateSalesReport = $('#generate-sales-report');
+            var instructions = $('#instructions');
 
             generateSalesReport.on('click', function(){
                 if(yearSales.val() == "" || parseInt(yearSales.val()) < 2022 || yearSales.val().length > 4){
                     yearSales.addClass('is-invalid');
                 }else{
-                    getMonthlySales(yearSales.val())
+                    getMonthlySales(yearSales.val(), instructions)
                 }
                 
             })
@@ -182,6 +184,7 @@
             var imageGridFileInput = $('#imageGridFileInput');
             var imageGridDetailsInput = $('#imageGridDetailsInput');
             var salesReportNav = $('#salesReportNav');
+            
 
             imageGridTitleInput.on('keydown',function(){
                 $(this).removeClass('is-invalid');
@@ -2110,6 +2113,12 @@
                         <h4 class="fw-bold my-3 mx-5">Sales Report:</h4>
                     </div>
                     <div class="card-body">
+
+                        <div id="instructions" class="text-center">
+                            <p class="text-secondary">
+                                Specify the year then click "Generate Sales Report" to view sales chart
+                            </p>
+                        </div>
                         <input id="year-sales" type="number" class="mb-4 form-control" placeholder="Specify Year">
                         <canvas id="sales-chart" style="width:100%;"></canvas>
                     </div>
