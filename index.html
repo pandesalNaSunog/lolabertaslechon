@@ -779,16 +779,18 @@
     </script>
     <style>
 
-        #carouselExampleFade{
+        #slide-show{
             position: relative;
         }
-        #carouselExampleFade::after{
+        #slide-show::before{
             position: absolute;
             content: '';
             top: 0;
             left: 0;
-            background: rgba(0, 0, 0, .4);
-            z-index: 5;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, .7);
+            z-index: 1;
         }
 
         *{
