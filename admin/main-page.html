@@ -7,6 +7,9 @@
     <title>Lola Berta's Lechon</title>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
+    </script>
     <script src="jquery.js"></script>
     <script>
         $(document).ready(function(){
@@ -24,6 +27,50 @@
                     }
                 }
             });
+
+            
+            function getMonthlySales(year){
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'php/getMonthlySales.php',
+                    data:{
+                        year: year,
+                    },
+                    success: function(response){
+                        var data = JSON.parse(response);
+
+                        var xValues = [];
+                        var yValues = [];
+                        $(data.months).each(function(index, value){
+                            xValues.push(value)
+                        })
+                        $(data.sales).each(function(index, value){
+                            yValues.push(value)
+                        })
+
+                        new Chart("sales-chart", {
+                            type: "line",
+                            data: {
+                                labels: xValues,
+                                datasets: [{
+                                fill: false,
+                                lineTension: 0,
+                                backgroundColor: "rgba(0,0,255,1.0)",
+                                borderColor: "rgba(0,0,255,0.1)",
+                                data: yValues
+                                }]
+                            },
+                            options: {
+                                legend: {display: false},
+                                scales: {
+                                yAxes: [{ticks: {min: 6, max:10000}}],
+                                }
+                            }
+                        });
+                    }
+                })
+            }
 
             
             //Jquery Nav Animation
@@ -61,6 +108,17 @@
             var ordersTotalPrice = $('#ordersTotalPrice');
             var confirmAmount = $('#confirm-amount');
             var amountRenderred = $('#amount-renderred');
+            var yearSales = $('#year-sales');
+            var generateSalesReport = $('#generate-sales-report');
+
+            generateSalesReport.on('click', function(){
+                if(yearSales.val() == "" || parseInt(yearSales.val()) < 2022 || yearSales.val().length > 4){
+                    yearSales.addClass('is-invalid');
+                }else{
+                    getMonthlySales(yearSales.val())
+                }
+                
+            })
 
             confirmAmount.on('click', function(){
                 if(amountRenderred.val() == ""){
@@ -2052,15 +2110,11 @@
                         <h4 class="fw-bold my-3 mx-5">Sales Report:</h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <th scope="col">hello world</th>
-                                </thead>
-                                <tbody id="salesReportTable">
-                                </tbody>
-                            </table>
-                        </div>
+                        <input id="year-sales" type="number" class="mb-4 form-control" placeholder="Specify Year">
+                        <canvas id="sales-chart" style="width:100%;"></canvas>
+                    </div>
+                    <div class="card-footer">
+                        <button id="generate-sales-report" class="btn btn-success rounded-pill px-5">Generate Sales Report</button>
                     </div>
                 </div>
             </div>
