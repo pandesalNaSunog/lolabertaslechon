@@ -778,6 +778,21 @@
         });
     </script>
     <style>
+
+        #carouselExampleFade{
+            position: relative;
+            z-index: -1;
+        }
+        #carouselExampleFade::before{
+            content: '';
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            opacity: 40%;
+            position: absolute;
+        }
         *{
             font-family: cursive;
         }
