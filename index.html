@@ -779,6 +779,18 @@
     </script>
     <style>
 
+        #carouselExampleFade{
+            position: relative;
+        }
+        #carouselExampleFade::after{
+            position: absolute;
+            content: '';
+            top: 0;
+            left: 0;
+            background: rgba(0, 0, 0, .4);
+            z-index: 5;
+        }
+
         *{
             font-family: cursive;
         }
@@ -919,7 +931,7 @@
         </a>
     </div>
     <section id="welcomeCustomers" class="text-center text-md-start mb-0">
-        <div id="carouselExampleFade" class="carousel slide carousel-fade mb-0" data-bs-ride="carousel" style="background-color: black; opacity: 30%;">
+        <div id="carouselExampleFade" class="carousel slide carousel-fade mb-0" data-bs-ride="carousel">
             <div id="slide-show" class="carousel-inner">
                 <div id="mainCarouselImage" class="carousel-item active">
                 </div>
