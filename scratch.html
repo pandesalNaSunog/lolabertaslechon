@@ -2,6 +2,28 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+<script src="jquery.js"></script>
+<script>
+  $(document).ready(function(){
+    var btn = $('#btn');
+    var stop = $('#stop');
+    var d = $('#d');
+    var tot = 0;
+    function go(){
+      tot = tot + 1;
+      d.text(tot)
+    }
+    btn.click(function(){
+      go();
+    });
+    stop.click(function(){
+      delete window.go;
+      alert('deleted')
+    });
+  });
+</script>
 <style>
     .container {
       position: relative;
@@ -20,67 +42,11 @@
         }
     </style>
     </head>
-    <body class="row row-cols-xm-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-2 m-0">
-      <div>
-        <div>
-          <h3>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolor quam cum consequuntur facere accusamus reiciendis dolores, sapiente mollitia temporibus in adipisci vitae officia obcaecati? Incidunt deleniti quas excepturi earum laudantium.</h3>
-        </div>
-        <div>
-          <img class="m-0" src="lechon1.jpg" alt="Nature" style="width:100%;">
-        </div>
-      </div>
-      <div>
-        <img class="m-0" src="lechon1.jpg" alt="Nature" style="width:100%;">
-      </div>
-      <div class="containera gridItem m-0" style="width: 500px;margin: 0px;">
-        <img src="lechon1.jpg" alt="Nature" style="width:100%;">
-        <div class="text-block">
-          <h4>Nature</h4>
-          <p>What a beautiful sunrise loremLorem ipsum dolor sit amet consectetur adipisicing elit. Rem, veniam labore provident ratione et illum blanditiis similique necessitatibus. Deserunt earum provident quibusdam modi unde velit autem dicta assumenda sed eligendi?</p>
-        </div>
-    </div>
-    <div class="containera gridItem m-0" style="width: 500px;margin: 0px;">
-        <img src="lechon1.jpg" alt="Nature" style="width:100%;">
-        <div class="text-block">
-          <h4>Nature</h4>
-          <p>What a beautiful sunrise loremLorem ipsum dolor sit amet consectetur adipisicing elit. Rem, veniam labore provident ratione et illum blanditiis similique necessitatibus. Deserunt earum provident quibusdam modi unde velit autem dicta assumenda sed eligendi?</p>
-        </div>
-    </div>
-    <div>
-      <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
-        <center>
-            <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${slider_title}</h4>
-        </center>
-      </div>
-      <div style="display: flex;justify-content:space-between">
-        <code>${updated_at}</code>
-        <button class="deleteCustomSliderTitleBtn btn btn-outline-danger">Delete</button>
-      </div>
-    </div>
-
-
-
-
-
-
-
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="height: fit-content;width: fit-content;">
-      <div style="width: 500px;" id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header text-light" style="background-color: rgb(254,105,23);">
-          <h6 id="toastImageTitle" class="h5 me-auto">Loading...</h6>
-          <code class="text-dark">Date: <span id="toastImageDateAdded">Loading...</span></code>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-          <div id="toastMessage">Loading...</div>
-          <br>
-          <center>
-              <div id="toastImage" style="height: fit-content;width:fit-content">
-                  <img src="footer.png" height="100px" width="200px" class="rounded me-2" alt="...">
-              </div>
-          </center>
-        </div>
-      </div>
-  </div>
+    <body class="">
+      <button id="btn" class="btn btn-dander">go</button>
+      <button id="stop">stop</button><br><br>
+      <div id="d" style="display: flex;align-self: center;"></div>
     </body>
+    <script>
+    </script>
     </html> 
