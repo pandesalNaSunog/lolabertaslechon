@@ -497,7 +497,7 @@
                                 searchMessageInput.text('Results for: ' + searchProductInput.val());
                                 var searchData = JSON.parse(response);
                                 $(searchData).each(function(index,value){
-                                    searchProductGrid(value.id, value.name, value.image, value.description, value.available, value.price);
+                                    searchProductGrid(index, value.id, value.name, value.image, value.description, value.available, value.price);
                                 })
                             }else{
                                 searchMessageInput.css('color','red');
