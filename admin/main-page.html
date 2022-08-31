@@ -233,19 +233,46 @@
                                                 <img src="${value.image_file}" alt="Grid-Image" width="100%" style="align-self:center;">
                                                 <div class="td" style="display: table;">
                                                     <div class="text-block overflow-auto pt-2" style="max-height: 25%;">
-                                                        <h4 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"><strong>Title: </strong>${value.image_title}</h4>
-                                                        <details>
-                                                            <summary>
-                                                                <strong>Details:</strong>    
-                                                            </summary>
-                                                            <p class="mb-1">${value.image_details}</p>
-                                                        </details>
-                                                        <button class="deleteNewGridImageButton btn btn-outline-danger m-1" value="${value.id}">Delete</button>
+                                                        <button class="liveToastBtnC1 btn btn-success m-1" value="${value.id}">View Image</button>
+                                                        <button class="deleteNewGridImageButton btn btn-danger m-1" value="${value.id}">Delete</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     `);
+                                    const toastTriggerC1 = $('.liveToastBtnC1');
+                                    const toastLiveExample = $('#liveToast');
+                                    toastTriggerC1.click(function(){
+                                                        globalProductId = $(this).val();
+                                                        const toast = new bootstrap.Toast(toastLiveExample)
+                                                        toast.show();
+                                                        $.ajax({
+                                                            type: 'POST',
+                                                            url: 'php/viewGridImage.php',
+                                                            data:
+                                                            {
+                                                                image_id: globalProductId,
+                                                            },
+                                                            success:function(response){
+                                                                var imgData = JSON.parse(response);
+                                                                toastImage.children().remove();
+                                                                $(imgData).each(function(index,value){
+                                                                    toastImageTitle.text(`
+                                                                        ${value.image_title}
+                                                                    `);
+                                                                    toastImageDateAdded.text(`
+                                                                        ${value.created_at}
+                                                                    `);
+                                                                    toastMessage.text(`
+                                                                        ${value.image_details}
+                                                                    `);
+                                                                    toastImage.append(`
+                                                                        <img src="${value.image_file}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                                                    `)
+                                                                });
+                                                            }
+                                                        });
+                                                    });
                                 var deleteNewGridImageButton = $('.deleteNewGridImageButton');
                                 deleteNewGridImageButton.click(function(){
                                         var thisNewGridDeleteButton = $(this);
@@ -701,13 +728,7 @@
                                     <img src="${value.image_file}" alt="Grid-Image" width="100%" style="align-self:center;">
                                     <div class="td" style="display: table;">
                                         <div class="text-block overflow-auto pt-2" style="max-height: 25%;">
-                                            <h4 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"><strong>Title: </strong>${value.image_title}</h4>
-                                            <details>
-                                                <summary>
-                                                    <strong>Details:</strong>    
-                                                </summary>
-                                                <p class="mb-1">${value.image_details}</p>
-                                            </details>
+                                            <button class="liveToastBtnC btn btn-success m-1" value="${value.id}">View Image</button>
                                             <button class="deleteGridImageButton btn btn-outline-danger m-1" value="${value.id}">Delete</button>
                                         </div>
                                     </div>
@@ -715,6 +736,39 @@
                             </div>
                         `);
                     });
+                    const toastTriggerC = $('.liveToastBtnC');
+                    const toastLiveExample = $('#liveToast');
+                    toastTriggerC.click(function(){
+                                        globalProductId = $(this).val();
+                                        const toast = new bootstrap.Toast(toastLiveExample)
+                                        toast.show();
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/viewGridImage.php',
+                                            data:
+                                            {
+                                                image_id: globalProductId,
+                                            },
+                                            success:function(response){
+                                                var imgData = JSON.parse(response);
+                                                toastImage.children().remove();
+                                                $(imgData).each(function(index,value){
+                                                    toastImageTitle.text(`
+                                                        ${value.image_title}
+                                                    `);
+                                                    toastImageDateAdded.text(`
+                                                        ${value.created_at}
+                                                    `);
+                                                    toastMessage.text(`
+                                                        ${value.image_details}
+                                                    `);
+                                                    toastImage.append(`
+                                                        <img src="${value.image_file}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                                    `)
+                                                });
+                                            }
+                                        });
+                                    });
                     var deleteGridImageButton = $('.deleteGridImageButton');
                     deleteGridImageButton.click(function(){
                         if(confirm('Delete This Grid Image?') == true){
@@ -1775,7 +1829,7 @@
             <div class="container">
                 <div class="navbar-brand m-0">
                     <img id="logo-ni-lola" src="Branding/received_727156111882599 page logo.png" height="70px" width="70px" alt="">
-                    <img class="shadow mt-2" value="0" id="LBL" src="Branding/brand.png" height="50px" width="300px" alt="">
+                    <img class="shadow mt-2" value="0" id="LBL" src="Branding/LLLL.png" height="50px" width="300px" alt="">
                 </div>
                 <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav-menu">
                     <span class="navbar-toggler-icon"></span>
