@@ -42,6 +42,7 @@
             var mainCarouselImage = $('#mainCarouselImage');
             var slideShowCarousel = $('#slide-show');
             var facebookRedirect = $('.facebookRedirect');
+            var instagramRedirect = $('.instagramRedirect');
             var orderNowButton = $('.ONB');
             var main = $('#main');
             var homeNav = $('#homeNav');
@@ -54,6 +55,7 @@
             var toastImage = $('#toastImage');
             var customSliderTitle = $('#customSliderTitle');
             var gridGallery = $('#gridGallery');
+            var aboutUsNav = $('#aboutUsNav');
             const toastTrigger = $('.liveToastBtn');
             const toastLiveExample = $('#liveToast');
             
@@ -70,13 +72,9 @@
             if($(window).width() < 976){
                 orderPop.show();
                 mainOrder.hide();
-                facebookRedirect.css('height','15px');
-                facebookRedirect.css('width','15px');
             }else{
                 mainOrder.show();
                 orderPop.hide();
-                facebookRedirect.css('height','25px');
-                facebookRedirect.css('width','25px');
             }
             //myCart Position when window is resized
             $(window).hover(function(){
@@ -84,26 +82,18 @@
                     if($(window).width() < 976){
                         orderPop.show('fast');
                         mainOrder.hide('fast');
-                        facebookRedirect.css('height','15px');
-                        facebookRedirect.css('width','15px');
                     }else{
                         mainOrder.show('fast');
                         orderPop.hide('fast');
-                        facebookRedirect.css('height','25px');
-                        facebookRedirect.css('width','25px');
                     }
                 }
                 else{
                     if($(window).width() < 976){
                         cartPop.show('fast');
                         mainCart.hide('fast');
-                        facebookRedirect.css('height','15px');
-                        facebookRedirect.css('width','15px');
                     }else{
                         mainCart.show('fast');
                         cartPop.hide('fast');
-                        facebookRedirect.css('height','25px');
-                        facebookRedirect.css('width','25px');
                     }
                 }
             });
@@ -111,6 +101,7 @@
                 $(this).hide('fast');
                 orderNowButton.removeClass('onOrder');
                 showProductList.hide('fast');
+                aboutUsNav.show('fast');
                 myCart.hide('fast');
                 main.hide('fast');
                 searchNav.hide('fast');
@@ -118,13 +109,9 @@
                 if($(window).width() < 976){
                         orderPop.show('fast');
                         mainOrder.hide('fast');
-                        facebookRedirect.css('height','15px');
-                        facebookRedirect.css('width','15px');
                     }else{
                         mainOrder.show('fast');
                         orderPop.hide('fast');
-                        facebookRedirect.css('height','25px');
-                        facebookRedirect.css('width','25px');
                     }
             });
             orderNowButton.click(function(){
@@ -134,19 +121,14 @@
                 if($(window).width() < 976){
                         orderPop.show('fast');
                         mainOrder.hide('fast');
-                        facebookRedirect.css('height','15px');
-                        facebookRedirect.css('width','15px');
                     }else{
                         mainOrder.show('fast');
                         orderPop.hide('fast');
-                        facebookRedirect.css('height','25px');
-                        facebookRedirect.css('width','25px');
                     }
                 $(orderNowButton).addClass('onOrder');
-                $('#mainOrder,#orderPop').hide('fast');
+                $('#mainOrder,#orderPop,#aboutUsNav').hide('fast');
 
                 $('#customSliderTitle,#sliderA,#sliderB,#ourHistorySliderTitle,#gridGallery,#welcomeCustomers,#aboutUsSection').slideUp('fast');
-
                 $('#homeNav').show('fast');
                 $('#searchNav,main').show('slow');
             });
@@ -156,6 +138,12 @@
             });
             facebookRedirect.click(function(){
                 location.replace('https://www.facebook.com/lolabertaslechon')
+            });
+            instagramRedirect.hover(function(){
+                $(this).css('cursor','pointer');
+            });
+            instagramRedirect.click(function(){
+                location.replace('https://www.instagram.com/lolabertas')
             });
             $.ajax({
                 type: 'POST',
@@ -167,13 +155,11 @@
                             <div class="gimg shadow" style="padding: 0px;">
                                 <div class="containera gridItem m-0" style="width: 100%;margin: 0px;">
                                     <img src="admin/${value.image_file}" alt="Grid-Image" style="height:auto;width: 100%;border-radius: 10px 10px 0px 0px ;">
-                                    <div class="td tb p-1 overflow-auto" style="max-height: 60px;">
-                                        
-                                            <h4 style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${value.image_title}</h4>
-                                            <center>
-                                                <p class="mb-1 text-light">${value.image_details}</p>
-                                            </center>
-                                        
+                                    <div style="padding:10px;background-color: rgba(0, 0, 0, 0.658);border-radius: 0px 0px 10px 10px;">
+                                        <h4 style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${value.image_title}</h4>
+                                        <div class="td tb p-1 overflow-auto" style="max-height: 60px;">                                           
+                                            <p class="mb-1 text-light">${value.image_details}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -629,11 +615,16 @@
                 addToCart.on('click', function(){
                     var thisProductOrderQuantity = $(this).parent().parent().children().eq(4).children().eq(1).val();
                     globalProductId = $(this).val();
-                    if(parseInt(thisProductOrderQuantity) == 0){
-                        alert('Please Add Quantity');
+                    if($(this).parent().parent().children().eq(2).children().eq(1).text() == "0"){
+                        alert('This Product Is Either Reserved or Out of Stock.');
+                        $(this).parent().parent().children().eq(2).children().eq(1).css('color','red');
                     }else{
-                        addToCartFunc(globalProductId, thisProductOrderQuantity);
-                        alert('Product Successfully Added to Cart');
+                        if(parseInt(thisProductOrderQuantity) == 0){
+                        alert('Please Add Quantity');
+                        }else{
+                            addToCartFunc(globalProductId, thisProductOrderQuantity);
+                            alert('Product Successfully Added to Cart');
+                        }
                     }
                 })
                 thisProductDecrease.click(function(){
@@ -865,8 +856,6 @@
             height: 5px;
         }
         .td{
-            border-radius: 0px 0px 10px 10px;
-            background-color: rgba(0, 0, 0, 0.658);
             width: 100%;
         }
         .gimg{
@@ -907,10 +896,7 @@
                             <a href="#" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
                         </li>
                         <li class="nav-item mx-1">
-                            <a href="#aboutUs" class="nav-link text-light" style="color: white;">About Us</a>
-                        </li>
-                        <li class="nav-item mx-3">
-                            <img class="facebookRedirect m-2" src="facebook.svg" alt="" height="25px" width="25px">
+                            <a href="#aboutUs" class="nav-link text-light" style="color: white;" id="aboutUsNav">About Us</a>
                         </li>
                     </ul>
                 </div>
@@ -1059,29 +1045,60 @@
     
     <footer id="aboutUs" class="shadow m-0" style="padding-top: 50px;background: rgb(224,100,28);background: linear-gradient(180deg, rgba(224,100,28,0) 0%, rgba(224,100,28,0.4429369159773284) 20%, rgba(224,100,29,0.6642254313834909) 40%, rgba(224,100,28,1) 85%, rgba(224,100,28,1) 100%, rgba(224,100,28,1) 100%, rgba(224,100,28,1) 100%);">
         <div class="container">
-            <section id="aboutUsSection"  class="m-0 pb-0 text-dark">
-                <center>
-                    <p class="px-5" style="margin-bottom: 0px;padding-top: 50px;">Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus nobis pariatur odit! Quo obcaecati iste impedit officiis quasi totam cum fuga iusto dolorum quia, qui consectetur voluptatum assumenda magni consequatur, unde amet quaerat nesciunt aut eaque quos veritatis quod. Magnam reprehenderit voluptatibus, suscipit architecto deserunt, soluta reiciendis iste illo laudantium quibusdam molestiae esse nisi quaerat modi iusto, velit quia similique? Rerum quasi, ad laboriosam quas distinctio voluptatem accusantium rem, libero labore, sunt dolorum aperiam. Eligendi numquam neque quo unde quisquam dignissimos est perferendis tempora, officiis molestias necessitatibus! Impedit tempore cupiditate atque, tempora consequuntur porro magni voluptatibus dolores, unde, quam eveniet?Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere repellendus necessitatibus molestiae quos? Dicta blanditiis sequi sint veritatis animi nemo soluta exercitationem! Eveniet ullam, odit culpa unde rem quo. Similique. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Placeat qui ex quae sunt officiis mollitia fugiat distinctio consectetur, odit adipisci ab neque doloremque. Voluptas consequatur provident facere officiis, quia laudantium hic reiciendis delectus possimus laboriosam ut nulla, quasi consectetur aperiam nisi sequi, exercitationem quaerat maxime adipisci! Delectus, nostrum! Eius, at?</p>
-                </center>
+            <section id="aboutUsSection"  class="pb-0 text-dark" style="padding-top: 50px;display: flex;">
+                <div>
+                    <img class="mx-5 d-none d-md-block" src="a.png" alt="">
+                </div>
+                <div class="mx-5 p-5" style="background-color: rgba(0, 0, 0, 0.658); height: fit-content;align-self: center;border-radius: 25%;">
+                    <center>
+                        <p class="text-light" style="margin-bottom: 0px;">The pig is cooked only as the order comes in. The pig is stuffed and roasted the old-fashioned way over a pit of smoldering charcoal in the family's own backyard to assure the lechon's consistency and quality.</p>
+                    </center>
+                </div>
             </section>
             <section style="display: column;justify-content:space-between;margin: 0px;margin-bottom: 0px;padding-bottom: 50px;">
                 <div style="display: column;">
                     <center>
                         <div>
-                            <img id="footerImage" src="footer.png" height="100%" width="100%">
+                            <figure>
+                                <img id="footerImage" src="footer.png" height="100%" width="100%">
+                                <figcaption>
+                                    <code class="text-dark">22 F Imson Street, Brgy San Pedro, 1620 Pateros, Philippines</code>
+                                </figcaption>
+                            </figure>
                         </div>
                     </center>
                 </div>
-                <div style="margin: 50px;margin-bottom: 0px;">
-                    <p  class="mb-0 mx-1">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto totam eaque sint ipsa sed harum at, non voluptate reiciendis nemo, perferendis voluptatem natus mollitia voluptatum iure odio quos sunt quisquam? Rerum, excepturi aliquam molestias sit ullam vero? Qui sint rem accusantium est, ad quo a beatae alias veritatis eum harum necessitatibus consectetur quisquam modi cupiditate dicta minima iusto tenetur id velit quam incidunt quia. Nesciunt sed illum eum dignissimos eaque sint quos eveniet reprehenderit itaque, velit consequatur, molestias ducimus dolorem deserunt magnam, error delectus facere! Quia assumenda alias unde non excepturi commodi exercitationem quidem, in ipsa dolor, corporis ratione dolores!</p>
+                <div class="d-md-flex justify-content-around mx-5" style="margin: 50px;margin-bottom: 0px;">
+                    <div class="container mb-0 ms-0 ms-md-5 text-center text-md-start">
+                        <!-- <div>
+                            lolabertaslechonhaus@gmail.com
+                        </div> -->
+                        <div>
+                            <h3>
+                                <img src="line.svg" alt=""><u>Contact us:</u>
+                            </h3>
+                            <div style="margin-left: 2%;">
+                            <span>Tel #: 86424762 / 89945210</span>
+                            <br>
+                            <span>Globe: 09171629196 / 09453015251</span>
+                            <br>
+                            <span>Smart: 09084851397</span>
+                            <br>
+                            <span>Sun: 09258019125</span>
+                            </div>
+                        </div>
+                    </div>
                     <hr>
-                    <div class="container mx-5">
-                        <p>Like us on: 
-                            <div class="btn btn-primary btn-sm">
+                    <div class="container text-end me-5 ms-md-5 text-center text-md-start">
+                        <p>Follow us on: </p>
+                            <div class="facebookRedirect btn btn-primary btn-sm">
                                 <img src="facebook.svg">
                                 <span> Facebook</span>
                             </div>
-                        </p>    
+                            <div class="instagramRedirect btn btn-light btn-sm">
+                                <img src="instagram.svg">
+                                <span> Instagram</span>
+                            </div>
                     </div>
                 </div>
             </section>
