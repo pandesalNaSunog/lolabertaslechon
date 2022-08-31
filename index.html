@@ -499,8 +499,6 @@
                                 $(searchData).each(function(index,value){
                                     searchProductGrid(value.id, value.name, value.image, value.description, value.available, value.price);
                                 })
-                                
-                                productFunctions()
                             }else{
                                 searchMessageInput.css('color','red');
                                 var noDataMessage = "Sorry, there is no product with such name.";
@@ -512,7 +510,7 @@
                     alert('no input')
                 }
             });
-            function searchProductGrid(id, name, image, description, available, price){
+            function searchProductGrid(index, id, name, image, description, available, price){
                 searchProductList.append(
                             `<div id="item" class="card shadow col-md mx-auto rounded-4" style="width: 300px; margin: 20px;">
                                 <div class="card-header rounded-4 rounded-bottom text-light" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
@@ -545,6 +543,8 @@
                                 </div>
                             </div>`
                         );
+
+                productFunctions(index, searchProductList)
             }
             //this how we display products
             $.ajax({
@@ -554,9 +554,8 @@
                     var data = JSON.parse(response);
                     $(data).each(function(index, value){
                         //${value.name} ${value.image} ${value.description} ${value.available} ${value.price} ${value.id}
-                        addToProductGrid(value.id, value.name, value.image, value.description, value.available, value.price);
+                        addToProductGrid(index, value.id, value.name, value.image, value.description, value.available, value.price);
                     })
-                    productFunctions()
                 }
             });
             //Order Confirm Button
@@ -571,7 +570,7 @@
                 productQuantities.push(quantity);
             }
 
-            function addToProductGrid(id, name, image, description, available, price){
+            function addToProductGrid(index, id, name, image, description, available, price){
                 productList.append(
                             `<div id="item" class="card shadow col-md mx-auto rounded-4" style="width: 300px; margin: 20px;">
                                 <div class="card-header rounded-4 rounded-bottom text-light" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
@@ -604,14 +603,16 @@
                                 </div>
                             </div>`
                         );
+
+                productFunctions(index, productList);
             }
             
-            function productFunctions(){
-                var viewProductButton = $('.viewProductButton');
-                var thisProductDecrease = $('.thisProductDecrease');
-                var thisProductQuantity = $('.thisProductQuantity');
-                var thisProductIncrease = $('.thisProductIncrease');
-                var addToCart = $('.add-to-cart');
+            function productFunctions(index, productList){
+                var viewProductButton = productList.children().eq(index).find('.viewProductButton');
+                var thisProductDecrease = productList.children().eq(index).find('.thisProductDecrease');
+                var thisProductQuantity = productList.children().eq(index).find('.thisProductQuantity');
+                var thisProductIncrease = productList.children().eq(index).find('.thisProductIncrease');
+                var addToCart = productList.children().eq(index).find('.add-to-cart');
 
                 addToCart.on('click', function(){
                     var thisProductOrderQuantity = $(this).parent().parent().children().eq(4).children().eq(1).val();
