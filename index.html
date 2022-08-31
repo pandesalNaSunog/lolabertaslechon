@@ -607,12 +607,12 @@
                 productFunctions(index, productList);
             }
             
-            function productFunctions(index, productList){
-                var viewProductButton = productList.children().eq(index).find('.viewProductButton');
-                var thisProductDecrease = productList.children().eq(index).find('.thisProductDecrease');
-                var thisProductQuantity = productList.children().eq(index).find('.thisProductQuantity');
-                var thisProductIncrease = productList.children().eq(index).find('.thisProductIncrease');
-                var addToCart = productList.children().eq(index).find('.add-to-cart');
+            function productFunctions(index, paramProductList){
+                var viewProductButton = paramProductList.children().eq(index).find('.viewProductButton');
+                var thisProductDecrease = paramProductList.children().eq(index).find('.thisProductDecrease');
+                var thisProductQuantity = paramProductList.children().eq(index).find('.thisProductQuantity');
+                var thisProductIncrease = paramProductList.children().eq(index).find('.thisProductIncrease');
+                var addToCart = paramProductList.children().eq(index).find('.add-to-cart');
 
                 addToCart.on('click', function(){
                     var thisProductOrderQuantity = $(this).parent().parent().children().eq(4).children().eq(1).val();
