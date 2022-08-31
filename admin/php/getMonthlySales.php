@@ -12,6 +12,8 @@
             $previousMonth = "";
             $salesPerMonth = 0;
             $index = 0;
+
+            $maximum = 0;
             while($salesRow = $salesQuery->fetch_assoc()){
                 
                 
@@ -20,6 +22,10 @@
                 if($previousMonth != $currentMonth && $previousMonth != ""){
                     $months[] = $previousMonth;
                     $sales[] = $salesPerMonth;
+
+                    if($salesPerMonth > $maximum){
+                        $maximum = $salesPerMonth;
+                    }
                     $salesPerMonth = 0;
                 }
                 $salesPerMonth += $salesRow['amount'];
@@ -31,10 +37,14 @@
             $months[] = $previousMonth;
             $sales[] = $salesPerMonth;
             $salesPerMonth = 0;
+            if($salesPerMonth > $maximum){
+                $maximum = $salesPerMonth;
+            }
 
             $response = array(
                 'months' => $months,
                 'sales' => $sales,
+                'maximum' => $maximum
             );
 
             echo json_encode($response);
