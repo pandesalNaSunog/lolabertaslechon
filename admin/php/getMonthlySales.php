@@ -36,10 +36,11 @@
 
             $months[] = $previousMonth;
             $sales[] = $salesPerMonth;
-            $salesPerMonth = 0;
             if($salesPerMonth > $maximum){
                 $maximum = $salesPerMonth;
             }
+            $salesPerMonth = 0;
+            
 
             $response = array(
                 'months' => $months,
