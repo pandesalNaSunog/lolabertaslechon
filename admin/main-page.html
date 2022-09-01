@@ -225,6 +225,9 @@
                             processData: false,
                             success:function(response){
                                 alert('Image Successfully Added to the Grid.');
+                                imageGridTitleInput.val("");
+                                imageGridFileInput.val("");
+                                imageGridDetailsInput.val("");
                                 var data = JSON.parse(response);
                                 $(data).each(function(index,value){
                                     addedImageGridList.append(`
@@ -1572,6 +1575,72 @@
                                             contentType: false,
                                             processData: false,
                                             success: function(response){
+                                                var data = JSON.parse(response);
+                                            $(data).each(function(index,value){
+                                                productsTable.append(
+                                                `<tr>
+                                                    <td>${data.name}</td>
+                                                    <td>
+                                                        <img src="${data.image}" style="height: 50px; width: 50px;">
+                                                        <button id="imgLarge" class="imgLarge btn btn-success" value="${value.id}" data-bs-toggle="modal" data-bs-target="#viewProductImage">View</button>
+                                                    </td>
+                                                    <td>${data.description}</td>
+                                                    <td>${data.quantity}</td>
+                                                    <td><span>&#8369</span>${data.price}</td>
+                                                    <td>
+                                                        <button class="edit-product btn btn-outline-danger" id="editButton" data-bs-toggle="modal" data-bs-target="#selectEditMethod" value="${data.id}">Edit</button>
+                                                        <button class="delete-product btn btn-outline-warning" id="deleteButton" value="${data.id}">Delete</button>
+                                                    </td>
+                                                </tr>`
+                                            );
+                                            });
+                                            var imgLarge = $('.imgLarge');
+                                            imgLarge.click(function(){
+                                                globalProductId = $(this).val();
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: 'php/AVI.php',
+                                                        data:
+                                                        {
+                                                            globalProductId: globalProductId
+                                                        },
+                                                        success:function(response){
+                                                            var data = JSON.parse(response);
+                                                            certainProductName.text(data.name);
+                                                            certainProductImage.attr('src', data.image);
+                                                            certainProductDescription.text(data.description);
+                                                            certainProductQuantity.text(data.quantity);
+                                                            certainProductPrice.text(data.price);
+                                                        }
+                                                    });
+                                            });
+                                                                
+                                            var btnEdit = $('.edit-product');
+                                            var btnDelete = $('.delete-product');
+                                            btnEdit.click(function(){
+                                                globalProductId = $(this).val();
+                                            });
+                                            btnDelete.click(function(){
+                                                var thisDelete = $(this);
+                                                globalProductId = $(this).val();
+                                                if(confirm('Are you sure you want to DELETE this product?') == true){
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: 'php/deleteProduct.php',
+                                                        data:
+                                                        {
+                                                            globalProductId: globalProductId,
+                                                        },
+                                                        success:function(response){
+                                                            thisDelete.parent().parent().remove();
+                                                            if(response == 'success'){
+                                                                alert('Data Deleted');
+                                                            }
+                                                        }
+                                                    })
+                                                }
+                                            });
+
                                                     alert('The New Product Is Inserted Successfully');
                                                     productName.val("");
                                                     productFile.val("");
@@ -1605,12 +1674,13 @@
                                         processData: false,
                                         success: function(response){
                                             var data = JSON.parse(response);
-                                            productsTable.append(
+                                            $(data).each(function(index,value){
+                                                productsTable.append(
                                                 `<tr>
                                                     <td>${data.name}</td>
                                                     <td>
                                                         <img src="${data.image}" style="height: 50px; width: 50px;">
-                                                        <button id="imgLarge" class="btn btn-success" value="">View</button>
+                                                        <button id="imgLarge" class="imgLarge btn btn-success" value="${value.id}" data-bs-toggle="modal" data-bs-target="#viewProductImage">View</button>
                                                     </td>
                                                     <td>${data.description}</td>
                                                     <td>${data.quantity}</td>
@@ -1621,6 +1691,27 @@
                                                     </td>
                                                 </tr>`
                                             );
+                                            });
+                                            var imgLarge = $('.imgLarge');
+                                            imgLarge.click(function(){
+                                                globalProductId = $(this).val();
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: 'php/AVI.php',
+                                                        data:
+                                                        {
+                                                            globalProductId: globalProductId
+                                                        },
+                                                        success:function(response){
+                                                            var data = JSON.parse(response);
+                                                            certainProductName.text(data.name);
+                                                            certainProductImage.attr('src', data.image);
+                                                            certainProductDescription.text(data.description);
+                                                            certainProductQuantity.text(data.quantity);
+                                                            certainProductPrice.text(data.price);
+                                                        }
+                                                    });
+                                            });
                                                                 
                                             var btnEdit = $('.edit-product');
                                             var btnDelete = $('.delete-product');
