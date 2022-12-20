@@ -1,86 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-    .container {
-      position: relative;
-      font-family: Arial;
-    }
-    
-    .text-block {
-            position: absolute;
-            max-width: fit-content;
-            bottom: 10px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.658);
-            color: white;
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-    </style>
-    </head>
-    <body class="row row-cols-xm-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-2 m-0">
-      <div>
-        <div>
-          <h3>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolor quam cum consequuntur facere accusamus reiciendis dolores, sapiente mollitia temporibus in adipisci vitae officia obcaecati? Incidunt deleniti quas excepturi earum laudantium.</h3>
-        </div>
-        <div>
-          <img class="m-0" src="lechon1.jpg" alt="Nature" style="width:100%;">
-        </div>
-      </div>
-      <div>
-        <img class="m-0" src="lechon1.jpg" alt="Nature" style="width:100%;">
-      </div>
-      <div class="containera gridItem m-0" style="width: 500px;margin: 0px;">
-        <img src="lechon1.jpg" alt="Nature" style="width:100%;">
-        <div class="text-block">
-          <h4>Nature</h4>
-          <p>What a beautiful sunrise loremLorem ipsum dolor sit amet consectetur adipisicing elit. Rem, veniam labore provident ratione et illum blanditiis similique necessitatibus. Deserunt earum provident quibusdam modi unde velit autem dicta assumenda sed eligendi?</p>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D' Original Lola Berta's Lechon Haus</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+    <script src="jquery.js"></script>
+</head>
+<body>
+    <div class="card" style="width: 18rem;">
+        <img class="card-img-top" src="Polish.jpg" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">Card title</h5>
+          <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <a href="#" class="btn btn-primary">Go somewhere</a>
         </div>
     </div>
-    <div class="containera gridItem m-0" style="width: 500px;margin: 0px;">
-        <img src="lechon1.jpg" alt="Nature" style="width:100%;">
-        <div class="text-block">
-          <h4>Nature</h4>
-          <p>What a beautiful sunrise loremLorem ipsum dolor sit amet consectetur adipisicing elit. Rem, veniam labore provident ratione et illum blanditiis similique necessitatibus. Deserunt earum provident quibusdam modi unde velit autem dicta assumenda sed eligendi?</p>
-        </div>
-    </div>
-    <div>
-      <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
-        <center>
-            <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${slider_title}</h4>
-        </center>
-      </div>
-      <div style="display: flex;justify-content:space-between">
-        <code>${updated_at}</code>
-        <button class="deleteCustomSliderTitleBtn btn btn-outline-danger">Delete</button>
-      </div>
-    </div>
-
-
-
-
-
-
-
-    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="height: fit-content;width: fit-content;">
-      <div style="width: 500px;" id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header text-light" style="background-color: rgb(254,105,23);">
-          <h6 id="toastImageTitle" class="h5 me-auto">Loading...</h6>
-          <code class="text-dark">Date: <span id="toastImageDateAdded">Loading...</span></code>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-          <div id="toastMessage">Loading...</div>
-          <br>
-          <center>
-              <div id="toastImage" style="height: fit-content;width:fit-content">
-                  <img src="footer.png" height="100px" width="200px" class="rounded me-2" alt="...">
-              </div>
-          </center>
-        </div>
-      </div>
-  </div>
-    </body>
-    </html> 
+</body>
+<div class="item">
+    <img class="liveToastBtn1 shadow" src="admin/${value.image}" alt="Slider Image">
+    <button style="position:fixed; z-index:-100;height:10px;width:10px;margin:0px;opacity:0;" value="${value.id}"></button>
+</div>
+</html>
