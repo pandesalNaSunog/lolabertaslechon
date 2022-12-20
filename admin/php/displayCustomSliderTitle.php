@@ -13,7 +13,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
             $date = $row['updated_at'];
             $productArray[] = array(
                 'id' => $id,
-                'slider_title' => $image,
+                'slider_title' => strtoupper($image),
                 'updated_at' => $date
             );
         }
