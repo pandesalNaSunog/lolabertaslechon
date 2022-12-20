@@ -225,6 +225,9 @@
                             processData: false,
                             success:function(response){
                                 alert('Image Successfully Added to the Grid.');
+                                imageGridTitleInput.val("");
+                                imageGridFileInput.val("");
+                                imageGridDetailsInput.val("");
                                 var data = JSON.parse(response);
                                 $(data).each(function(index,value){
                                     addedImageGridList.append(`
@@ -233,19 +236,46 @@
                                                 <img src="${value.image_file}" alt="Grid-Image" width="100%" style="align-self:center;">
                                                 <div class="td" style="display: table;">
                                                     <div class="text-block overflow-auto pt-2" style="max-height: 25%;">
-                                                        <h4 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"><strong>Title: </strong>${value.image_title}</h4>
-                                                        <details>
-                                                            <summary>
-                                                                <strong>Details:</strong>    
-                                                            </summary>
-                                                            <p class="mb-1">${value.image_details}</p>
-                                                        </details>
-                                                        <button class="deleteNewGridImageButton btn btn-outline-danger m-1" value="${value.id}">Delete</button>
+                                                        <button class="liveToastBtnC1 btn btn-success m-1" value="${value.id}">View Image</button>
+                                                        <button class="deleteNewGridImageButton btn btn-danger m-1" value="${value.id}">Delete</button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     `);
+                                    const toastTriggerC1 = $('.liveToastBtnC1');
+                                    const toastLiveExample = $('#liveToast');
+                                    toastTriggerC1.click(function(){
+                                                        globalProductId = $(this).val();
+                                                        const toast = new bootstrap.Toast(toastLiveExample)
+                                                        toast.show();
+                                                        $.ajax({
+                                                            type: 'POST',
+                                                            url: 'php/viewGridImage.php',
+                                                            data:
+                                                            {
+                                                                image_id: globalProductId,
+                                                            },
+                                                            success:function(response){
+                                                                var imgData = JSON.parse(response);
+                                                                toastImage.children().remove();
+                                                                $(imgData).each(function(index,value){
+                                                                    toastImageTitle.text(`
+                                                                        ${value.image_title}
+                                                                    `);
+                                                                    toastImageDateAdded.text(`
+                                                                        ${value.created_at}
+                                                                    `);
+                                                                    toastMessage.text(`
+                                                                        ${value.image_details}
+                                                                    `);
+                                                                    toastImage.append(`
+                                                                        <img src="${value.image_file}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                                                    `)
+                                                                });
+                                                            }
+                                                        });
+                                                    });
                                 var deleteNewGridImageButton = $('.deleteNewGridImageButton');
                                 deleteNewGridImageButton.click(function(){
                                         var thisNewGridDeleteButton = $(this);
@@ -701,13 +731,7 @@
                                     <img src="${value.image_file}" alt="Grid-Image" width="100%" style="align-self:center;">
                                     <div class="td" style="display: table;">
                                         <div class="text-block overflow-auto pt-2" style="max-height: 25%;">
-                                            <h4 style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"><strong>Title: </strong>${value.image_title}</h4>
-                                            <details>
-                                                <summary>
-                                                    <strong>Details:</strong>    
-                                                </summary>
-                                                <p class="mb-1">${value.image_details}</p>
-                                            </details>
+                                            <button class="liveToastBtnC btn btn-success m-1" value="${value.id}">View Image</button>
                                             <button class="deleteGridImageButton btn btn-outline-danger m-1" value="${value.id}">Delete</button>
                                         </div>
                                     </div>
@@ -715,6 +739,39 @@
                             </div>
                         `);
                     });
+                    const toastTriggerC = $('.liveToastBtnC');
+                    const toastLiveExample = $('#liveToast');
+                    toastTriggerC.click(function(){
+                                        globalProductId = $(this).val();
+                                        const toast = new bootstrap.Toast(toastLiveExample)
+                                        toast.show();
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: 'php/viewGridImage.php',
+                                            data:
+                                            {
+                                                image_id: globalProductId,
+                                            },
+                                            success:function(response){
+                                                var imgData = JSON.parse(response);
+                                                toastImage.children().remove();
+                                                $(imgData).each(function(index,value){
+                                                    toastImageTitle.text(`
+                                                        ${value.image_title}
+                                                    `);
+                                                    toastImageDateAdded.text(`
+                                                        ${value.created_at}
+                                                    `);
+                                                    toastMessage.text(`
+                                                        ${value.image_details}
+                                                    `);
+                                                    toastImage.append(`
+                                                        <img src="${value.image_file}" style="max-height:300px;max-width:100%;" class="rounded me-2" alt="...">
+                                                    `)
+                                                });
+                                            }
+                                        });
+                                    });
                     var deleteGridImageButton = $('.deleteGridImageButton');
                     deleteGridImageButton.click(function(){
                         if(confirm('Delete This Grid Image?') == true){
@@ -1518,6 +1575,72 @@
                                             contentType: false,
                                             processData: false,
                                             success: function(response){
+                                                var data = JSON.parse(response);
+                                            $(data).each(function(index,value){
+                                                productsTable.append(
+                                                `<tr>
+                                                    <td>${data.name}</td>
+                                                    <td>
+                                                        <img src="${data.image}" style="height: 50px; width: 50px;">
+                                                        <button id="imgLarge" class="imgLarge btn btn-success" value="${value.id}" data-bs-toggle="modal" data-bs-target="#viewProductImage">View</button>
+                                                    </td>
+                                                    <td>${data.description}</td>
+                                                    <td>${data.quantity}</td>
+                                                    <td><span>&#8369</span>${data.price}</td>
+                                                    <td>
+                                                        <button class="edit-product btn btn-outline-danger" id="editButton" data-bs-toggle="modal" data-bs-target="#selectEditMethod" value="${data.id}">Edit</button>
+                                                        <button class="delete-product btn btn-outline-warning" id="deleteButton" value="${data.id}">Delete</button>
+                                                    </td>
+                                                </tr>`
+                                            );
+                                            });
+                                            var imgLarge = $('.imgLarge');
+                                            imgLarge.click(function(){
+                                                globalProductId = $(this).val();
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: 'php/AVI.php',
+                                                        data:
+                                                        {
+                                                            globalProductId: globalProductId
+                                                        },
+                                                        success:function(response){
+                                                            var data = JSON.parse(response);
+                                                            certainProductName.text(data.name);
+                                                            certainProductImage.attr('src', data.image);
+                                                            certainProductDescription.text(data.description);
+                                                            certainProductQuantity.text(data.quantity);
+                                                            certainProductPrice.text(data.price);
+                                                        }
+                                                    });
+                                            });
+                                                                
+                                            var btnEdit = $('.edit-product');
+                                            var btnDelete = $('.delete-product');
+                                            btnEdit.click(function(){
+                                                globalProductId = $(this).val();
+                                            });
+                                            btnDelete.click(function(){
+                                                var thisDelete = $(this);
+                                                globalProductId = $(this).val();
+                                                if(confirm('Are you sure you want to DELETE this product?') == true){
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: 'php/deleteProduct.php',
+                                                        data:
+                                                        {
+                                                            globalProductId: globalProductId,
+                                                        },
+                                                        success:function(response){
+                                                            thisDelete.parent().parent().remove();
+                                                            if(response == 'success'){
+                                                                alert('Data Deleted');
+                                                            }
+                                                        }
+                                                    })
+                                                }
+                                            });
+
                                                     alert('The New Product Is Inserted Successfully');
                                                     productName.val("");
                                                     productFile.val("");
@@ -1551,12 +1674,13 @@
                                         processData: false,
                                         success: function(response){
                                             var data = JSON.parse(response);
-                                            productsTable.append(
+                                            $(data).each(function(index,value){
+                                                productsTable.append(
                                                 `<tr>
                                                     <td>${data.name}</td>
                                                     <td>
                                                         <img src="${data.image}" style="height: 50px; width: 50px;">
-                                                        <button id="imgLarge" class="btn btn-success" value="">View</button>
+                                                        <button id="imgLarge" class="imgLarge btn btn-success" value="${value.id}" data-bs-toggle="modal" data-bs-target="#viewProductImage">View</button>
                                                     </td>
                                                     <td>${data.description}</td>
                                                     <td>${data.quantity}</td>
@@ -1567,6 +1691,27 @@
                                                     </td>
                                                 </tr>`
                                             );
+                                            });
+                                            var imgLarge = $('.imgLarge');
+                                            imgLarge.click(function(){
+                                                globalProductId = $(this).val();
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: 'php/AVI.php',
+                                                        data:
+                                                        {
+                                                            globalProductId: globalProductId
+                                                        },
+                                                        success:function(response){
+                                                            var data = JSON.parse(response);
+                                                            certainProductName.text(data.name);
+                                                            certainProductImage.attr('src', data.image);
+                                                            certainProductDescription.text(data.description);
+                                                            certainProductQuantity.text(data.quantity);
+                                                            certainProductPrice.text(data.price);
+                                                        }
+                                                    });
+                                            });
                                                                 
                                             var btnEdit = $('.edit-product');
                                             var btnDelete = $('.delete-product');
@@ -1747,9 +1892,6 @@
         padding: 2px;
         
     }
-    *{
-        font-family: cursive;
-    }
     /*add product button*/
     #addProduct{
         background-color: rgb(254,105,23);
@@ -1774,8 +1916,8 @@
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
                 <div class="navbar-brand m-0">
-                    <img id="logo-ni-lola" src="Branding/received_727156111882599 page logo.png" height="70px" width="70px" alt="">
-                    <img class="shadow mt-2" value="0" id="LBL" src="Branding/brand.png" height="50px" width="300px" alt="">
+                    <img id="logo-ni-lola" src="Branding/received_727156111882599 page logo.png" height="60px" width="60px" alt="">
+                    <img class="shadow mt-2" value="0" id="LBL" src="Branding/LLLL.png" height="50px" width="300px" alt="">
                 </div>
                 <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav-menu">
                     <span class="navbar-toggler-icon"></span>
