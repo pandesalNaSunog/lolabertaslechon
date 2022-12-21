@@ -10,9 +10,13 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
         $query = "SELECT * FROM custom_slider_title";
         $main = $con->query($query) or die($con->error);
         if($mainRow = $main->fetch_assoc()){
-            $query = "UPDATE custom_slider_title SET grid_title = '$title',updated_at='$today'";
+            $query = $con->prepare("UPDATE custom_slider_title SET grid_title = ? ,updated_at= ?");
+            $query->bind_param("ss", $title, $today);
+            $query->execute();
         }else{
-            $query = "INSERT INTO `custom_slider_title`(`grid_title`,`created_at`,`updated_at`) VALUES ('$title','$today','$today');";
+            $query = $con->prepare("INSERT INTO custom_slider_title(grid_title,created_at,updated_at) VALUES (?,?,?)");
+            $query->bind_param("sss", $title, $today, $today);
+            $query->execute();
         }
 
         $con->query($query) or die($con->error);
