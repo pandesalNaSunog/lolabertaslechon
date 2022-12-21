@@ -5,7 +5,7 @@
         if($con->connect_error){
             echo $con->connect_error;
         }else{
-            $query = "DELETE FROM custom_slider_title";
+            $query = "UPDATE `custom_slider_title` SET `slider_title`=''";
             $con->query($query) or die($con->error);
             echo 'success';
         }
