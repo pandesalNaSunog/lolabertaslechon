@@ -19,8 +19,6 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
             $query->execute();
         }
 
-        $con->query($query) or die($con->error);
-
         $query = "SELECT * FROM custom_slider_title";
         $main = $con->query($query) or die($con->error);
         $mainRow = $main->fetch_assoc();
