@@ -12,7 +12,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
         if($mainRow = $main->fetch_assoc()){
             $query = "UPDATE custom_slider_title SET opening_title = '$title',updated_at='$today'";
         }else{
-            $query = "INSERT INTO `custom_slider_title`(`openng_title`,`created_at`,`updated_at`) VALUES ('$title','$today','$today');";
+            $query = "INSERT INTO `custom_slider_title`(`opening_title`,`created_at`,`updated_at`) VALUES ('$title','$today','$today');";
         }
 
         $con->query($query) or die($con->error);
