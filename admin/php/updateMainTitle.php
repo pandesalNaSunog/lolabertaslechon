@@ -14,7 +14,7 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
             $query->bind_param("ss", $title, $today);
             $query->execute();
         }else{
-            $query = $con->prepare("INSERT INTO custom_slider_title(opening_title,created_at,updated_at) VALUES (?,?,?)";
+            $query = $con->prepare("INSERT INTO custom_slider_title(opening_title,created_at,updated_at) VALUES (?,?,?))";
             $query->bind_param("sss", $title, $today, $today);
             $query->execute();
         }
