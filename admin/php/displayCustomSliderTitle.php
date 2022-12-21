@@ -10,10 +10,16 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
         while($row = mysqli_fetch_assoc($result)){
             $id = $row['id'];
             $image = $row['slider_title'];
+            $gridTitle = $row['grid_title'];
+            $openingTitle = $row['opening_title'];
+            $openingSubtitle = $row['opening_subtitle'];
             $date = $row['updated_at'];
             $productArray[] = array(
                 'id' => $id,
                 'slider_title' => strtoupper($image),
+                'grid_title' => strtoupper($gridTitle),
+                'opening_title' => strtoupper($openingTitle),
+                'opening_subtitle' => strtoupper($openingSubtitle),
                 'updated_at' => $date
             );
         }

@@ -189,6 +189,82 @@
             var imageGridFileInput = $('#imageGridFileInput');
             var imageGridDetailsInput = $('#imageGridDetailsInput');
             var salesReportNav = $('#salesReportNav');
+            var editGridTitleButton = $('#editGridTitleButton');
+            var editGridTitleInput = $('#editGridTitleInput');
+            var imageGridTitle = $('#imageGridTitle');
+            var editMainTitleInput = $('#editMainTitleInput');
+            var editMainTitleButton = $('#editMainTitleButton');
+            var mainTitle = $('#mainTitle');
+            var subtitle = $('#subtitle');
+            var editSubtitleInput = $('#editSubtitleInput');
+            var editSubtitleButton = $('#editSubtitleButton');
+
+            editSubtitleInput.on('keydown', function(){
+                $(this).removeClass('is-invalid');
+            });
+            editSubtitleButton.click(function(){
+                if(editSubtitleInput.val() == ""){
+                    editSubtitleInput.addClass('is-invalid');
+                }else{
+                    if(confirm('Update Subtitle?') == true){
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/updateSubtitle.php',
+                            data:{
+                                editSubtitleInput: editSubtitleInput.val(),
+                            },
+                            success:function(response){
+                                alert('Main Title Updated.');
+                                subtitle.text(editSubtitleInput.val());
+                            }
+                        });
+                    }
+                }
+            });
+            editMainTitleInput.on('keydown', function(){
+                $(this).removeClass('is-invalid');
+            });
+            editMainTitleButton.click(function(){
+                if(editMainTitleInput.val() == ""){
+                    editMainTitleInput.addClass('is-invalid');
+                }else{
+                    if(confirm('Update Main Title?') == true){
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/updateMainTitle.php',
+                            data:{
+                                editMainTitleInput: editMainTitleInput.val(),
+                            },
+                            success:function(response){
+                                alert('Main Title Updated.');
+                                mainTitle.text(editMainTitleInput.val());
+                            }
+                        });
+                    }
+                }
+            });
+            editGridTitleInput.on('keydown',function(){
+                $(this).removeClass('is-invalid');
+            });
+            editGridTitleButton.click(function(){
+                if(editGridTitleInput.val() == ""){
+                    editGridTitleInput.addClass('is-invalid');
+                }else{
+                    if(confirm('Update Grid title?') == true){
+                        $.ajax({
+                            type: 'POST',
+                            url: 'php/updateGridTitle.php',
+                            data:{
+                                editGridTitleInput: editGridTitleInput.val(),
+                            },
+                            success:function(response){
+                                alert('Grid Title Updated.');
+                                imageGridTitle.text(editGridTitleInput.val());
+                            }
+                        });
+                    }
+                }
+            });
 
             var addedImageGridList = $('#addedImageGridList');
 
@@ -701,7 +777,7 @@
                 success:function(response){
                     var data = JSON.parse(response);
                     $(data).each(function(index,value){
-                        showCustomSliderTitle(value.id,value.slider_title,value.updated_at);
+                        showCustomSliderTitle(value.id,value.slider_title,value.opening_title,value.grid_title,value.opening_subtitle,value.updated_at);
                     });
                     var deleteCustomSliderTitleBtn = $('.deleteCustomSliderTitleBtn');
                     deleteCustomSliderTitleBtn.click(function(){
@@ -919,19 +995,22 @@
                     });
                 }
             });
-            function showCustomSliderTitle(id,slider_title,updated_at){
+            function showCustomSliderTitle(id,slider_title,opening_title,grid_title,opening_subtitle,updated_at){
                 addedSliderATitleList.append(`
                 <div>
-                    <div class="m-0" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
                         <center>
-                            <h4 class="m-0 p-2" style="color: rgb(254,254,6);font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${slider_title}</h4>
+                            <h4 class="m-0 p-2" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">${slider_title}</h4>
                         </center>
-                    </div>
-                    <div style="display: flex;justify-content:space-between">
-                        <button class="deleteCustomSliderTitleBtn btn btn-outline-danger m-1">Delete</button>
-                        <code><code class="text-dark">Updated At: </code>${updated_at}</code>
-                    </div>
                 </div>
+                `);
+                imageGridTitle.text(`
+                    ${grid_title}
+                `);
+                mainTitle.text(`
+                    ${opening_title}
+                `);
+                subtitle.text(`
+                    ${opening_subtitle}
                 `);
             }
             function showSliderA(id,title,image,caption,created_at,updated_at,date_captured){
@@ -1955,7 +2034,7 @@
                     </div>
                     <div class="card-body" style="background-color: rgb(255,191,8);">
                         <div class="shadow text-center pt-3 pb-3 rounded-5" style="background-color: rgb(41,22,5);">
-                            <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editCarouselButton">Main Image</button>
+                            <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editCarouselButton">Title</button>
                             <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editSliderAButton">Custom Slider</button>
                             <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editImageGridButton">Image Grid</button>
                             <button class="CPCbtn btn btn-danger text-light shadow mt-1" id="editSliderBButton">Our History Slider</button>
@@ -1964,10 +2043,42 @@
                             <div class="container">
                                 <div class="card mt-3 rounded-5 shadow">
                                     <div class="card-header d-flex">
-                                        <h4 class="fw-bold my-3 mx-5">Main Image:</h4>
+                                        <h4 class="fw-bold my-3 mx-5">Title:</h4>
                                     </div>
                                     <div class="card-body">
-                                        <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <th scope="col">Main Title <button data-bs-toggle="modal" data-bs-target="#editMainTitleModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);">Update Main Title</button></th>
+                                            </thead>
+                                            <tbody>
+                                                <td class="m-3">
+                                                    <div>
+                                                        <div>
+                                                            <center>
+                                                                <h4 id="mainTitle" class="m-0 p-2" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"></h4>
+                                                            </center>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tbody>
+                                        </table>
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <th scope="col">Subtitle <button data-bs-toggle="modal" data-bs-target="#editSubtitleModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);">Update Subtitle</button></th>
+                                            </thead>
+                                            <tbody>
+                                                <td class="m-3">
+                                                    <div>
+                                                        <div>
+                                                            <center>
+                                                                <h4 id="subtitle" class="m-0 p-2" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"></h4>
+                                                            </center>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tbody>
+                                        </table>
+                                        <!-- <div class="table-responsive">
                                             <table class="table table-striped">
                                                 <thead>
                                                     <th scope="col">Main Image <button class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);" data-bs-toggle="modal" data-bs-target="#editMainCarouselModal">Update Main Image</button></th>
@@ -1981,7 +2092,7 @@
                                                     </td>
                                                 </tbody>
                                             </table>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
@@ -2053,6 +2164,22 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <th scope="col">Grid Title <button data-bs-toggle="modal" data-bs-target="#editGridTitleModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);">Update Grid Title</button></th>
+                                                </thead>
+                                                <tbody>
+                                                    <td class="m-3">
+                                                        <div>
+                                                            <div>
+                                                                <center>
+                                                                    <h4 id="imageGridTitle" class="m-0 p-2" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"></h4>
+                                                                </center>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tbody>
+                                            </table>
                                             <table class="table table-striped">
                                                 <thead>
                                                     <th scope="col">Images <button data-bs-toggle="modal" data-bs-target="#editImageGridModal" class="customizedButton btn mx-3" style="background-color: rgb(254,103,23);">Add Image Grid</button></th>
@@ -2493,6 +2620,66 @@
             </div>
         </div>
     </div>
+    <!---grid title-->
+    <div class="modal fade" id="editGridTitleModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Update Grid Title</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" id="editGridTitleInput" type="text" placeholder="Grid Title">
+                    <div class="invalid-feedback">Please Fill Up This Field</div>
+                </div>
+                <div>
+                    <button id="editGridTitleButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Update Title</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---main title-->
+    <div class="modal fade" id="editMainTitleModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Update Main Title</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control" id="editMainTitleInput" type="text" placeholder="Grid Title">
+                    <div class="invalid-feedback">Please Fill Up This Field</div>
+                </div>
+                <div>
+                    <button id="editMainTitleButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Update Title</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!---sub title-->
+    <div class="modal fade" id="editSubtitleModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: rgb(254,105,23);">
+                    <div class="modal-title">
+                        <h4 class="text-light">Update Subtitle</h4>
+                    </div>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <textarea class="form-control" id="editSubtitleInput" type="text" placeholder="Grid Title"></textarea>
+                    <div class="invalid-feedback">Please Fill Up This Field</div>
+                </div>
+                <div>
+                    <button id="editSubtitleButton" class="btn btn-success m-2 mt-1 my-3 mx-3">Update Title</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="modal fade" id="editImageGridModal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -2504,7 +2691,7 @@
                 </div>
                 <div class="modal-body">
                     <div>
-                        <input class="form-control mt-3" id="imageGridTitleInput" type="text" placeholder="Image Grid Title">
+                        <input class="form-control mt-3" id="imageGridTitleInput" maxlength="30" type="text" placeholder="Image Grid Title">
                         <div class="invalid-feedback">Please Fill Up This Field</div>
                     </div>
                     <div>

@@ -58,6 +58,8 @@
             var gridGallery = $('#gridGallery');
             var aboutUsNav = $('#aboutUsNav');
             var gridTitle = $('#gridTitle');
+            var headerTitle = $('#header-title');
+            var headerSubtitle = $('#header-sub-title');
             const toastTrigger = $('.liveToastBtn');
             const toastLiveExample = $('#liveToast');
             
@@ -180,16 +182,15 @@
                             </center>
                         </div>
                         `);
-                    });
-                }
-            });
-            $.ajax({
-                type: 'POST',
-                url: 'admin/php/displayGridTitle',
-                success:function(response){
-                    var data = JSON.parse(response);
-                    $(data).each(function(index,value){
-                        gridTitle.text(`${value.title}`);
+                        gridTitle.append(`
+                            ${value.grid_title}
+                        `);
+                        headerTitle.text(`
+                            ${value.opening_title}
+                        `);
+                        headerSubtitle.text(`
+                            ${value.opening_subtitle}
+                        `);
                     });
                 }
             });
@@ -1005,9 +1006,9 @@
         <div>
             <div id="headerImage">
                 <div>
-                    <h1 id="header-title" class="fw-bold">The Man Who Sold The World</h1>
+                    <h1 id="header-title" class="fw-bold" style="text-shadow: 10px 10px rgb(255, 124, 36);"></h1>
                     <br>
-                    <p id="header-sub-title" class="container">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Totam cum est aut. Amet repellendus blanditiis doloribus incidunt accusantium eius assumenda atque placeat, non rem dolor provident iusto ratione, totam voluptates quae exercitationem sed similique eum sit quod corporis voluptatum facilis expedita? Minus minima id, atque numquam temporibus repellendus consequuntur et!</p>
+                    <p id="header-sub-title" class="container"></p>
                     <br>
                     <button class="btn btn-warning rounded rounded-pill fs-3 px-5 fw-bold ONB" id="mainOrder">Order Now</button>
                 </div>
@@ -1018,7 +1019,7 @@
             </div>
             <div id="sliderA" class="wrapper container pt-3 pb-3 mb-5">
             </div>
-            <h4 id="gridTitle" class="pt-5 mb-0" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-size:50px;letter-spacing: 4px;">MILESTONES (STATIC)</h4>
+            <h4 id="gridTitle" class="pt-5 mb-0" style="font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;font-size:50px;letter-spacing: 4px;"></h4>
             <div style="display: flex;align-items: center;justify-content: center;">
                 <div class="row row-cols-sm-1 row-cols-md-2 row-cols-lg-2 g-5 m-0 container" id="gridGallery" style="width: 100%;border-left: solid 10px rgba(0, 0, 255, 0);border-bottom: solid 2.5px rgba(0, 0, 255, 0);"></div>
             </div>
