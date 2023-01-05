@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,24 +119,24 @@
                         orderPop.hide('fast');
                     }
             });
-            orderNowButton.click(function(){
-                if(searchProduct.hasClass('onSearch')){
-                    showProductList.show('fast');
-                }
-                if($(window).width() < 976){
-                        orderPop.show('fast');
-                        mainOrder.hide('fast');
-                    }else{
-                        mainOrder.show('fast');
-                        orderPop.hide('fast');
-                    }
-                $(orderNowButton).addClass('onOrder');
-                $('#mainOrder,#orderPop,#aboutUsNav').hide('fast');
+            // orderNowButton.click(function(){
+            //     if(searchProduct.hasClass('onSearch')){
+            //         showProductList.show('fast');
+            //     }
+            //     if($(window).width() < 976){
+            //             orderPop.show('fast');
+            //             mainOrder.hide('fast');
+            //         }else{
+            //             mainOrder.show('fast');
+            //             orderPop.hide('fast');
+            //         }
+            //     $(orderNowButton).addClass('onOrder');
+            //     $('#mainOrder,#orderPop,#aboutUsNav').hide('fast');
 
-                $('#customSliderTitle,#sliderA,#sliderB,#ourHistorySliderTitle,#gridGallery,#welcomeCustomers,#aboutUsSection').slideUp('fast');
-                $('#homeNav').show('fast');
-                $('#searchNav,main').show('slow');
-            });
+            //     $('#customSliderTitle,#sliderA,#sliderB,#ourHistorySliderTitle,#gridGallery,#welcomeCustomers,#aboutUsSection').slideUp('fast');
+            //     $('#homeNav').show('fast');
+            //     $('#searchNav,main').show('slow');
+            // });
 
             facebookRedirect.hover(function(){
                 $(this).css('cursor','pointer');
@@ -382,34 +383,7 @@
                 }
             })
             mainCart.click(function(){
-                productIds = productIds.filter(function(obj){
-                    return obj != 'del';
-                })
-                productQuantities = productQuantities.filter(function(obj){
-                    return obj != 'del';
-                })
-                if(productIds.length == 0 || productQuantities.length == 0){
-                    alert('Your Cart is currently empty.');
-                }else{
-                    myOrderslist.modal('show');
-                    cartList.children().remove();
-                    $.ajax({
-                        type: 'POST',
-                        url: 'admin/php/proccessOrders.php',
-                        data:
-                        {
-                            productIds: productIds,
-                            productQuantities: productQuantities,
-                        },
-                        success: function(response){
-                            var data = JSON.parse(response);
-                            totalOfCart = data.total;
-                            $(data.products).each(function(index, value){
-                                addToCartsList(index,value.id, value.name, value.description, value.image, value.quantity, value.price);
-                            })
-                        }
-                    });
-                }
+                
             });
             cartPop.on('click', function(){
                 productIds = productIds.filter(function(obj){
@@ -541,11 +515,7 @@
                                     <p style="margin-left: 10px;margin-top: 5px;margin-bottom: 5px;" class="text-truncate"><strong>Description: </strong>${description}</p>
                                     <p style="margin-left: 10px;margin-bottom: 15px;"><strong>Available: </strong><span class="available">${available}</span></p>
                                     <p style="margin-left: 10px;">
-                                        <code style="color: orange;padding: 2px;background-color: black;border-radius: 25%;">Price</code>
-                                        <br>
-                                        <strong>
-                                            <span>&#8369</span>${price}
-                                        </strong>
+                                        ${price}
                                     </p>
                                     <div class="input-group mb-3">
                                         <button style="border-radius: 50% 0 0 50%;" class="thisProductDecrease btn btn-success">-</button>
@@ -588,36 +558,20 @@
 
             function addToProductGrid(index, id, name, image, description, available, price){
                 productList.append(
-                            `<div id="item" class="card shadow col-md mx-auto rounded-4" style="width: 300px; margin: 20px;">
-                                <div class="card-header rounded-4 rounded-bottom text-light" style="background-color: rgb(41,22,5);border-top: 5px solid rgb(254,104,27);border-bottom: solid 5px rgb(254,104,27);">
-                                    <center>
-                                        <h5 class="text-truncate" style="color: rgb(254,254,6);">${name}</h5>
-                                    </center>
-                                </div>
-                                <div class="card-body">
-                                    <center>
-                                        <img style="border-radius: 5%; border: solid 5px rgb(255,191,8);" src="admin/${image}" alt="" height="200px" width="200px" style="margin: 10px;">
-                                    </center>
-                                    <p style="margin-left: 10px;margin-top: 5px;margin-bottom: 5px;" class="text-truncate"><strong>Description: </strong>${description}</p>
-                                    <p style="margin-left: 10px;margin-bottom: 15px;"><strong>Available: </strong><span class="available">${available}</span></p>
-                                    <p style="margin-left: 10px;">
-                                        <code style="color: orange;padding: 2px;background-color: black;border-radius: 25%;">Price</code>
-                                        <br>
-                                        <strong>
-                                            <span>&#8369</span>${price}
-                                        </strong>
-                                    </p>
-                                    <div class="input-group mb-3">
-                                        <button style="border-radius: 50% 0 0 50%;" class="thisProductDecrease btn btn-success">-</button>
-                                        <input type="number" class="thisProductQuantity form-control text-center" value="0">
-                                        <button style="border-radius: 0 50% 50% 0;" class="thisProductIncrease btn btn-success">+</button> 
+                            `<div class="col">
+                                <div class="card shadow col-md mx-auto" style="cursor: pointer">
+                                    <img class="img-fluid card-img-top" style="height: 300px; width: 100%; object-fit: cover" src="admin/${image}" alt="">
+                                    <div class="card-footer text-center">
+                                        <p class="fw-bold text-truncate fs-3 mt-1">${name}</p>
+                                        <p class="text-truncate">${description}</p>
+                                
+                                        <p class="text-start fs-2 fw-bold text-secondary mt-2">&#8369; ${price}</p>
+                                        <button class="btn btn-outline-danger w-100 mt-3">View Product</button>
                                     </div>
-                                    <div class="d-flex justify-content-between">
-                                        <button value="${id}" class="viewProductButton btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#viewProduct">View Product</button>
-                                        <button value="${id}" class="add-to-cart btn btn-warning">Add To Cart</button>
-                                    </div>
+                                    
                                 </div>
                             </div>`
+                            
                         );
 
                 productFunctions(index, productList);
@@ -797,165 +751,7 @@
         });
     </script>
     <style>
-        #header-sub-title{
-            font-size: 20px;
-            color: white;
-        }
-        #header-title{
-            color: white;
-            -webkit-user-select: none;
-            font-size: 50px;
-            text-shadow: 2px 2px 10px black;
-        }
-        @media (min-width: 768px){
-            #header-title{
-                color: white;
-                -webkit-user-select: none;
-                font-size: 80px;
-                text-shadow: 2px 2px 10px black;
-            }
-            #header-sub-title{
-                font-size: 25px;
-            }
-        }
-        @media (min-width: 1000px){
-            .botLogo{
-                width: 50%;
-            }
-            .botContacts{
-                width: 25%;
-            }
-            .botFollow{
-                width: 25%;
-            }
-            .footerDetails{
-            margin-top: 70px;
-            }
-        }
-        @media (max-width: 1000px) {
-            .botContacts{
-                text-align: center;
-            }
-            .botFollow{
-                text-align: center;
-            }
-        }
         
-        
-        #headerImage::before{
-            position: absolute;
-            background-image: url('lechon1.jpg');
-            background-repeat: no-repeat;
-            background-size: cover;
-            opacity: 60%;
-            content: '';
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: -1;
-            background-position: center;
-        }
-        #headerImage{
-            position: relative;
-            height: 100vh;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #slide-show{
-            position: relative;
-            z-index: -1;
-        }
-        #slide-show::before{
-            position: absolute;
-            content: '';
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, .7);
-        }
-        *{
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        #logo-ni-lola{
-            display: none;
-        }
-
-        @media (min-width: 768px){
-            #logo-ni-lola{
-                display:inline;
-            }
-        }
-        .carouselImg{
-            max-height: 90vh;
-        }
-        /* @media screen and (max-width: 50%) {
-            .carouselImg{
-                max-height: 100px;
-            }
-        } */
-        #footerImage{
-            max-height: 225px;
-            max-width: 450px;
-        }
-        .wrapper{
-            height: fit-content;
-            display: flex;
-            overflow-x: auto;
-        }
-        ::-webkit-scrollbar{
-            width: 10px;
-            /* background-color: rgb(254,105,23); */
-        }
-        .wrapper::-webkit-scrollbar{
-            width: 12px;
-            height: 8px;
-            /* background-color: rgb(254,105,23); */
-        }
-        ::-webkit-scrollbar-track{
-            border-radius: 10px;
-            background-color: #F5F5F5;
-        }
-        ::-webkit-scrollbar-thumb{
-            border-radius: 10px;
-            background-color:  rgb(224, 100, 28);
-        }
-        .wrapper .item{
-            min-width: 300px;
-            height: auto;
-            text-align: center;
-        }
-        .wrapper .item img{
-            max-width: 500px;
-            height: 250px;
-            cursor: pointer;
-        }
-        #gridGallery .gridItem{
-            min-width: 250px;
-            min-height: 200px;
-        }
-        .containera {
-            font-family: Arial;
-            margin: 0px;
-            
-        }
-        .tb {
-            color: white;
-        }
-        .tb::-webkit-scrollbar{
-            width: 5px;
-            height: 5px;
-        }
-        .td{
-            width: 100%;
-        }
-        .gimg{
-            border-bottom: solid 2.5px rgba(0, 0, 255, 0);
-            border-right: solid 10px rgba(0, 0, 255, 0);
-        }
     </style>
 </head>
 <body style="margin-bottom: 0px;background-color: black;">
@@ -978,7 +774,7 @@
                             </div>
                         </li>
                         <li class="nav-item mx-2">
-                            <a class="myCart btn btn-warning shadow" id="mainCart" href="#">My Cart</a>
+                            <a class="myCart btn btn-warning shadow" id="mainCart" href="cart/">My Cart</a>
                         </li>
                         <li class="nav-item mx-2">
                             <a href="#" class="nav-link" id="showProductList" style="color: white;">All Products</a>
@@ -1010,7 +806,7 @@
                     <br>
                     <p id="header-sub-title" class="container"></p>
                     <br>
-                    <button class="btn btn-warning rounded rounded-pill fs-3 px-5 fw-bold ONB" id="mainOrder">Order Now</button>
+                    <a href="products/" class="btn btn-warning rounded rounded-pill fs-3 px-5 fw-bold ONB" id="mainOrder">Order Now</a>
                 </div>
             </div>
         </div>
@@ -1044,7 +840,7 @@
                 <hr style="width: 40%;margin-left: 10px;height: 1px;background-color: aliceblue; border: none;">
             </div>
             <div class="container">
-                <div id="productList" style="display: grid; grid-template-columns: repeat(auto-fill,minmax(320px,1fr));"></div>
+                <div id="productList" class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3"></div>
             </div>
         </section>
         <!--searchBar Results-->
