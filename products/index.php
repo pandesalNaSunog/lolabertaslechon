@@ -3,6 +3,9 @@
     $productsArray = array();
     include('../admin/php/connection.php');
     $con = connect();
+    $hasResult = false;
+    $hasActiveSession = false;
+    session_start();
     if(isset($_GET['search'])){
         
         $search = "%" . $_GET['search'] . "%";
@@ -10,6 +13,15 @@
         $query->bind_param('s', $search);
     }else{
         $query = $con->prepare('SELECT * FROM products LIMIT 5');
+    }
+    if(isset($_SESSION['user_id'])){
+        $hasActiveSession = true;
+        $userId = $_SESSION['user_id'];
+        $userquery = $con->prepare('SELECT * FROM users WHERE id = ?');
+        $userquery->bind_param('i', $userId);
+        $userquery->execute();
+        $userresult = $userquery->get_result();
+        $userdata = $userresult->fetch_assoc();
     }
 
     
@@ -24,8 +36,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <script src="../bootstrap/js/bootstrap.min.js"></script>
     <script src="jquery.js"></script>
     <title>Products | D' Original Lola Berta's Lechon Haus</title>
 </head>
@@ -35,7 +49,15 @@
         <div class="container">
             <div class="navbar-brand" style="margin: 0;">
                 <a href="<?php echo $_SERVER['PHP_SELF'] ?>"><img style="cursor: pointer margin: 0px;pointer-events: none;" id="logo-ni-lola" src="../admin/Branding/received_727156111882599 page logo.png" height="70px" width="70px" alt="" srcset=""></a>
-                <img class="rounded-2 shadow mt-2" src="../admin/Branding/LLLL.png" height="50px" width="280px" alt="">
+                <?php 
+                        if($hasActiveSession){
+                        ?>
+                        
+                            <span class="ms-3 fw-bold text-light me-5">Welcome, <?php echo $userdata['name'];?></span>
+                            
+                        <?php
+                        }
+                    ?>
             </div>
             <button class="navbar-toggler shadow" style="border: solid 2px rgb(255, 124, 36);border-radius: 25%;" data-bs-toggle="collapse" data-bs-target="#nav-menu">
                 <span class="navbar-toggler-icon"></span>
@@ -68,7 +90,9 @@
         <div class="container">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
                 <?php
-                    while($data = $result->fetch_assoc()){?>
+                    while($data = $result->fetch_assoc()){
+                        $hasResult = true;
+                        ?>
 
                     <div class="col">
                         <div class="card shadow col-md mx-auto" style="cursor: pointer">
@@ -92,7 +116,19 @@
 
             </div>
         </div>
-        
+
+        <?php if(!$hasResult && isset($_GET['search'])){ 
+            ?>
+            <div class="container">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <p>404 Not Found</p>
+                    </div>
+                </div>
+            </div>
+        <?php
+            }
+            ?>
         
     </section>
 
@@ -114,7 +150,7 @@
                                     <figure>
                                         <img id="footerImage" src="../footer.png" height="100%" width="100%" style="-webkit-user-select: none;min-height: 100px;min-width: 270px;">
                                         <figcaption>
-                                            <p class="text-dark">22 F Imson Street, Brgy San Pedro, 1620 Pateros, Philippines</p>
+                                            <p class="text-light">22 F Imson Street, Brgy San Pedro, 1620 Pateros, Philippines</p>
                                         </figcaption>
                                     </figure>
                                 </div>

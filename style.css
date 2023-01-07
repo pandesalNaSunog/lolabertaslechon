@@ -59,10 +59,26 @@
     }
 }
 
+.my-btn-outline{
+    border: 2px solid orangered;
+    border-radius: 5px;
+    background-color: white;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: orangered;
+    transition-duration: 0.3s;
+}
+.my-btn-outline:hover{
+    background-color: orangered;
+    color: white;
+    text-decoration: none;
+}
 
 #headerImage::before{
     position: absolute;
-    background-image: url('lechon1.jpg');
+    background-image: url('XLbelly.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     opacity: 60%;
@@ -133,6 +149,22 @@
     height: 8px;
     /* background-color: rgb(254,105,23); */
 }
+.my-btn{
+    background-color: orangered;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: white;
+    border: none;
+    transition-duration: 0.3s;
+}
+.my-btn:hover{
+    background-color: orange;
+}
+.my-btn:disabled{
+    opacity: 50%;
+}
 ::-webkit-scrollbar-track{
     border-radius: 10px;
     background-color: #F5F5F5;
@@ -159,6 +191,20 @@
     font-family: Arial;
     margin: 0px;
     
+}
+#background{
+    position: relative;
+}
+#background::before{
+    opacity: 20%;
+    content: '';
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    position: absolute;
+    background-image: url('lechon1.jpg');
+    background-size: cover;
 }
 .tb {
     color: white;
