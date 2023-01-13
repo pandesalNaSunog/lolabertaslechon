@@ -125,20 +125,39 @@
         </div>
     </nav>
 
-    <section>
+    <section class="mt-5">
         <div class="container">
+            <h2 class="fw-bold">My Orders</h2>
+            <hr>
             <?php
                 $productIds = array();
                 while($orderData = $orderresult->fetch_assoc()){
                     $productIds = explode('*', $orderData['product_ids']);
 
-                    foreach($productIds as $productid){
-                        echo $productid;
-                    }
+                    
             ?>
-                <div class="card shadow">
+                <div class="card shadow mt-3">
                     <div class="card-body">
-                        <?php echo $orderData['product_ids'] ?>
+                        <?php 
+                            foreach($productIds as $productid){
+                                $productQuery = $con->prepare('SELECT * FROM products WHERE id = ?');
+                                $productQuery->bind_param('i', $productid);
+                                $productQuery->execute();
+                                $productResult = $productQuery->get_result();
+                                $productData = $productResult->fetch_assoc();
+                        ?>
+                                <div class="card shadow mt-3">
+                                    <div class="card-body d-flex">
+                                        <img src="../admin/<?php echo $productData['image'] ?>" style="height: 100px; width: 100px; object-fit: cover" alt="">
+                                        <div class="ms-3">
+                                            <h4 class="fw-bold text-secondary"><?php echo $productData['name']; ?></h4>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                        <?php
+                            } 
+                        ?>
                     </div>
                 </div>
             <?php
