@@ -83,14 +83,16 @@
     <section id="cart-list">
         <div class="container">
             <div class="card shadow mt-5">
-                <div class="card-body p-5">
+                <div class="card-body p-4">
                     <h1 class="fw-bold"><svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-cart4" viewBox="0 0 16 16">
                     <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
                     </svg><span class="ms-5">Shopping Cart</span></h1>
                     <hr>
                     <div class="row row-cols-1 row-cols-xl-2 g-3">
                     <?php
+                        $hasCartItems = false;
                         while($cartData = $cartResult->fetch_assoc()){
+                            $hasCartItems = true;
                             $productId = $cartData['product_id'];
                             $productquery = $con->prepare('SELECT * FROM products WHERE id = ?');
                             $productquery->bind_param('i', $productId);
@@ -139,9 +141,26 @@
                         }
                     ?>
                     </div>
+                    <?php
+                        if(!$hasCartItems){
+                    ?>
+                        <h4 class="w-100 p-5 text-center text-secondary">Your Cart is Empty</h4>
+                    <?php
+                        }
+                    ?>
                 </div>
-                <div class="card-footer p-5">
-                    <button id="check-out-button" class="my-btn">Check Out</button>
+                <div class="card-footer p-4">
+                    <a href="../products/" class="btn btn-link"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                    </svg>  Continue Shopping</a>
+                    <?php
+                        if($hasCartItems){
+                    ?>
+                        <button id="check-out-button" class="my-btn">Check Out</button>
+                    <?php
+                        }
+                    ?>
+                    
                 </div>
             </div>
         </div>
@@ -171,8 +190,13 @@
                         
                         
                     </div>
-                    <form action="../orders/" method="POST">
-                        <button class="my-btn w-100">Confirm Checkout</button>
+                    <form class="w-100" action="../orders/" method="POST">
+                        <label for="">Delivery Mode: </label>
+                        <select class="form-select" name="order_type">
+                            <option value="Pickup">Pickup</option>
+                            <option value="Delivery">Delivery</option>
+                        </select>
+                        <button class="my-btn w-100 mt-3">Confirm Checkout</button>
                     </form>
                 </div>
             </div>

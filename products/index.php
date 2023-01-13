@@ -79,7 +79,7 @@
                         <a class="myCart btn btn-warning shadow" id="mainCart" href="../cart/">My Cart</a>
                     </li>
                     <li class="nav-item mx-2">
-                        <a href="#" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
+                        <a href="../" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
                     </li>
                 </ul>
             </div>

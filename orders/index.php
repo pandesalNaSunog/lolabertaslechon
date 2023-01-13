@@ -3,6 +3,7 @@
     $hasActiveSession = false;
     include('../admin/php/connection.php');
     $con = connect();
+    $today = today();
     if(isset($_SESSION['user_id'])){
         $hasActiveSession = true;
         $userId = $_SESSION['user_id'];
@@ -13,6 +14,7 @@
         $userdata = $userresult->fetch_assoc();
 
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $orderType = htmlspecialchars($_POST['order_type']);
             $cartQuery = $con->prepare('SELECT * FROM carts WHERE user_id = ?');
             $cartQuery->bind_param('i', $userId);
             $cartQuery->execute();
@@ -29,6 +31,10 @@
                 $quantities[] = $quantity;
             }
 
+            $query = $con->prepare('DELETE FROM carts WHERE user_id = ?');
+            $query->bind_param('i', $userId);
+            $query->execute();
+
             foreach($productIds as $key => $productid){
                 if($key + 1 == count($productIds)){
                     $productIdsString .= $productid;
@@ -39,8 +45,21 @@
                 }
 
             }
-            echo $productIdsString . "---" . $quantityString;
+
+            $query = $con->prepare('INSERT INTO orders(user_id,order_type, product_ids, quantities, order_status,date_and_time, created_at, updated_at)VALUES(?,?,?,?,?,?,?,?)');
+            $orderStatus = 'Preparing';
+            $query->bind_param('isssssss', $userId, $orderType, $productIdsString, $quantityString, $orderStatus, $today, $today, $today);
+            $query->execute();
         }
+
+        $orderquery = $con->prepare('SELECT * FROM orders WHERE user_id = ?');
+        $orderquery->bind_param('i', $userId);
+        $orderquery->execute();
+        $orderresult = $orderquery->get_result();
+
+
+    }else{
+        header('Location: ../');
     }
 
     
@@ -99,11 +118,33 @@
                         <a class="myCart btn btn-warning shadow" id="mainCart" href="../cart/">My Cart</a>
                     </li>
                     <li class="nav-item mx-2">
-                        <a href="#" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
+                        <a href="../" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
+
+    <section>
+        <div class="container">
+            <?php
+                $productIds = array();
+                while($orderData = $orderresult->fetch_assoc()){
+                    $productIds = explode('*', $orderData['product_ids']);
+
+                    foreach($productIds as $productid){
+                        echo $productid;
+                    }
+            ?>
+                <div class="card shadow">
+                    <div class="card-body">
+                        <?php echo $orderData['product_ids'] ?>
+                    </div>
+                </div>
+            <?php
+                }
+            ?>
+        </div>
+    </section>
 </body>
 </html>
