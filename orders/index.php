@@ -46,9 +46,19 @@
 
             }
 
-            $query = $con->prepare('INSERT INTO orders(user_id,order_type, product_ids, quantities, order_status,date_and_time, created_at, updated_at)VALUES(?,?,?,?,?,?,?,?)');
-            $orderStatus = 'Preparing';
-            $query->bind_param('isssssss', $userId, $orderType, $productIdsString, $quantityString, $orderStatus, $today, $today, $today);
+            $query = $con->prepare('INSERT INTO orders(user_id,order_type, product_ids, quantities,date_and_time, created_at, updated_at)VALUES(?,?,?,?,?,?,?)');
+            $orderStatus = 'Your order is currently Preparing';
+            $query->bind_param('issssss', $userId, $orderType, $productIdsString, $quantityString, $today, $today, $today);
+            $query->execute();
+
+            $lastinsertorderquery = "SELECT * FROM orders WHERE id = LAST_INSERT_ID()";
+            $lastinsertorderresult = $con->query($lastinsertorderquery);
+            $lastinsertorderData = $lastinsertorderresult->fetch_assoc();
+
+            $orderId = $lastinsertorderData['id'];
+
+            $query = $con->prepare('INSERT INTO order_statuses(order_id, status, created_at, updated_at)VALUES(?,?,?,?)');
+            $query->bind_param('isss', $orderId, $orderStatus, $today, $today);
             $query->execute();
         }
 
@@ -129,40 +139,79 @@
         <div class="container">
             <h2 class="fw-bold">My Orders</h2>
             <hr>
-            <?php
-                $productIds = array();
-                while($orderData = $orderresult->fetch_assoc()){
-                    $productIds = explode('*', $orderData['product_ids']);
+            <div class="row row-cols-1 row-cols-md-2">
+                
 
-                    
-            ?>
-                <div class="card shadow mt-3">
-                    <div class="card-body">
-                        <?php 
-                            foreach($productIds as $productid){
-                                $productQuery = $con->prepare('SELECT * FROM products WHERE id = ?');
-                                $productQuery->bind_param('i', $productid);
-                                $productQuery->execute();
-                                $productResult = $productQuery->get_result();
-                                $productData = $productResult->fetch_assoc();
-                        ?>
-                                <div class="card shadow mt-3">
-                                    <div class="card-body d-flex">
-                                        <img src="../admin/<?php echo $productData['image'] ?>" style="height: 100px; width: 100px; object-fit: cover" alt="">
-                                        <div class="ms-3">
-                                            <h4 class="fw-bold text-secondary"><?php echo $productData['name']; ?></h4>
+                
+                    <?php
+                        $productIds = array();
+                        while($orderData = $orderresult->fetch_assoc()){
+                            $productIds = explode('*', $orderData['product_ids']);
+                            $quantities = explode('*', $orderData['quantities']);
+                            $orderId = $orderData['id'];
+                    ?>
+                    <div class="col">
+                        <div class="card shadow mt-3">
+                            <div class="card-body">
+                                
+
+                                
+                                <?php 
+                                    foreach($productIds as $key => $productid){
+                                        $productQuery = $con->prepare('SELECT * FROM products WHERE id = ?');
+                                        $productQuery->bind_param('i', $productid);
+                                        $productQuery->execute();
+                                        $productResult = $productQuery->get_result();
+                                        $productData = $productResult->fetch_assoc();
+
+                                        $quantity = $quantities[$key];
+                                ?>      
+                                    
+                                        <div class="card shadow mt-3">
+                                            <div class="card-body d-flex">
+                                                <img src="../admin/<?php echo $productData['image'] ?>" style="height: 100px; width: 100px; object-fit: cover" alt="">
+                                                <div class="ms-3">
+                                                    <h4 class="fw-bold text-secondary"><?php echo $productData['name']; ?></h4>
+                                                    <i>Quantity: <?php echo $quantity; ?></i>
+                                                    
+                                                </div>
+                                            </div>
                                         </div>
+                                    
                                         
-                                    </div>
-                                </div>
-                        <?php
-                            } 
-                        ?>
+                                <?php
+                                    } 
+                                ?>
+                            </div>
+                            <div class="card-footer">
+                                <ul>
+                                    <?php
+                                        $statusQuery = $con->prepare('SELECT * FROM order_statuses WHERE order_id = ?');
+                                        $statusQuery->bind_param('i',$orderId);
+                                        $statusQuery->execute();
+                                        $statusResult = $statusQuery->get_result();
+
+                                        while($statusData = $statusResult->fetch_assoc()){
+                                    ?>
+                                        <li>
+                                            <?php echo $statusData['status'] ?><br>
+                                            <p style="font-size: 10px"> <?php echo date_format(date_create($statusData['created_at']), 'M d, Y h:i A') ?></p>
+                                        </li>
+                                    <?php
+                                        }
+                                    ?>
+                                </ul>
+                            </div>
+                            
+                        </div>
                     </div>
+                    <?php
+                        }
+                    ?>
+                    
                 </div>
-            <?php
-                }
-            ?>
+            </div>
+            
         </div>
     </section>
 </body>
