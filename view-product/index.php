@@ -16,12 +16,11 @@
         }
         $canViewCart = false;
         $hasActiveSession = false;
-        if(isset($_SESSION['user_id'])){
-            $userId = $_SESSION['user_id'];
+        if(isset($_SESSION['client_user_id'])){
+            $userId = $_SESSION['client_user_id'];
             $canViewCart = true;
             
             $hasActiveSession = true;
-            $userId = $_SESSION['user_id'];
             $userquery = $con->prepare('SELECT * FROM users WHERE id = ?');
             $userquery->bind_param('i', $userId);
             $userquery->execute();
@@ -55,7 +54,7 @@
     <title>View Product | D Original Lola Berta's Lechon Haus</title>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="padding: 0px; -webkit-user-select: none; background-color: #fe6917;">
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="padding: 0px; -webkit-user-select: none; background-color: #fe6917;">
         <div class="container">
             <div class="navbar-brand" style="margin: 0;">
                 <a href="<?php echo $_SERVER['PHP_SELF'] ?>"><img style="cursor: pointer margin: 0px;pointer-events: none;" id="logo-ni-lola" src="../admin/Branding/received_727156111882599 page logo.png" height="70px" width="70px" alt="" srcset=""></a>
@@ -76,20 +75,29 @@
                 <ul class="navbar-nav ms-auto">
                     <li id="searchNav" class="nav-item mx-2">
                         
-                        <form action="../products/" method="GET">
-                            <div class="input-group col-8 shadow">
-                                <input type="text" class="form-control mt-0 mb-0" name="search" id="searchProductInput" placeholder="Search..." required>
-                                <button class="btn btn-warning mt-0" id="searchProduct">Search</button>
-                            </div>
-                        </form>
+                            <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="GET">
+                                <div class="input-group col-8 shadow">
+                                    <input type="text" class="form-control mt-0 mb-0" name="search" id="searchProductInput" placeholder="Search..." required>
+                                    <button class="btn btn-warning mt-0" id="searchProduct">Search</button>
+                                </div>
+                            </form>
                             
                         
                     </li>
                     <li class="nav-item mx-2">
                         <a class="myCart btn btn-warning shadow" id="mainCart" href="../cart/">My Cart</a>
                     </li>
+                    <?php
+                        if($hasActiveSession){
+                    ?>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link text-light" href="../orders/">My Orders</a>
+                        </li>
+                    <?php
+                        }
+                    ?>
                     <li class="nav-item mx-2">
-                        <a href="#" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
+                        <a href="../" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
                     </li>
                 </ul>
             </div>

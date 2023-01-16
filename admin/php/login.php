@@ -5,12 +5,14 @@
         $con = connect();
     
         if(isset($_POST)){
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-    
-            $query = "SELECT * FROM users WHERE email = '$email'";
-            $user = $con->query($query) or die($con->error);
-            if($row = $user->fetch_assoc()){
+            $email = htmlspecialchars($_POST['email']);
+            $password = htmlspecialchars($_POST['password']);
+            $userType = 'admin';
+            $query = $con->prepare("SELECT * FROM users WHERE email = ? AND user_type = ?");
+            $query->bind_param('ss', $email, $userType);
+            $query->execute();
+            $result = $query->get_result();
+            if($row = $result->fetch_assoc()){
                 if(password_verify($password,$row['password'])){
                     $userId = $row['id'];
                     $_SESSION['user_id'] = $userId;

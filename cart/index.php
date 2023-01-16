@@ -3,9 +3,9 @@
     session_start();
     include('../admin/php/connection.php');
     $con = connect();
-    if(isset($_SESSION['user_id'])){
+    if(isset($_SESSION['client_user_id'])){
         $hasActiveSession = true;
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['client_user_id'];
         $query = $con->prepare('SELECT * FROM users WHERE id = ?');
         $query->bind_param('i', $userId);
         $query->execute();
@@ -16,6 +16,8 @@
         $cartQuery->bind_param('i', $userId);
         $cartQuery->execute();
         $cartResult = $cartQuery->get_result();
+    }else{
+        header('Location: ../');
     }
 ?>
 <!DOCTYPE html>
@@ -72,6 +74,16 @@
                     <li class="nav-item mx-2">
                         <a class="myCart btn btn-warning shadow" id="mainCart" href="<?php echo $_SERVER['PHP_SELF']?>">My Cart</a>
                     </li>
+
+                    <?php
+                        if($hasActiveSession){
+                    ?>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link text-light" href="../orders/">My Orders</a>
+                        </li>
+                    <?php
+                        }
+                    ?>
                     <li class="nav-item mx-2">
                         <a href="../" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
                     </li>

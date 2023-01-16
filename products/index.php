@@ -14,9 +14,9 @@
     }else{
         $query = $con->prepare('SELECT * FROM products LIMIT 5');
     }
-    if(isset($_SESSION['user_id'])){
+    if(isset($_SESSION['client_user_id'])){
         $hasActiveSession = true;
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['client_user_id'];
         $userquery = $con->prepare('SELECT * FROM users WHERE id = ?');
         $userquery->bind_param('i', $userId);
         $userquery->execute();
@@ -78,6 +78,15 @@
                     <li class="nav-item mx-2">
                         <a class="myCart btn btn-warning shadow" id="mainCart" href="../cart/">My Cart</a>
                     </li>
+                    <?php
+                        if($hasActiveSession){
+                    ?>
+                        <li class="nav-item mx-2">
+                            <a class="nav-link text-light" href="../orders/">My Orders</a>
+                        </li>
+                    <?php
+                        }
+                    ?>
                     <li class="nav-item mx-2">
                         <a href="../" class="nav-link text-light" id="homeNav" style="color: white;">Home</a>
                     </li>
@@ -92,10 +101,25 @@
                 <?php
                     while($data = $result->fetch_assoc()){
                         $hasResult = true;
+                        $quantity = $data['quantity'];
                         ?>
 
                     <div class="col">
-                        <div class="card shadow col-md mx-auto" style="cursor: pointer">
+                        <div style="position: relative" class="card shadow col-md mx-auto" style="cursor: pointer">
+                            <?php
+                                if($quantity == 0){
+                            ?>
+                            
+                                <div style="width: 100%; height: 100%; position: absolute; opacity: 30%" class="bg-dark">
+                                    
+                                </div>
+                                <div class="d-flex justify-content-center" style="position: absolute; width: 100%;">
+                                    <p class="text-light text-center" style="background-color: orangered; padding: 10px">Sold Out</p>
+                                </div>
+                            <?php
+                                }
+                            ?>
+
                             <img class="img-fluid card-img-top" style="height: 300px; width: 100%; object-fit: cover" src="../admin/<?php echo $data['image']; ?>" alt="">
                             <div class="card-footer text-center">
                                 <p class="fw-bold text-truncate fs-3 mt-1"><?php echo $data['name']; ?></p>

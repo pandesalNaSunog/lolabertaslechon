@@ -58,7 +58,7 @@
                                  <?php
                                  }else{
                                     session_start();
-                                    $_SESSION['user_id'] = $data['id'];
+                                    $_SESSION['client_user_id'] = $data['id'];
                                     header('Location: ../');
                                  }
                                  ?>

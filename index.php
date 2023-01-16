@@ -8,14 +8,18 @@
         session_destroy();
         $hasActiveSession = false;
     }
-    if(isset($_SESSION['user_id'])){
+    if(isset($_SESSION['client_user_id'])){
         $hasActiveSession = true;
-        $userId = $_SESSION['user_id'];
+        $userId = $_SESSION['client_user_id'];
         $query = $con->prepare('SELECT * FROM users WHERE id = ?');
         $query->bind_param('i', $userId);
         $query->execute();
         $result = $query->get_result();
         $data = $result->fetch_assoc();
+        if($data['user_type'] == 'admin'){
+            session_destroy();
+            header('Location: ' . $_SERVER['PHP_SELF']);
+        }
     }
 ?>
 
@@ -28,10 +32,10 @@
     <title>D' Original Lola Berta's Lechon Haus</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <script src="bootstrap/js/bootstrap.min.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="jquery.js"></script>
     <script src="js/toast.js"></script>
     <script src="main.js"></script>
@@ -127,7 +131,17 @@
                     <br>
                     <p id="header-sub-title" class="container"></p>
                     <br>
-                    <a href="products/" class="btn btn-warning rounded rounded-pill fs-3 px-5 fw-bold ONB" id="mainOrder">Order Now</a>
+                    <a href="products/" class="my-btn rounded rounded-pill fs-3 px-5 fw-bold ONB" id="mainOrder">Order Now</a>
+
+                    <?php
+                        if(!$hasActiveSession){
+                    ?>
+                        <a href="login/" class="ms-3 my-btn-outline rounded-pill fs-3 px-5 fw-bold">Log In Now</a>
+                    <?php
+                        }
+                    ?>
+                    
+                        
                 </div>
             </div>
         </div>
@@ -283,7 +297,9 @@
                             </div> -->
                             <div>
                                 <h3>
-                                    <img src="line.svg" alt=""><u>Contact us:</u>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-telephone-fill" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                                </svg> Contact Us
                                 </h3>
                                 <div style="margin-left: 2%;">
                                 <span>Tel #: 86424762 / 89945210</span>

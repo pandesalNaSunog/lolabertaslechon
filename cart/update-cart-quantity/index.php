@@ -3,8 +3,8 @@
         include('../../admin/php/connection.php');
         $con = connect();
         session_start();
-        if(isset($_POST) && isset($_SESSION['user_id'])){
-            $userId = $_SESSION['user_id'];
+        if(isset($_POST) && isset($_SESSION['client_user_id'])){
+            $userId = $_SESSION['client_user_id'];
             $quantity = $_POST['quantity'];
             $cartItemId = $_POST['cart_item_id'];
             $query = $con->prepare('UPDATE carts SET quantity = ? WHERE id = ? AND user_id = ?');

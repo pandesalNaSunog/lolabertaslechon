@@ -4,8 +4,8 @@
         $con = connect();
         session_start();
         $cart = array();
-        if(isset($_SESSION['user_id'])){
-            $userId = $_SESSION['user_id'];
+        if(isset($_SESSION['client_user_id'])){
+            $userId = $_SESSION['client_user_id'];
             $query = $con->prepare('SELECT * FROM carts WHERE user_id = ?');
             $query->bind_param('i', $userId);
             $query->execute();
@@ -25,13 +25,13 @@
                     'image' => $productData['image'],
                     'price' => $productData['price'],
                     'quantity' => $data['quantity'],
-                    'total' => $total
+                    'total' => number_format($total, 2),
                 );
                 $grandTotal += $total;
             }
             echo json_encode(array(
                 'cart_item' => $cart,
-                'grand_total' => $grandTotal
+                'grand_total' => number_format($grandTotal,2)
             ));
         }else{
             echo 'session expired';

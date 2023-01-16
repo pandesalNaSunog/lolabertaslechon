@@ -62,13 +62,14 @@
 .my-btn-outline{
     border: 2px solid orangered;
     border-radius: 5px;
-    background-color: white;
+    background-color: none;
     padding-left: 20px;
     padding-right: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
     color: orangered;
     transition-duration: 0.3s;
+    text-decoration: none;
 }
 .my-btn-outline:hover{
     background-color: orangered;
@@ -81,7 +82,7 @@
     background-image: url('XLbelly.jpg');
     background-repeat: no-repeat;
     background-size: cover;
-    opacity: 60%;
+    opacity: 40%;
     content: '';
     top: 0;
     bottom: 0;
@@ -90,6 +91,7 @@
     z-index: -1;
     background-position: center;
 }
+
 #headerImage{
     position: relative;
     height: 100vh;
@@ -115,14 +117,9 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 #logo-ni-lola{
-    display: none;
+    display: inline;
 }
 
-@media (min-width: 768px){
-    #logo-ni-lola{
-        display:inline;
-    }
-}
 .carouselImg{
     max-height: 90vh;
 }
@@ -157,10 +154,12 @@
     padding-bottom: 10px;
     color: white;
     border: none;
+    text-decoration: none;
     transition-duration: 0.3s;
 }
 .my-btn:hover{
     background-color: orange;
+    text-decoration: none;
 }
 .my-btn:disabled{
     opacity: 50%;
