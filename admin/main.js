@@ -102,6 +102,29 @@ $(document).ready(function(){
     var instructions = $('#instructions');
     var salesChart = $('#sales-chart');
     let viewOrderModal = $('#view-order-modal');
+    let updateOrderStatus = $('#update-order-status');
+    let orderStatus = $('#order-status');
+
+    updateOrderStatus.click(function(){
+        if(confirm('Please confirm update.') == true){
+            updateOrderStatus.prop('disabled', true);
+            $.ajax({
+                type: 'POST',
+                url: 'php/updateOrderStatus.php',
+                data:{
+                    order_id: globalOrderId,
+                    status: orderStatus.val()
+                },
+                success: function(response){
+                    if(response == 'ok'){
+                        updateOrderStatus.prop('disabled', false);
+                        viewOrderModal.modal('hide');
+                    }
+                }
+            })
+        }
+    })
+
     salesChart.hide();
 
     generateSalesReport.on('click', function(){
@@ -187,7 +210,7 @@ $(document).ready(function(){
     let numberOfItems = $('#number-of-items');
     let orderProductsList = $('#order-products-list');
     let orderStatuses = $('#order-statuses');
-
+    let orderPlaceholder = $('#order-placeholder');
     editSubtitleInput.on('keydown', function(){
         $(this).removeClass('is-invalid');
     });
@@ -1869,7 +1892,10 @@ $(document).ready(function(){
             viewOrderModal.modal('show');
             orderProductsList.children().remove();
             orderStatuses.children().remove();
+            orderPlaceholder.show();
+            
             let thisView = $(this);
+            globalOrderId = thisView.val();
             $.ajax({
                 type: 'POST',
                 url: 'php/viewOrder.php',
@@ -1878,7 +1904,7 @@ $(document).ready(function(){
                 },
                 success: function(response){
                     let data = JSON.parse(response);
-
+                    orderPlaceholder.hide();
                     let item = '';
                     if(data.items == 1){
                         item = ' item'
