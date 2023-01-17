@@ -32,10 +32,11 @@
     <title>D' Original Lola Berta's Lechon Haus</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"> -->
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <script src="bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Dancing+Script" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <script src="bootstrap/js/bootstrap.min.js"></script> -->
     <script src="jquery.js"></script>
     <script src="js/toast.js"></script>
     <script src="main.js"></script>
@@ -134,7 +135,7 @@
         <div>
             <div id="headerImage">
                 <div class="container">
-                    <h1 id="header-title" class="fw-bold" style="text-shadow: 10px 10px rgb(255, 124, 36);"></h1>
+                    <h1 id="header-title" class="fw-bold"></h1>
                     <br>
                     <p id="header-sub-title" class="container"></p>
                     <br>

@@ -1310,7 +1310,7 @@ $(document).ready(function(){
                                         <td>${value.available}</td>
                                         <td><span>&#8369<span>${value.price}</td>
                                         <td>
-                                            <button class="edit-product btn btn-outline-danger" id="editButton" data-bs-toggle="modal" data-bs-target="#selectEditMethod" value="${value.id}">Edit</button>
+                                            <button class="edit-product btn btn-outline-danger" id="editButton" data-bs-toggle="modal" data-bs-target="#edit-product-modal" value="${value.id}">Edit</button>
                                             <button class="delete-product btn btn-outline-warning" id="deleteButton" value="${value.id}">Delete</button>
                                         </td>
                                     </tr>

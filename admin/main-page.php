@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -316,20 +317,42 @@
                 </div>
             </div>
                 <!--edit select edit method modal-->
-                <div class="modal fade" id="selectEditMethod">
+                <div class="modal fade" id="edit-product-modal" data-bs-backdrop="static">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header" style="background-color: rgb(254,105,23);">
-                                <div class="modal-title">
-                                    <h4>Select Edit Method</h4>
+                            <div class="modal-header">
+                                <div class="modal-title d-flex">
+                                    <img src="../footer.png" style="height: 50px; width: 50px; object-fit:cover" alt="">
+                                    <h4 class="ms-3 align-self-center">Edit Product</h4>
                                 </div>
                                 <button class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div class="modal-body">
-                                <div class="d-flex m-3 justify-content-around">
-                                    <button class="btn btn-danger col-3 rounded mt-2" data-bs-toggle="modal" data-bs-target="#editProductModal" data-bs-dismiss="modal">Edit All Data</button>
-                                    <button  class="btn btn-danger col-3 mt-2 rounded" data-bs-toggle="modal" data-bs-target="#editCertainProductDataModal" data-bs-dismiss="modal">Edit Certain Data</button>
+                                <div>
+                                    <input type="text" class="form-control" id="edit-product-name" placeholder="Product Name">
+                                    <div class="invalid-feedback" id="edit-product-name-error"></div>
                                 </div>
+                                <div class="w-100 text-center">
+                                    <img id="edit-product-image" src="" class="img-fluid mx-auto" style="height: 100px; width: 100px; object-fit: cover" alt="">
+                                </div>
+                                <div>
+                                    <input style="display: none" type="file" class="form-control" id="edit-product-image">
+                                    <label style="cursor: pointer; background-color: lightgray" class="w-100 text-center mt-3 px-5 py-2 rounded-2" for="edit-product-image">Select Image</label>
+                                    <div class="invalid-feedback" id="edit-product-image-error"></div>
+                                </div>
+                                <div>
+                                    <input type="text" placeholder="Product Description" class="form-control mt-3" id="edit-product-description">
+                                    <div class="invalid-feedback" id="edit-product-description-error"></div>
+                                </div>
+                                <div>
+                                    <input type="number" placeholder="Available" class="form-control mt-3" id="edit-product-available">
+                                    <div class="invalid-feedback" id="edit-product-available-error"></div>
+                                </div>
+                                <div>
+                                    <input type="number" placeholder="Price" class="form-control mt-3" id="edit-product-price">
+                                    <div class="invalid-feedback" id="edit-product-price-error"></div>
+                                </div>
+                                <button id="confirm-edit-product" class="btn btn-danger w-100 mt-3">Confirm</button>
                             </div>
                         </div>
                     </div>

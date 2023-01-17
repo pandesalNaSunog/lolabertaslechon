@@ -12,6 +12,7 @@ $(document).ready(function(){
     let addressError = $('#signup-address-error');
     let contact = $('#signup-contact');
     let contactError = $('#signup-contact-error');
+    
     let signup = new SignUp(signupName, singupEmail, signupPassword, signupRetypePassword, signUpNameError, signupEmailError, signupPasswordError, retypePasswordError,signupButton,address, contact, addressError, contactError);
     signup.signUp();
 })

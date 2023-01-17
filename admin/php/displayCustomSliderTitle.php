@@ -16,10 +16,10 @@ if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH']
             $date = $row['updated_at'];
             $productArray[] = array(
                 'id' => $id,
-                'slider_title' => strtoupper($image),
-                'grid_title' => strtoupper($gridTitle),
-                'opening_title' => strtoupper($openingTitle),
-                'opening_subtitle' => strtoupper($openingSubtitle),
+                'slider_title' => $image,
+                'grid_title' => $gridTitle,
+                'opening_title' => $openingTitle,
+                'opening_subtitle' => $openingSubtitle,
                 'updated_at' => $date
             );
         }
