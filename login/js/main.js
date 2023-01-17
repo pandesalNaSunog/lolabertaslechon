@@ -8,7 +8,10 @@ $(document).ready(function(){
     let signupPasswordError = $('#signup-password-error');
     let retypePasswordError = $('#retype-password-error');
     let signupButton = $('#signup');
-    
-    let signup = new SignUp(signupName, singupEmail, signupPassword, signupRetypePassword, signUpNameError, signupEmailError, signupPasswordError, retypePasswordError,signupButton);
+    let address = $('#signup-address');
+    let addressError = $('#signup-address-error');
+    let contact = $('#signup-contact');
+    let contactError = $('#signup-contact-error');
+    let signup = new SignUp(signupName, singupEmail, signupPassword, signupRetypePassword, signUpNameError, signupEmailError, signupPasswordError, retypePasswordError,signupButton,address, contact, addressError, contactError);
     signup.signUp();
 })

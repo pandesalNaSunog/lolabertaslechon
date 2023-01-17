@@ -1867,19 +1867,20 @@ $(document).ready(function(){
                 let data = JSON.parse(response);
 
                 $(data).each(function(index, value){
-                    addToOrdersTable(index, value.customer_name, value.date, value.id, value.order_type);
+                    addToOrdersTable(index, value.customer_name, value.date, value.id, value.order_type, value.delivery_address);
                 })
             }
         })
     }
 
-    function addToOrdersTable(index,name, date, id, orderType){
+    function addToOrdersTable(index,name, date, id, orderType, deliveryAddress){
         ordersTable.append(`<tr>
                                 <td>
                                     ${name}
                                 </td>
                                 <td>${orderType}</td>
                                 <td>${date}</td>
+                                <td>${deliveryAddress}</td>
                                 <td>
                                     <button value="${id}" class="view btn btn-danger">View Order</button>
                                     <button value="${id}" class="delete btn btn-outline-danger">Delete</button>

@@ -204,9 +204,14 @@
                     </div>
                     <form class="w-100" action="../orders/" method="POST">
                         <label for="">Delivery Mode: </label>
-                        <select class="form-select" name="order_type">
-                            <option value="Pickup">Pickup</option>
+                        <select required class="form-select" id="delivery-mode" name="order_type">
                             <option value="Delivery">Delivery</option>
+                            <option value="Pickup">Pickup</option>
+                            
+                        </select>
+                        <label class="delivery-mode mt-3" for="">Delivery Address:</label>
+                        <select required name="delivery-address" id="select-delivery-address" class="delivery-mode form-select">
+
                         </select>
                         <button class="my-btn w-100 mt-3">Confirm Checkout</button>
                     </form>

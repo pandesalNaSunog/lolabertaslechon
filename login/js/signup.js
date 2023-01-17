@@ -1,5 +1,5 @@
 class SignUp{
-    constructor(name, email, password, retypePassword, nameError, emailError, passwordError, retypePasswordError, signup){
+    constructor(name, email, password, retypePassword, nameError, emailError, passwordError, retypePasswordError, signup, address, contact, addressError, contactError){
         this.name = name;
         this.email = email;
         this.password = password;
@@ -9,6 +9,10 @@ class SignUp{
         this.passwordError = passwordError;
         this.retypePasswordError = retypePasswordError;
         this.signup = signup;
+        this.address = address;
+        this.contact = contact;
+        this.addressError = addressError;
+        this.contactError = contactError;
     }
 
     signUp(){
@@ -20,6 +24,10 @@ class SignUp{
                 thisObject.triggerInputError(thisObject.name, thisObject.nameError, 'Please fill out this field');
             }else if(thisObject.email.val() == ""){
                 thisObject.triggerInputError(thisObject.email, thisObject.emailError, 'Please fill out this field');
+            }else if(thisObject.contact.val() == ""){
+                thisObject.triggerInputError(thisObject.contact, thisObject.contactError, 'Please fill out this field');
+            }else if(thisObject.address.val() == ""){
+                thisObject.triggerInputError(thisObject.address, thisObject.addressError, 'Please fill out this field');
             }else if(thisObject.password.val() == ""){
                 thisObject.triggerInputError(thisObject.password, thisObject.passwordError, 'Please fill out this field');
             }else if(thisObject.retypePassword.val() == ""){
@@ -34,7 +42,9 @@ class SignUp{
                     data:{
                         name: thisObject.name.val(),
                         email: thisObject.email.val(),
-                        password: thisObject.password.val()
+                        password: thisObject.password.val(),
+                        address: thisObject.address.val(),
+                        contact: thisObject.contact.val()
                     },
                     success: function(response){
                         if(response == 'ok'){

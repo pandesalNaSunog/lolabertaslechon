@@ -18,6 +18,13 @@
         }
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
             $orderType = htmlspecialchars($_POST['order_type']);
+
+            if(isset($_POST['delivery-address'])){
+                $deliveryAddress = htmlspecialchars($_POST['delivery-address']);
+            }else{
+                $deliveryAddress = null;
+            }
+        
             $cartQuery = $con->prepare('SELECT * FROM carts WHERE user_id = ?');
             $cartQuery->bind_param('i', $userId);
             $cartQuery->execute();
@@ -63,9 +70,9 @@
 
             }
 
-            $query = $con->prepare('INSERT INTO orders(user_id,order_type, product_ids, quantities,date_and_time, created_at, updated_at)VALUES(?,?,?,?,?,?,?)');
+            $query = $con->prepare('INSERT INTO orders(user_id,order_type, product_ids, quantities,date_and_time, delivery_address, created_at, updated_at)VALUES(?,?,?,?,?,?,?,?)');
             $orderStatus = 'Your order is currently Preparing';
-            $query->bind_param('issssss', $userId, $orderType, $productIdsString, $quantityString, $today, $today, $today);
+            $query->bind_param('isssssss', $userId, $orderType, $productIdsString, $quantityString, $today, $deliveryAddress, $today, $today);
             $query->execute();
 
             $lastinsertorderquery = "SELECT * FROM orders WHERE id = LAST_INSERT_ID()";
@@ -79,7 +86,7 @@
             $query->execute();
         }
 
-        $orderquery = $con->prepare('SELECT * FROM orders WHERE user_id = ?');
+        $orderquery = $con->prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC');
         $orderquery->bind_param('i', $userId);
         $orderquery->execute();
         $orderresult = $orderquery->get_result();
@@ -102,10 +109,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"> -->
-    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
-    <script src="../bootstrap/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../style.css">
+    <!-- <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <script src="../bootstrap/js/bootstrap.min.js"></script> -->
     <script src="jquery.js"></script>
     <title>Products | D' Original Lola Berta's Lechon Haus</title>
 </head>
@@ -177,7 +185,7 @@
                         <div class="card shadow mt-3">
                             <div class="card-body">
                                 
-
+                                <p class="text-end fw-bold" style="font-size: 10px">Order Date: <?php echo date_format(date_create($orderData['created_at']), "M d, Y h:i A") ?></p>
                                 
                                 <?php
                                     $grandTotal = 0;
@@ -198,6 +206,26 @@
                                                 <div class="ms-3">
                                                     <h4 class="fw-bold text-secondary"><?php echo $productData['name']; ?></h4>
                                                     <i>Quantity: <?php echo $quantity; ?></i>
+                                                    <p>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
+                                                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                                                        </svg>
+                                                        <span class="ms-2">
+                                                            <?php
+                                                                $deliveryAddressId = $orderData['delivery_address'];
+                                                                if($deliveryAddressId != null){
+                                                                    $deliveryAddressQuery = "SELECT * FROM delivery_addresses WHERE id = '$deliveryAddressId'";
+                                                                    $deliveryAddressResult = $con->query($deliveryAddressQuery) or die($con->error);
+                                                                    $deliveryAddressData = $deliveryAddressResult->fetch_assoc();
+                                                                    $deliveryAddress = $deliveryAddressData['address'];
+                                                                }else{
+                                                                    $deliveryAddress = 'For Pickup';
+                                                                }
+                                                                echo $deliveryAddress;
+                                                                
+                                                            ?>
+                                                        </span>
+                                                    </p>
                                                     <p class="text-danger">Price: &#8369; <?php echo $productData['price'] ?></p>
                                                     
                                                 </div>
@@ -210,9 +238,10 @@
                                     } 
                                 ?>
                             <hr>
-                            <div class="d-flex justify-content-between">
+                            <div class="d-flex justify-content-between text-secondary">
                                 <h4 class="fw-bold">Total:</h4>
                                 <h4 class="fw-bold">&#8369; <?php echo number_format($grandTotal, 2); ?></h4>
+                                
                             </div>
                             </div>
                             <div class="card-footer">

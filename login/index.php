@@ -103,6 +103,16 @@
                         <div class="invalid-feedback" id="signup-email-error"></div>
                     </div>
                     
+                    
+                    <div>
+                        <input id="signup-contact" type="number" placeholder="Contact Number" class="form-control mt-3">
+                        <div class="invalid-feedback" id="signup-contact-error"></div>
+                    </div>
+
+                    <div>
+                        <input id="signup-address" type="text" placeholder="Address" class="form-control mt-3">
+                        <div class="invalid-feedback" id="signup-address-error"></div>
+                    </div>
                     <div>
                         <input id="signup-password" type="password" placeholder="Password" class="form-control mt-3">
                         <div class="invalid-feedback" id="signup-password-error"></div>

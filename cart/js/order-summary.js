@@ -1,9 +1,25 @@
 class OrderSummary{
-    constructor(checkoutButton, orderSummaryTable, orderSummaryModal, grandTotal){
+    constructor(checkoutButton, orderSummaryTable, orderSummaryModal, grandTotal, selectDeliveryAddress, deliveryModeClass, deliveryMode){
         this.checkoutButton = checkoutButton;
         this.orderSummaryTable = orderSummaryTable;
         this.orderSummaryModal = orderSummaryModal;
-        this.grandTotal = grandTotal
+        this.grandTotal = grandTotal;
+        this.selectDeliveryAddress = selectDeliveryAddress
+        this.deliveryMode = deliveryMode;
+        this.deliveryModeClass = deliveryModeClass
+        
+    }
+
+    changeDeliveryMode(){
+        let thisObject = this;
+        thisObject.deliveryMode.change(function(){
+            if(thisObject.deliveryMode.val() == 'Pickup'){
+                thisObject.deliveryModeClass.prop('disabled', true)
+                thisObject.selectDeliveryAddress.val(0);
+            }else{
+                thisObject.deliveryModeClass.prop('disabled', false)
+            }
+        })
     }
 
     orderSummary(){
@@ -13,6 +29,7 @@ class OrderSummary{
         thisObject.checkoutButton.click(function(){
             buttonState.disableButton(thisObject.checkoutButton, thisObject.checkoutButton, 'Please Wait...');
             thisObject.orderSummaryTable.children().remove();
+            thisObject.selectDeliveryAddress.children().remove();
             $.ajax({
                 type: 'GET',
                 url: 'order-summary/',
@@ -22,7 +39,9 @@ class OrderSummary{
                     thisObject.orderSummaryModal.modal('show');
                     if(response != 'session expired'){
                         let data = JSON.parse(response);
-
+                        $(data.addresses).each(function(index, value){
+                            addToSelectDeliveryAddressMenu(value.id, value.address);
+                        })
                         $(data.cart_item).each(function(index, value){
                             addToOrderSummaryTable(value.name, value.image, value. price, value.quantity, value.total)
                         })
@@ -47,6 +66,11 @@ class OrderSummary{
                                                         </div>
                                                     </div>
                                                 </div>`)
+        }
+        function addToSelectDeliveryAddressMenu(id, address){
+            thisObject.selectDeliveryAddress.append(`<option value="${id}">
+                                                        ${address}
+                                                    </option>`)
         }
     }
 }

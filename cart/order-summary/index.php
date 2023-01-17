@@ -29,9 +29,16 @@
                 );
                 $grandTotal += $total;
             }
+            $addresses = array();
+            $addressQuery = "SELECT * FROM delivery_addresses WHERE user_id = '$userId'";
+            $addressResult = $con->query($addressQuery) or die($con->error);
+            while($addressRow = $addressResult->fetch_assoc()){
+                $addresses[] = $addressRow;
+            }
             echo json_encode(array(
                 'cart_item' => $cart,
-                'grand_total' => number_format($grandTotal,2)
+                'grand_total' => number_format($grandTotal,2),
+                'addresses' => $addresses,
             ));
         }else{
             echo 'session expired';
