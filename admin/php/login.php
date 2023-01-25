@@ -16,7 +16,7 @@
                 if(password_verify($password,$row['password'])){
                     $userId = $row['id'];
                     $_SESSION['user_id'] = $userId;
-                    echo "main-page.html";
+                    echo "main-page.php";
                 }else{
                     echo "Invalid Data";
                 }

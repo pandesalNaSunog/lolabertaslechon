@@ -20,6 +20,7 @@
                     'description' => $description,
                     'available' => $available,
                     'price' => $price,
+                    'has_freebie' => $row['has_freebie']
                 );
             }
             echo json_encode($productArray);

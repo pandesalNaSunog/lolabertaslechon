@@ -6,37 +6,40 @@
         include('connection.php');
         $con = connect();
 
-        if($con->connect_error){
-            echo $con->connect_error;
-        }else{
+        if(isset($_POST)){
+            $name = htmlspecialchars($_POST['name']);
+            $description = htmlspecialchars($_POST['description']);
+            $price = htmlspecialchars($_POST['price']);
+            $available = htmlspecialchars($_POST['available']);
+            $productId = htmlspecialchars($_POST['product_id']);
+            $filename = "";
+            if(isset($_FILES['image'])){
+                $file = $_FILES['image']['name'];
+                $tmp = $_FILES['image']['tmp_name'];
+                $extension = strtolower(pathinfo($file,PATHINFO_EXTENSION));
+                $allowedExtensions = ['jpg','png','jpeg'];
 
-            $file = $_FILES['editfile']['name'];
-            $tmpName = $_FILES['editfile']['tmp_name'];
-            $fileExtension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-
-            $allowedExtension = array('jpg','png','jpeg');
-
-            if(in_array($fileExtension, $allowedExtension)){
-
-                $filepath = '../images/' . uniqid() . '.' . $fileExtension;
-                move_uploaded_file($tmpName, $filepath);
-                $filepath = str_replace("../","",$filepath);
-
-                $productId = $_POST['productId'];
-                $editName = $_POST['editName'];
-                $editFile = $filepath;
-                $editDescription = $_POST['editDescription'];
-                $editQuantity = $_POST['editQuantity'];
-                $editPrice = $_POST['editPrice'];
-
-                $query = "UPDATE products SET name='$editName', quantity='$editQuantity',image='$editFile',description='$editDescription',updated_at='$today',price='$editPrice' WHERE id='$productId'";
-
-                $con->query($query) or die($con->error);
-                echo 'success';
+                if(in_array($extension, $allowedExtensions)){
+                    $filename = "../images/" . uniqid() . "." . $extension;
+                    move_uploaded_file($tmp,$filename);
+                    $filename = str_replace("../","",$filename);
+                }
+                
             }
-        // editName.val() || editFile.val() || editDescription.val() || editQuantity.val() || editPrice.val()
 
-    }
+            if($filename == ""){
+                $queryString = $con->prepare("UPDATE products SET name = ?, description = ?, price = ?, quantity = ? WHERE id = ?");
+                $queryString->bind_param('ssdii', $name, $description, $price, $available, $productId);
+
+            }else{
+                $queryString = $con->prepare("UPDATE products SET name = ?, description = ?, price = ?, quantity = ?, image = ? WHERE id = ?");
+                $queryString->bind_param('ssdisi', $name, $description, $price, $available, $filename, $productId);
+            }
+
+            $queryString->execute();
+            echo 'ok';
+            
+        }
     }else{
         echo header('HTTP/1.1 403 Forbidden');
     }

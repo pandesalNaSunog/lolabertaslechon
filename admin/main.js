@@ -1,9 +1,7 @@
 
 $(document).ready(function(){
     //default menu
-    $('#ordersNav').css('color','dimgrey');
-    $('#ordersNav').css('-webkit-text-fill-color','transparent');
-    $('#ordersNav').css('-webkit-text-stroke-width','1px');
+    $('#ordersNav').addClass('active');
     $.ajax({
         type: 'GET',
         url: 'php/sessioncheck.php',
@@ -211,6 +209,58 @@ $(document).ready(function(){
     let orderProductsList = $('#order-products-list');
     let orderStatuses = $('#order-statuses');
     let orderPlaceholder = $('#order-placeholder');
+
+    let editProductName = $('#edit-product-name');
+    let editProductNameError = $('#edit-product-name-error');
+    let editProductImage = $('#edit-product-image');
+    let editProductImageInput = $('#edit-product-image-input');
+    let editProductDescription = $('#edit-product-description');
+    let editProductDescriptionError = $('#edit-product-description-error');
+    let editProductAvailable = $('#edit-product-available');
+    let editProductAvailableError = $('#edit-product-available-error');
+    let editProductPrice = $('#edit-product-price');
+    let editProductPriceError = $('#edit-product-price-error');
+    let confirmEditProduct = $('#confirm-edit-product');
+    let editProductModal = $('#edit-product-modal');
+    confirmEditProduct.click(function(){
+        if(editProductName.val() == ""){
+            editProductNameError.text('Please fill out this field');
+            editProductName.addClass('is-invalid');
+        }else if(editProductDescription.val() == ""){
+            editProductDescriptionError.text('Please fill out this field');
+            editProductDescription.addClass('is-invalid');
+        }else if(editProductAvailable.val() == ""){
+            editProductAvailableError.text('Please fill out this field');
+            editProductAvailable.addClass('is-invalid');
+        }else if(editProductPrice.val() == ""){
+            editProductPriceError.text('Please fill out this field');
+            editProductPrice.addClass('is-invalid');
+        }else{
+            let formdata = new FormData();
+            formdata.append("name", editProductName.val())
+            formdata.append("image", editProductName.val())
+            formdata.append("description", editProductDescription.val())
+            formdata.append("available", editProductAvailable.val())
+            formdata.append("price", editProductPrice.val())
+            formdata.append("product_id", globalProductId)
+            formdata.append("image", editProductImageInput[0].files[0])
+            $.ajax({
+                type: 'POST',
+                url: 'php/editProduct.php',
+                data: formdata,
+                contentType: false,
+                processData: false,
+                success: function(response){
+                    if(response = 'ok'){
+                        editProductModal.modal('hide');
+                        editProductModal.children().find('input').val('');
+                        getProducts()
+                    }
+                }
+            })
+        }
+    })
+
     editSubtitleInput.on('keydown', function(){
         $(this).removeClass('is-invalid');
     });
@@ -1212,73 +1262,34 @@ $(document).ready(function(){
         editImageGridButton.show('fast');
     });
     //navigational Buttons
+
+    $('.nav-link').click(function(){
+        $('.nav-link').removeClass('active');
+        $(this).addClass('active');
+    })
     pageCustomizationNav.click(function(){
-        $(this).css('color','dimgrey');
-        $(this).css('-webkit-text-fill-color','transparent');
-        $(this).css('-webkit-text-stroke-width','1px');
-        ordersNav.css('color','white');
-        ordersNav.css('-webkit-text-stroke-width','0px');
-        ordersNav.css('-webkit-text-fill-color','white');
-        myProductsNav.css('color','white');
-        myProductsNav.css('-webkit-text-stroke-width','0px');
-        myProductsNav.css('-webkit-text-fill-color','white');
-        salesReportNav.css('color','white');
-        salesReportNav.css('-webkit-text-stroke-width','0px');
-        salesReportNav.css('-webkit-text-fill-color','white');
+    
         salesReportSection.slideUp('fast');
         myProductSection.slideUp('fast');
         ordersSection.slideUp('fast');
         customerPageCustomizationSection.slideDown('slow');
     });
     myProductsNav.click(function(){
-        $(this).css('color','dimgrey');
-        $(this).css('-webkit-text-fill-color','transparent');
-        $(this).css('-webkit-text-stroke-width','1px');
-        pageCustomizationNav.css('color','white');
-        pageCustomizationNav.css('-webkit-text-stroke-width','0px');
-        pageCustomizationNav.css('-webkit-text-fill-color','white');
-        ordersNav.css('color','white');
-        ordersNav.css('-webkit-text-stroke-width','0px');
-        ordersNav.css('-webkit-text-fill-color','white');
-        salesReportNav.css('color','white');
-        salesReportNav.css('-webkit-text-stroke-width','0px');
-        salesReportNav.css('-webkit-text-fill-color','white');
+        
         myProductSection.slideDown('slow');
         ordersSection.slideUp('fast');
         customerPageCustomizationSection.slideUp('fast');
         salesReportSection.slideUp('fast');
     });
     ordersNav.click(function(){
-        $(this).css('color','dimgrey');
-        $(this).css('-webkit-text-fill-color','transparent');
-        $(this).css('-webkit-text-stroke-width','1px');
-        myProductsNav.css('color','white');
-        myProductsNav.css('-webkit-text-stroke-width','0px');
-        myProductsNav.css('-webkit-text-fill-color','white');
-        pageCustomizationNav.css('color','white');
-        pageCustomizationNav.css('-webkit-text-stroke-width','0px');
-        pageCustomizationNav.css('-webkit-text-fill-color','white');
-        salesReportNav.css('color','white');
-        salesReportNav.css('-webkit-text-stroke-width','0px');
-        salesReportNav.css('-webkit-text-fill-color','white');
+
         ordersSection.slideDown('slow');
         myProductSection.slideUp('fast');
         customerPageCustomizationSection.slideUp('fast');
         salesReportSection.slideUp('fast');
     });
     salesReportNav.click(function(){
-        $(this).css('color','dimgrey');
-        $(this).css('-webkit-text-fill-color','transparent');
-        $(this).css('-webkit-text-stroke-width','1px');
-        myProductsNav.css('color','white');
-        myProductsNav.css('-webkit-text-stroke-width','0px');
-        myProductsNav.css('-webkit-text-fill-color','white');
-        pageCustomizationNav.css('color','white');
-        pageCustomizationNav.css('-webkit-text-stroke-width','0px');
-        pageCustomizationNav.css('-webkit-text-fill-color','white');
-        ordersNav.css('color','white');
-        ordersNav.css('-webkit-text-stroke-width','0px');
-        ordersNav.css('-webkit-text-fill-color','white');
+
         ordersSection.slideUp('fast');
         myProductSection.slideUp('fast');
         customerPageCustomizationSection.slideUp('fast');
@@ -1292,79 +1303,152 @@ $(document).ready(function(){
     var certainProductQuantity = $('#certainProductQuantity');
     var certainProductPrice = $('#certainProductPrice');
     //SHOW MyProducts
-    $.ajax({
-        type: 'GET',
-        url: 'php/displayMyProduct.php',
-        success:function(response){
-            var data = JSON.parse(response);
-            $(data).each(function(index, value){
-                productsTable.append(`<tr>
-                                        <td id="name">${value.name}</td>
-                                        <td>
-                                            <div style="display: flex; margin: 0px;">
-                                                <img src="${value.image}" style="height: 50px; width: 50px;">
-                                                <button id="imgLarge" data-bs-toggle="modal" data-bs-target="#viewProductImage" class="viewProductImageButton btn btn-success" value="${value.id}">View</button>
-                                            </div>
-                                        </td>
-                                        <td>${value.description}</td>
-                                        <td>${value.available}</td>
-                                        <td><span>&#8369<span>${value.price}</td>
-                                        <td>
-                                            <button class="edit-product btn btn-outline-danger" id="editButton" data-bs-toggle="modal" data-bs-target="#edit-product-modal" value="${value.id}">Edit</button>
-                                            <button class="delete-product btn btn-outline-warning" id="deleteButton" value="${value.id}">Delete</button>
-                                        </td>
-                                    </tr>
-                                    `);
+
+    getProducts();
+
+    function addToProductsTable(index, name, image, id, description, available, price, hasFreebieData){
+        productsTable.append(`<tr>
+                                <td id="name">${name}</td>
+                                <td>
+                                    <div style="display: flex; margin: 0px;">
+                                        <img src="${image}" style="height: 50px; width: 50px;">
+                                        <button id="imgLarge" data-bs-toggle="modal" data-bs-target="#viewProductImage" class="viewProductImageButton btn btn-success" value="${id}">View</button>
+                                    </div>
+                                </td>
+                                <td>${description}</td>
+                                <td>${available}</td>
+                                <td><span>&#8369<span>${price}</td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input has-freebie" type="checkbox">
+                                        <label class="form-check-label" for="flexCheckDefault">
+                                            Has Freebie
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <button class="dropdown-toggle btn btn-danger" data-bs-toggle="dropdown">Actions</button>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <button class="edit-product dropdown-item" id="editButton" data-bs-toggle="modal" data-bs-target="#edit-product-modal" value="${id}">Edit</button>
+                                            </li>
+                                            <hr class="dropdown-divider">
+                                            <li>
+                                                <button class="delete-product dropdown-item" id="deleteButton" value="${id}">Delete</button>
+                                            </li>
+                                            
+                                        </ul>
+                                    </div>
+                                    
+                                </td>
+                            </tr>
+                            `);
+
+        let hasFreebie = productsTable.children().eq(index).find('.has-freebie');
+        var btnEdit = productsTable.children().eq(index).find('.edit-product');
+        var btnDelete = productsTable.children().eq(index).find('.delete-product');
+        var viewProductImageButton = productsTable.children().eq(index).find('.viewProductImageButton');
+        if(hasFreebieData == "yes"){
+            hasFreebie.attr('checked', true)
+        }
+
+        hasFreebie.change(function(){
+            let freebieValue = "no"
+            if(hasFreebie.prop('checked') == true){
+                freebieValue = "yes"
+            }else{
+                freebieValue = "no"
+            }
+            $.ajax({
+                type: 'POST',
+                url: 'php/toggleProductHasFreebie.php',
+                data:{
+                    product_id: id,
+                    has_freebie: freebieValue
+                },
+                success: function(response){
+
+                }
             })
-            var name = $('#name');
-            var btnEdit = $('.edit-product');
-            var btnDelete = $('.delete-product');
-            var viewProductImageButton = $('.viewProductImageButton');
-            viewProductImageButton.click(function(){
-                globalProductId = $(this).val();
-                $.ajax({
-                    type: 'POST',
-                    url: 'php/AVI.php',
-                    data:
-                    {
-                        globalProductId: globalProductId
-                    },
-                    success:function(response){
-                        var data = JSON.parse(response);
-                        console.log(data);
-                        certainProductName.text(data.name);
-                        certainProductImage.attr('src', data.image);
-                        certainProductDescription.text(data.description);
-                        certainProductQuantity.text(data.quantity);
-                        certainProductPrice.text(data.price);
-                    }
-                });
-            });
-            btnEdit.click(function(){
-                globalProductId = $(this).val();
-            });
-            btnDelete.click(function(){
-                var thisDelete = $(this);
-                globalProductId = $(this).val();
-                if(confirm('Are you sure you want to DELETE this product?') == true){
-                    $.ajax({
-                        type: 'POST',
-                        url: 'php/deleteProduct.php',
-                        data:
-                        {
-                            globalProductId: globalProductId,
-                        },
-                        success:function(response){
-                            thisDelete.parent().parent().remove();
-                            if(response == 'success'){
-                                alert('Data Deleted');
-                            }
-                        }
-                    })
+        })
+        viewProductImageButton.click(function(){
+            globalProductId = $(this).val();
+            $.ajax({
+                type: 'POST',
+                url: 'php/AVI.php',
+                data:
+                {
+                    globalProductId: globalProductId
+                },
+                success:function(response){
+                    var data = JSON.parse(response);
+                    console.log(data);
+                    certainProductName.text(data.name);
+                    certainProductImage.attr('src', data.image);
+                    certainProductDescription.text(data.description);
+                    certainProductQuantity.text(data.quantity);
+                    certainProductPrice.text(data.price);
                 }
             });
-        }
-    });
+        });
+        btnEdit.click(function(){
+            globalProductId = $(this).val();
+            
+            $.ajax({
+                type: 'POST',
+                url: 'php/showProduct.php',
+                data:{
+                    product_id: globalProductId
+                },
+                success: function(response){
+                    let data = JSON.parse(response);
+                    editProductName.val(data.name);
+                    editProductImage.attr('src', "../admin/" + data.image)
+                    editProductAvailable.val(data.quantity)
+                    editProductPrice.val(data.price)
+                    editProductDescription.val(data.description)
+                }
+            })
+        });
+        btnDelete.click(function(){
+            var thisDelete = $(this);
+            globalProductId = $(this).val();
+            if(confirm('Are you sure you want to DELETE this product?') == true){
+                $.ajax({
+                    type: 'POST',
+                    url: 'php/deleteProduct.php',
+                    data:
+                    {
+                        globalProductId: globalProductId,
+                    },
+                    success:function(response){
+                        thisDelete.parent().parent().remove();
+                        if(response == 'success'){
+                            alert('Data Deleted');
+                        }
+                    }
+                })
+            }
+        });
+    }
+    function getProducts(){
+        productsTable.children().remove();
+        $.ajax({
+            type: 'GET',
+            url: 'php/displayMyProduct.php',
+            success:function(response){
+                var data = JSON.parse(response);
+                
+
+                $(data).each(function(index, value){
+                    addToProductsTable(index, value.name, value.image, value.id, value.description, value.available, value.price, value.has_freebie)
+                })
+                
+            }
+        });
+    }
+    
 
     var logOut = $('#logOut');
 
@@ -1381,80 +1465,7 @@ $(document).ready(function(){
             })
         }
     });
-    //this is all the variables on Edit button on each tablerow
-    var editName = $('#editName');
-    var editFile = $('#editFile');
-    var editDescription = $('#editDescription');
-    var editQuantity = $('#editQuantity');
-    var editPrice = $('#editPrice');
-    var editButton = $('#confirmEditProduct');
-    var resetAllEditFields = $('#resetAllEditFields');
 
-    //remove Edit invalid feedback on keydown/click
-    editName.on('keydown',function(){
-        $(this).removeClass('is-invalid');
-    });
-    editFile.on('click',function(){
-        $(this).removeClass('is-invalid');
-    });
-    editDescription.on('keydown',function(){
-        $(this).removeClass('is-invalid');
-    });
-    editQuantity.on('keydown',function(){
-        $(this).removeClass('is-invalid');
-    });
-    editPrice.on('keydown',function(){
-        $(this).removeClass('is-invalid');
-    });
-    editButton.click(function(){
-        // if a specific Edit input has no data
-        if(editName.val() == ""){
-            editName.addClass('is-invalid');
-        }
-        if(editFile.val() == ""){
-            editFile.addClass("is-invalid");
-        }
-        if(editDescription.val() == ""){
-            editDescription.addClass('is-invalid');
-        }
-        if(editQuantity.val() == ""){
-            editQuantity.addClass('is-invalid');
-        }
-        if(editPrice.val() == ""){
-            editPrice.addClass('is-invalid');
-        }
-        if(editName.val() || editFile.val() || editDescription.val() || editQuantity.val() || editPrice.val() != ""){
-            var form = new FormData();
-            form.append('productId', globalProductId);
-            form.append('editName',editName.val());
-            form.append('editPrice',editPrice.val());
-            form.append('editfile', editFile[0].files[0]);
-            form.append('editDescription', editDescription.val());
-            form.append('editQuantity', editQuantity.val());
-
-            $.ajax({
-                type: 'POST',
-                url: 'php/editProduct.php',
-                data: form,
-                contentType: false,
-                processData: false,
-                success:function(response){
-                    if(response == 'success'){
-                        alert('Data Editted.')
-                    }
-                }
-            })
-        }
-        resetAllEditFields.click(function(){
-            if(confirm('Are you sure you want to RESET?') == true){
-                editName.val("");
-                editFile.val("");
-                editDescription.val("");
-                editQuantity.val("");
-                editPrice.val("");
-            }
-        });
-    });
     //Manual Product Data Edit
     //manual edit inputs and buttons
     var manualNameEdit = $('#manualNameEdit');

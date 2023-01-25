@@ -9,10 +9,10 @@
     if(isset($_GET['search'])){
         
         $search = "%" . $_GET['search'] . "%";
-        $query = $con->prepare("SELECT * FROM products WHERE name LIKE ?");
-        $query->bind_param('s', $search);
+        $query = $con->prepare("SELECT * FROM products WHERE name LIKE ? or description LIKE ?");
+        $query->bind_param('ss', $search, $search);
     }else{
-        $query = $con->prepare('SELECT * FROM products LIMIT 5');
+        $query = $con->prepare('SELECT * FROM products');
     }
     if(isset($_SESSION['client_user_id'])){
         $hasActiveSession = true;

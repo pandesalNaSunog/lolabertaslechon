@@ -65,18 +65,18 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div id="nav-menu" class="collapse navbar-collapse">
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="navbar-nav ms-auto fw-bold">
                         <li class="nav-item">
-                            <a href="#" class="nav-link px-2" id="pageCustomizationNav" style="color: white;">Page Customization</a>
+                            <a href="#" class="nav-link px-2" id="pageCustomizationNav">Page Customization</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link px-2" id="myProductsNav" style="color: white;">My Products</a>
+                            <a href="#" class="nav-link px-2" id="myProductsNav">My Products</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link px-2" id="salesReportNav" style="color:white;">Sales Report</a>
+                            <a href="#" class="nav-link px-2" id="salesReportNav">Sales Report</a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link px-2" id="ordersNav" style="color:white;">Orders</a>
+                            <a href="#" class="nav-link px-2" id="ordersNav">Orders</a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link btn btn-warning text-dark rounded-pill mx-5 px-3 shadow" id="logOut">Log Out</a>
@@ -279,6 +279,7 @@
                                     <th scope="col">Product Description</th>
                                     <th scope="col">Available</th>
                                     <th scope="col">Price</th>
+                                    <th scope="col">Has Freebie</th>
                                     <th scope="col">Operations</th>
                                 </thead>
                                 <tbody id="productsTable">
@@ -333,11 +334,11 @@
                                     <div class="invalid-feedback" id="edit-product-name-error"></div>
                                 </div>
                                 <div class="w-100 text-center">
-                                    <img id="edit-product-image" src="" class="img-fluid mx-auto" style="height: 100px; width: 100px; object-fit: cover" alt="">
+                                    <img id="edit-product-image" src="" class="mt-3 img-fluid mx-auto" style="height: 150px; width: 150px; object-fit: cover" alt="">
                                 </div>
                                 <div>
-                                    <input style="display: none" type="file" class="form-control" id="edit-product-image">
-                                    <label style="cursor: pointer; background-color: lightgray" class="w-100 text-center mt-3 px-5 py-2 rounded-2" for="edit-product-image">Select Image</label>
+                                    <input style="display: none" type="file" class="form-control" id="edit-product-image-input">
+                                    <label style="cursor: pointer; background-color: lightgray" class="w-100 text-center mt-3 px-5 py-2 rounded-2" for="edit-product-image-input">Select Image</label>
                                     <div class="invalid-feedback" id="edit-product-image-error"></div>
                                 </div>
                                 <div>
@@ -620,7 +621,6 @@
             </div>
         </div>
     </div>
-    
     <!--view order modal-->
     <div class="modal fade" id="view-order-modal" data-bs-backdrop="static">
         <div class="modal-dialog">
